@@ -1,11 +1,15 @@
 package models.entities.roles;
 
-import javax.persistence.Column;
+import models.entities.Order;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @Entity
 public class Customer extends User {
-
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "customer")
+  private List<Order> orders ;
 
 }

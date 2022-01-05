@@ -41,9 +41,10 @@ public class ServiceConfig {
         return serviceCategoryService;
     }
     @Bean
-    public ServiceService serviceService (ServiceDao serviceDao ){
+    public ServiceService serviceService (ServiceDao serviceDao , ServiceCategoryDao serviceCategoryDao ){
         ServiceService serviceService = ServiceService.instance();
         serviceService.setServiceDao(serviceDao);
+        serviceService.setServiceCategoryDao(serviceCategoryDao);
         return serviceService;
     }
 }

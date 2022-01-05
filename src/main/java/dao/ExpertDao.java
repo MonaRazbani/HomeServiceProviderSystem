@@ -1,5 +1,6 @@
 package dao;
 
+import models.entities.Service;
 import models.entities.roles.Expert;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -7,6 +8,7 @@ import org.hibernate.query.Query;
 import util.HibernateUtil;
 
 import javax.persistence.NoResultException;
+import java.util.Set;
 
 public class ExpertDao extends HibernateUtil {
 
@@ -45,5 +47,18 @@ public class ExpertDao extends HibernateUtil {
         session.update(expert);
         transaction.commit();
         session.close();
+    }
+
+    public Set<Service> getAllExpertServices (Expert expert ,Service service){
+        Session session = getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Query<Expert> query = session.createQuery("FROM Expert expert WHERE expert.id =:id ");
+        query.setParameter("id",expert.getId());
+        Expert expertFound = query.getSingleResult();
+        Set<Service> expertServices = expertFound.getServices();
+        expertServices.add(service);
+        transaction.commit();
+        session.close();
+        return expertServices;
     }
 }

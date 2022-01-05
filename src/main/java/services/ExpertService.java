@@ -2,6 +2,7 @@ package services;
 
 import dao.ExpertDao;
 import lombok.Data;
+import models.entities.Service;
 import models.entities.roles.Expert;
 import models.enums.Gender;
 import models.enums.UserStatus;
@@ -11,8 +12,9 @@ import javax.persistence.NoResultException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Set;
 
- @Data
+@Data
 public class ExpertService {
     private ExpertDao expertDao;
     private ControlInput controlInput;
@@ -94,5 +96,14 @@ public class ExpertService {
         }
         return imageData;
     }
+
+    public void addServiceToExpertServices(Service service , Expert expert){
+        Set<Service> allExpertServices = expertDao.getAllExpertServices(expert,service);
+        expert.setServices(allExpertServices);
+        expertDao.update(expert);
+
+    }
+
+
 }
 

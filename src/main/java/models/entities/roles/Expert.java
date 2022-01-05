@@ -8,6 +8,7 @@ import models.enums.UserStatus;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -17,8 +18,7 @@ public class Expert extends User{
     private byte[] photo;
     private int rate ;
     @ManyToMany
-    private List<Service> services ;
-
+    private Set<Service> services ;
 
     public static final class ExpertBuilder {
         private byte[] photo;

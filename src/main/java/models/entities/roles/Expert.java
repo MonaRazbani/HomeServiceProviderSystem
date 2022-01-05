@@ -17,7 +17,7 @@ public class Expert extends User{
     @Column(name = "photo", columnDefinition="BLOB")
     private byte[] photo;
     private int rate ;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<Service> services ;
 
     public static final class ExpertBuilder {

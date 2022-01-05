@@ -1,6 +1,7 @@
 package services;
 
 import dao.ExpertDao;
+import dao.ServiceDao;
 import lombok.Data;
 import models.entities.Service;
 import models.entities.roles.Expert;
@@ -18,6 +19,7 @@ import java.util.Set;
 public class ExpertService {
     private ExpertDao expertDao;
     private ControlInput controlInput;
+    private ServiceDao serviceDao;
 
     private static ExpertService expertService;
 
@@ -97,10 +99,19 @@ public class ExpertService {
         return imageData;
     }
 
-    public void addServiceToExpertServices(Service service , Expert expert){
-        Set<Service> allExpertServices = expertDao.getAllExpertServices(expert,service);
-        expert.setServices(allExpertServices);
-        expertDao.update(expert);
+    public void addServiceToExpertServices(String expertEmail  , String serviceName){
+        Service service = serviceDao.findByName(serviceName);
+        Expert expert = expertDao.findByEmail(expertEmail);
+        expertDao.addExpertServices(expert,service);
+
+    }
+
+    public void deleteServiceFromExpertServices(String expertEmail  , String serviceName){
+        Service service = serviceDao.findByName(serviceName);
+        Expert expert = expertDao.findByEmail(expertEmail);
+        expertDao.removeExpertServices(expert,service);
+        /*expert.getServices().remove(service);
+        expertDao.update(expert)*/;
 
     }
 

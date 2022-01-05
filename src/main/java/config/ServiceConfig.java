@@ -27,10 +27,11 @@ public class ServiceConfig {
 
     }
     @Bean
-    public ExpertService expertService (ExpertDao expertDao , ControlInput controlInput){
+    public ExpertService expertService (ExpertDao expertDao , ControlInput controlInput ,ServiceDao serviceDao){
         ExpertService expertService = ExpertService.instance();
         expertService.setExpertDao(expertDao);
         expertService.setControlInput(controlInput);
+        expertService.setServiceDao(serviceDao);
         return expertService;
     }
     @Bean

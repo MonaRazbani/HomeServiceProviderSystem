@@ -49,16 +49,29 @@ public class ExpertDao extends HibernateUtil {
         session.close();
     }
 
-    public Set<Service> getAllExpertServices (Expert expert ,Service service){
+    public void addExpertServices(Expert expert , Service service){
         Session session = getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
-        Query<Expert> query = session.createQuery("FROM Expert expert WHERE expert.id =:id ");
-        query.setParameter("id",expert.getId());
-        Expert expertFound = query.getSingleResult();
-        Set<Service> expertServices = expertFound.getServices();
-        expertServices.add(service);
+        expert.getServices().add(service);
+        session.update(expert);
         transaction.commit();
         session.close();
-        return expertServices;
+    }
+    public void removeExpertServices(Expert expert , Service service){
+        Session session = getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        expert.getServices().remove(service);
+        session.update(expert);
+        transaction.commit();
+        session.close();
+        /*Query<Expert> query1 = session.createQuery("FROM Expert expert WHERE expert.id =:id ");
+        Query<Expert> query2 = session.createQuery("FROM Service service WHERE service.id =:id ");
+
+        query1.setParameter("id",expert.getId());
+        query2.setParameter("id",service.getId());
+        Query query = session.createNativeQuery("DELETE FROM expert_service WHERE expertList_id=:expertId AND expertList_id=:serviceId ");
+        query.setParameter("expertId",expert.getId());
+        query.setParameter("serviceId",service.getId());*/
+
     }
 }

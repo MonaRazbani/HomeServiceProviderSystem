@@ -3,12 +3,15 @@ package config;
 import dao.CustomerDao;
 import dao.ExpertDao;
 import dao.ServiceCategoryDao;
+import dao.ServiceDao;
+import models.entities.Service;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import services.CustomerService;
 import services.ExpertService;
 import services.ServiceCategoryService;
+import services.ServiceService;
 import validation.ControlInput;
 
 @Configuration
@@ -36,5 +39,11 @@ public class ServiceConfig {
         serviceCategoryService.setServiceCategoryDao(serviceCategoryDao);
         serviceCategoryService.setControlInput(controlInput);
         return serviceCategoryService;
+    }
+    @Bean
+    public ServiceService serviceService (ServiceDao serviceDao ){
+        ServiceService serviceService = ServiceService.instance();
+        serviceService.setServiceDao(serviceDao);
+        return serviceService;
     }
 }

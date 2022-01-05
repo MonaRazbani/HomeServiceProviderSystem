@@ -3,9 +3,13 @@ package validation;
 import exceptions.InvalidEmail;
 import exceptions.InvalidName;
 import exceptions.InvalidPassword;
+import exceptions.TooLargePhotoSize;
+
+import java.io.File;
 
 public class ControlInput {
     private static ControlInput controlInput;
+    private static int maxPhotoSize =300 * 1024;
 
     public ControlInput() {
     }
@@ -56,6 +60,20 @@ public class ControlInput {
             i.getMessage();
         }
         return false;
+    }
+
+    public boolean isValidPhoto(File file){
+        boolean isValid = false;
+        try {
+            if (file.length()<maxPhotoSize)
+                isValid = true;
+            else {
+                throw new TooLargePhotoSize();
+            }
+        } catch (TooLargePhotoSize invalidPassword) {
+            System.out.println(invalidPassword.getMessage());
+        }
+        return isValid;
     }
 }
 

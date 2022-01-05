@@ -63,7 +63,9 @@ public class CustomerService {
         if (customer.getPassword().equals(currentPassword)){
             customer.setPassword(newPassword);
             customerDao.update(customer);
+            System.out.println("done");
         }else System.out.println("changing password fail because you current password not correct ");
 
     }
+
 }

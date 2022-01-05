@@ -20,4 +20,6 @@ public class Offer {
     private double suggestedPrice ;
     private int suggestedDurationOfService ;
     private String StartTime;
+    @ManyToOne
+    private Instruction instruction;
 }

@@ -11,13 +11,13 @@ import java.util.List;
 
 @Data
 @Entity
-public class Order {
+public class Instruction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id ;
     @ManyToOne
     private Customer customer ;
-    @OneToMany (cascade = CascadeType.ALL , mappedBy = "order")
+    @OneToMany (cascade = CascadeType.ALL , mappedBy = "instruction")
     private List<Offer> offerList;
     private double suggestedPrice ;
     private String explanation ;

@@ -1,5 +1,6 @@
 package models.entities.roles;
 
+import lombok.Builder;
 import lombok.Data;
 import models.enums.Gender;
 import models.enums.UserStatus;
@@ -16,6 +17,7 @@ public class User {
     private long id ;
     private String firstName;
     private String lastName;
+@Column(unique = true)
     private String email;
     private String password;
     @Enumerated(value = EnumType.STRING)
@@ -24,5 +26,8 @@ public class User {
     private Date creationDate ;
     @Enumerated(value = EnumType.STRING)
     private Gender gender ;
+
+    public User() {
+    }
 
 }

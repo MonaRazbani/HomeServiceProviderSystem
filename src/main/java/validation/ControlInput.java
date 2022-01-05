@@ -45,19 +45,20 @@ public class ControlInput {
     }
 
     public boolean isValidEmail(String email) {
-        boolean isValid = false;
         try {
-            if (!email.matches("^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]))")) {
-                throw new InvalidEmail();
-            } else {
-                isValid = true;
+
+            if (email.matches("^((\"[\\w-\\s]+\")|([\\w-]+(?:\\.[\\w-]+)*)|(\"[\\w-\\s]+\")([\\w-]+(?:\\.[\\w-]+)*))(@((?:[\\w-]+\\.)*\\w[\\w-]{0,66})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$)|(@\\[?((25[0-5]\\.|2[0-4][0-9]\\.|1[0-9]{2}\\.|[0-9]{1,2}\\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\\]?$)")) {
+                return true;
             }
-        } catch (InvalidEmail invalidEmail) {
-            System.out.println(invalidEmail.getMessage());
+
+            throw new InvalidEmail();
+        } catch (InvalidEmail i) {
+            i.getMessage();
         }
-        return isValid;
+        return false;
     }
 }
+
 
 
 

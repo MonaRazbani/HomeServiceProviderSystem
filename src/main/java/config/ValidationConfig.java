@@ -1,14 +1,14 @@
 package config;
 
-import dao.CustomerDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import validation.ControlInput;
 
 @Configuration
-public class DaoConfig {
-    @Bean
-    public CustomerDao customerDao (){
-        return new CustomerDao();
-    }
 
+public class ValidationConfig {
+    @Bean
+    public ControlInput controlInput (){
+        return new ControlInput();
+    }
 }

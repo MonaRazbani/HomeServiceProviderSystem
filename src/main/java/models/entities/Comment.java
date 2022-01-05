@@ -11,6 +11,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id ;
+    @Column(nullable = false)
     private int rate ;
     private String comment ;
     @OneToOne

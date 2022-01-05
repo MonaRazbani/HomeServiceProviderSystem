@@ -27,7 +27,16 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private Gender gender ;
 
-    public User() {
+    @Override
+    public String toString() {
+        return "User{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", status=" + status +
+                ", creationDate=" + creationDate +
+                ", gender=" + gender +
+                '}';
     }
-
 }

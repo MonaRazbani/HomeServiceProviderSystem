@@ -30,4 +30,7 @@ public class Instruction {
     private Offer acceptedOffer ;
     @Enumerated(value = EnumType.STRING)
     private OrderStatus status;
+    @OneToOne
+    private Comment comment ;
+
 }

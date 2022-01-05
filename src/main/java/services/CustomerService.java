@@ -9,11 +9,13 @@ import models.enums.UserStatus;
 import org.springframework.core.type.filter.RegexPatternTypeFilter;
 import validation.ControlInput;
 
+import javax.persistence.NoResultException;
+
 @Getter
 @Setter
 public class CustomerService {
-    private CustomerDao customerDao =new CustomerDao() ;
-    private ControlInput controlInput = new ControlInput();
+    private CustomerDao customerDao ;
+    private ControlInput controlInput ;
 
     public void AddCustomer(String customerInfo) {
         try {
@@ -44,4 +46,16 @@ public class CustomerService {
         }
     }
 
+    public Customer findCustomerByEmail(String email) {
+        Customer customer = null;
+        if (controlInput.isValidEmail(email)) {
+            try {
+                customer = customerDao.findByEmail(email);
+
+            } catch (NoResultException noResultException) {
+                System.out.println("Customer not found!");
+            }
+        }
+        return customer;
+    }
 }

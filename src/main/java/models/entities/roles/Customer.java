@@ -80,4 +80,9 @@ public class Customer extends User {
             return customer;
         }
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

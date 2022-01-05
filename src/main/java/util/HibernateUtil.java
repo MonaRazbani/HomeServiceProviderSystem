@@ -37,6 +37,7 @@ public class HibernateUtil {
                     configuration.addAnnotatedClass(ServiceCategory.class);
                     configuration.addAnnotatedClass(Service.class);
                     configuration.addAnnotatedClass(Address.class);
+                    configuration.addAnnotatedClass(Comment.class);
                     ServiceRegistry serviceRegistry = (new StandardServiceRegistryBuilder()).applySettings(configuration.getProperties()).build();
                     sessionFactory = configuration.buildSessionFactory(serviceRegistry);
                 } catch (Exception var3) {

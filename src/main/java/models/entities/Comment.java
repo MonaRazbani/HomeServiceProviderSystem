@@ -2,10 +2,7 @@ package models.entities;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.swing.*;
 
 @Data
@@ -16,4 +13,6 @@ public class Comment {
     private long id ;
     private int rate ;
     private String comment ;
+    @OneToOne
+    private Instruction instruction ;
 }

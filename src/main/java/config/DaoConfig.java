@@ -2,6 +2,7 @@ package config;
 
 import dao.CustomerDao;
 import dao.ExpertDao;
+import dao.ServiceCategoryDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,6 +15,10 @@ public class DaoConfig {
     @Bean
     public ExpertDao expertDao(){
         return ExpertDao.instance();
+    }
+    @Bean
+    public ServiceCategoryDao serviceCategoryDao (){
+        return ServiceCategoryDao.instance();
     }
 
 }

@@ -58,4 +58,12 @@ public class CustomerService {
         }
         return customer;
     }
+
+    public void changePasswordForCustomer(Customer customer , String currentPassword , String newPassword){
+        if (customer.getPassword().equals(currentPassword)){
+            customer.setPassword(newPassword);
+            customerDao.update(customer);
+        }else System.out.println("changing password fail because you current password not correct ");
+
+    }
 }

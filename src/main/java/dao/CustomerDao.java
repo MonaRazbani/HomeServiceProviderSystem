@@ -27,5 +27,13 @@ public class CustomerDao extends HibernateUtil {
         session.close();
         return result ;
     }
+
+    public void update(Customer customer) {
+        Session session = getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        session.update(customer);
+        transaction.commit();
+        session.close();
+    }
 }
 

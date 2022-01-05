@@ -5,10 +5,22 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import util.HibernateUtil;
+import validation.ControlInput;
 
 import javax.persistence.NoResultException;
 
 public class CustomerDao extends HibernateUtil {
+
+    private static CustomerDao customerDao;
+
+    public static CustomerDao instance() {
+
+        if (customerDao == null)
+            customerDao = new CustomerDao();
+
+        return customerDao;
+    }
+
     public void save(Customer customer) {
         Session session = getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();

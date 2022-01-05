@@ -1,7 +1,7 @@
 package services;
 
 import dao.ExpertDao;
-import models.entities.roles.Customer;
+import lombok.Data;
 import models.entities.roles.Expert;
 import models.enums.Gender;
 import models.enums.UserStatus;
@@ -12,9 +12,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+ @Data
 public class ExpertService {
     private ExpertDao expertDao;
     private ControlInput controlInput;
+
+    private static ExpertService expertService;
+
+    public static ExpertService instance() {
+
+        if (expertService == null)
+            expertService = new ExpertService();
+
+        return expertService;
+    }
 
     public void AddExpert(String expertInfo, File file) {
         try {
@@ -70,7 +81,6 @@ public class ExpertService {
         } else System.out.println("changing password fail because you current password not correct ");
 
     }
-
 
     public byte[] initializePhoto(File file) {
         byte[] imageData = new byte[(int) file.length()];

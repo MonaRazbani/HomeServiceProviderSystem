@@ -1,6 +1,5 @@
 package dao;
 
-import models.entities.roles.Customer;
 import models.entities.roles.Expert;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -10,6 +9,17 @@ import util.HibernateUtil;
 import javax.persistence.NoResultException;
 
 public class ExpertDao extends HibernateUtil {
+
+    private static ExpertDao expertDao;
+
+    public static ExpertDao instance() {
+
+        if (expertDao == null)
+            expertDao = new ExpertDao();
+
+        return expertDao;
+    }
+
     public void save(Expert expert) {
         Session session = getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();

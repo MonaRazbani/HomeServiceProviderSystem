@@ -1,12 +1,12 @@
 package services;
 
 import dao.CustomerDao;
+import dao.ExpertDao;
 import lombok.Getter;
 import lombok.Setter;
 import models.entities.roles.Customer;
 import models.enums.Gender;
 import models.enums.UserStatus;
-import org.springframework.core.type.filter.RegexPatternTypeFilter;
 import validation.ControlInput;
 
 import javax.persistence.NoResultException;
@@ -16,6 +16,15 @@ import javax.persistence.NoResultException;
 public class CustomerService {
     private CustomerDao customerDao ;
     private ControlInput controlInput ;
+    private static CustomerService customerService;
+
+    public static CustomerService instance() {
+
+        if (customerService == null)
+            customerService = new CustomerService();
+
+        return customerService;
+    }
 
     public void AddCustomer(String customerInfo) {
         try {

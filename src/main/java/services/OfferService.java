@@ -1,16 +1,13 @@
 package services;
 
-import dao.*;
+import dao.InstructionDao;
+import dao.OfferDao;
 import exceptions.EditionDenied;
 import lombok.Data;
-import models.entities.Address;
 import models.entities.Instruction;
 import models.entities.Offer;
-import models.entities.Service;
-import models.entities.roles.Customer;
 import models.entities.roles.Expert;
 import models.enums.InstructionStatus;
-import validation.ControlInput;
 
 import javax.persistence.NoResultException;
 import java.text.ParseException;
@@ -79,7 +76,7 @@ public class OfferService {
         }
     }
 
-    public void editSuggestedDurationOfService(Offer offer, int  suggestedDurationOfService) {
+    public void editSuggestedDurationOfService(Offer offer, int suggestedDurationOfService) {
         try {
             if (canEdit(offer.getInstruction().getStatus())) {
                 offer.setSuggestedDurationOfService(suggestedDurationOfService);
@@ -90,7 +87,7 @@ public class OfferService {
         }
     }
 
-    public List<Offer> findOffersOfInstruction (Instruction instruction, InstructionStatus status) {
+    public List<Offer> findOffersOfInstruction(Instruction instruction, InstructionStatus status) {
         try {
             return offerDao.findOffersOfInstruction(instruction, status);
         } catch (NoResultException e) {
@@ -99,7 +96,7 @@ public class OfferService {
         return null;
     }
 
-    public void deleteOfferFromInstruction(long offerId ) {
+    public void deleteOfferFromInstruction(long offerId) {
         try {
             Offer offer = offerDao.findById(offerId);
             if (canEdit(offer.getInstruction().getStatus())) {

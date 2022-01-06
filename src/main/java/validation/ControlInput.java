@@ -82,6 +82,13 @@ public class ControlInput {
         }
     }
 
+    public boolean isValidRate(int rate ){
+        if (rate <= 5 && rate >=0 ){
+            return true;
+        }else {
+            throw new InvalidRate();
+        }
+    }
 }
 
 

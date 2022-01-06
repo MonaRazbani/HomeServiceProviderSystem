@@ -40,5 +40,9 @@ public class DaoConfig {
     public AddressDao addressDao() {
         return AddressDao.instance();
     }
+    @Bean
+    public CommentDao commentDao() {
+        return CommentDao.instance();
+    }
 
 }

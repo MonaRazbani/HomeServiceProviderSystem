@@ -3,6 +3,7 @@ package models.entities.roles;
 import lombok.Builder;
 import lombok.Data;
 import models.enums.Gender;
+import models.enums.RoleStatus;
 import models.enums.UserStatus;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -26,6 +27,8 @@ public class User {
     private Date creationDate ;
     @Enumerated(value = EnumType.STRING)
     private Gender gender ;
+    @Enumerated(value =EnumType.STRING)
+    private static RoleStatus role = RoleStatus.USER;
 
     @Override
     public String toString() {

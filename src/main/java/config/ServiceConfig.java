@@ -65,4 +65,12 @@ public class ServiceConfig {
         offerService.setOfferDao(offerDao);
         return offerService;
     }
+    @Bean
+    public CommentService commentService ( InstructionDao instructionDao, CommentDao commentDao ,ControlInput controlInput ){
+        CommentService commentService = CommentService.instance();
+        commentService.setInstructionDao(instructionDao);
+        commentService.setCommentDao(commentDao);
+        commentService.setControlInput(controlInput);
+        return commentService;
+    }
 }

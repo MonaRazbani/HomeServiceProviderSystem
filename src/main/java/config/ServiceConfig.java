@@ -43,13 +43,14 @@ public class ServiceConfig {
         return serviceService;
     }
     @Bean
-    public InstructionService instructionService (ServiceDao serviceDao , ExpertDao expertDao , CustomerDao customerDao, OfferDao offerDao,ControlInput controlInput){
+    public InstructionService instructionService (ServiceDao serviceDao , ExpertDao expertDao , CustomerDao customerDao, OfferDao offerDao,ControlInput controlInput,AddressDao addressDao){
         InstructionService instructionService = InstructionService.instance();
         instructionService.setServiceDao(serviceDao);
         instructionService.setExpertDao(expertDao);
         instructionService.setCustomerDao(customerDao);
         instructionService.setOfferDao(offerDao);
         instructionService.setControlInput(controlInput);
+        instructionService.setAddressDao(addressDao);
 
         return instructionService;
     }

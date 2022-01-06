@@ -8,7 +8,7 @@ import models.enums.Gender;
 import models.enums.UserStatus;
 @Data
 public class AddressService {
-    private  static AddressDao addressDao ;
+    private   AddressDao addressDao ;
     public static Address createAddress (String addressInfo ){
 
         try {

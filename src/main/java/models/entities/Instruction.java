@@ -15,7 +15,7 @@ public class Instruction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id ;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Customer customer ;
     @OneToMany (cascade = CascadeType.ALL , mappedBy = "instruction")
     private List<Offer> offerList;
@@ -35,4 +35,19 @@ public class Instruction {
     @OneToOne
     private Comment comment ;
 
+    @Override
+    public String toString() {
+        return "Instruction{" +
+                "customer=" + customer +
+                ", suggestedPrice=" + suggestedPrice +
+                ", explanation='" + explanation + '\'' +
+                ", service=" + service +
+                ", doneService=" + doneService +
+                ", address=" + address +
+                ", creation=" + creation +
+                ", acceptedOffer=" + acceptedOffer +
+                ", status=" + status +
+                ", comment=" + comment +
+                '}';
+    }
 }

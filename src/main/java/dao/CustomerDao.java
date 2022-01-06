@@ -5,7 +5,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import util.HibernateUtil;
-import validation.ControlInput;
 
 import javax.persistence.NoResultException;
 
@@ -21,7 +20,7 @@ public class CustomerDao extends HibernateUtil {
         return customerDao;
     }
 
-    public void save(Customer customer) {
+    public void save(Customer customer)  {
         Session session = getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         session.persist(customer);
@@ -47,5 +46,18 @@ public class CustomerDao extends HibernateUtil {
         transaction.commit();
         session.close();
     }
+
+    public Customer getCustomerWithInstruction (Customer customer ){
+        Session session = getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Query<Customer> query = session.createQuery("FROM Customer customer  WHERE customer.email =: email");
+        query.setParameter("email" , customer.getEmail());
+        Customer result = query.getSingleResult();
+        customer.setInstructions(result.getInstructions());
+        transaction.commit();
+        session.close();
+        return customer;
+    }
+
 }
 

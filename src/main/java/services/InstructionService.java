@@ -8,6 +8,7 @@ import models.entities.Address;
 import models.entities.Instruction;
 import models.entities.Service;
 import models.entities.roles.Customer;
+import models.entities.roles.Expert;
 import models.enums.InstructionStatus;
 import validation.ControlInput;
 
@@ -101,6 +102,15 @@ public class InstructionService {
     public List<Instruction> findInstructionByCustomerAndStatus(Customer customer, InstructionStatus status) {
         try {
            return  instructionDao.findInstructionByCustomerAndStatus(customer, status);
+        } catch (NoResultException e) {
+            System.out.println("no result ");
+        }
+        return null;
+    }
+
+    public List<Instruction> findInstructionByExpertAndStatus(Expert expert, InstructionStatus status) {
+        try {
+           return  instructionDao.findInstructionByExpertAndStatus(expert, status);
         } catch (NoResultException e) {
             System.out.println("no result ");
         }

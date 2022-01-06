@@ -70,4 +70,19 @@ public class InstructionDao extends HibernateUtil {
         session.close();
         return result ;
     }
+
+    public List<Instruction> findInstructionByExpertAndStatus(Expert expert, InstructionStatus status) throws NoResultException {
+        Session session = getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Query<Instruction> query = session.createQuery("FROM Instruction instruction WHERE" +
+                " instruction.acceptedOffer.expert =: expertId AND instruction.status=:status " );
+        query.setParameter("expertId",expert.getId());
+        query.setParameter("status",status);
+        List<Instruction> result = query.getResultList();
+        transaction.commit();
+        session.close();
+        return result ;
+    }
+
+
 }

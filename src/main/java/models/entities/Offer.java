@@ -13,7 +13,7 @@ public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id ;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Expert expert ;
     @CreationTimestamp
     private Date creationDate ;

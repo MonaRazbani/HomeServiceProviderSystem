@@ -8,7 +8,6 @@ import org.hibernate.query.Query;
 import util.HibernateUtil;
 
 import javax.persistence.NoResultException;
-import java.util.Set;
 
 public class ExpertDao extends HibernateUtil {
 
@@ -61,6 +60,7 @@ public class ExpertDao extends HibernateUtil {
         Session session = getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         expert.getServices().remove(service);
+        System.out.println(expert.getServices());
         session.update(expert);
         transaction.commit();
         session.close();

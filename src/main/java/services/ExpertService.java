@@ -100,18 +100,24 @@ public class ExpertService {
     }
 
     public void addServiceToExpertServices(String expertEmail  , String serviceName){
-        Service service = serviceDao.findByName(serviceName);
-        Expert expert = expertDao.findByEmail(expertEmail);
-        expertDao.addExpertServices(expert,service);
+        try {
+            Service service = serviceDao.findByName(serviceName);
+            Expert expert = expertDao.findByEmail(expertEmail);
+            expertDao.addExpertServices(expert,service);
+        }catch (NoResultException noResultException ) {
+            System.out.println("wrong email or service name ");
+        }
 
     }
 
     public void deleteServiceFromExpertServices(String expertEmail  , String serviceName){
-        Service service = serviceDao.findByName(serviceName);
-        Expert expert = expertDao.findByEmail(expertEmail);
-        expertDao.removeExpertServices(expert,service);
-        /*expert.getServices().remove(service);
-        expertDao.update(expert)*/;
+        try {
+            Service service = serviceDao.findByName(serviceName);
+            Expert expert = expertDao.findByEmail(expertEmail);
+            expertDao.removeExpertServices(expert, service);
+        }catch (NoResultException noResultException ) {
+            System.out.println("wrong email or service name ");
+        }
 
     }
 

@@ -1,9 +1,6 @@
 package config;
 
-import dao.CustomerDao;
-import dao.ExpertDao;
-import dao.ServiceCategoryDao;
-import dao.ServiceDao;
+import dao.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,5 +22,9 @@ public class DaoConfig {
     public ServiceDao serviceDao (){
         return ServiceDao.instance();
     }
+    @Bean
+    public InstructionDao instructionDao(){ return InstructionDao.instance(); }
+    @Bean
+    public OfferDao offerDao(){ return OfferDao.instance(); }
 
 }

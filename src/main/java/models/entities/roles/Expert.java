@@ -7,6 +7,7 @@ import models.enums.UserStatus;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class Expert extends User{
     private byte[] photo;
     private int rate ;
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<Service> services ;
+    private Set<Service> services = new HashSet<>();
 
     public static final class ExpertBuilder {
         private byte[] photo;

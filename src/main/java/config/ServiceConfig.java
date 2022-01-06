@@ -73,4 +73,14 @@ public class ServiceConfig {
         commentService.setControlInput(controlInput);
         return commentService;
     }
+      @Bean
+    public AdminService adminService( AdminDao adminDao,  UserDao userDao ,ControlInput controlInput ){
+
+        AdminService adminService = AdminService.instance();
+        adminService.setAdminDao(adminDao);
+        adminService.setUserDao(userDao);
+        adminService.setControlInput(controlInput);
+        return adminService;
+    }
+
 }

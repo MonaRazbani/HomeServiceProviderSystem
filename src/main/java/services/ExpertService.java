@@ -7,6 +7,7 @@ import models.entities.Service;
 import models.entities.roles.Expert;
 import models.enums.Gender;
 import models.enums.UserStatus;
+import models.enums.UserType;
 import validation.ControlInput;
 
 import javax.persistence.NoResultException;
@@ -54,6 +55,7 @@ public class ExpertService {
                         .withStatus(UserStatus.NEW)
                         .withRate(0)
                         .withPhoto(imageBytes)
+                        .withUserType(UserType.CUSTOMER)
                         .build();
 
                 expertDao.save(expert);

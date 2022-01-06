@@ -7,6 +7,7 @@ import lombok.Setter;
 import models.entities.roles.Customer;
 import models.enums.Gender;
 import models.enums.UserStatus;
+import models.enums.UserType;
 import validation.ControlInput;
 
 import javax.persistence.NoResultException;
@@ -45,6 +46,7 @@ public class CustomerService {
                         .withEmail(email)
                         .withPassword(password)
                         .withStatus(UserStatus.NEW)
+                        .withUserType(UserType.CUSTOMER)
                         .build();
 
                 customerDao.save(customer);

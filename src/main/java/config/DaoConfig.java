@@ -44,5 +44,13 @@ public class DaoConfig {
     public CommentDao commentDao() {
         return CommentDao.instance();
     }
+    @Bean
+    public AdminDao adminDao() {
+        return AdminDao.instance();
+    }
+    @Bean
+    public UserDao userDao() {
+        return UserDao.instance();
+    }
 
 }

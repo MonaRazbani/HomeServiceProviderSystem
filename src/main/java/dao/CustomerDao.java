@@ -1,12 +1,17 @@
 package dao;
 
 import models.entities.roles.Customer;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import util.HibernateUtil;
 
 import javax.persistence.NoResultException;
+import java.util.Date;
+import java.util.List;
 
 public class CustomerDao extends HibernateUtil {
 
@@ -58,6 +63,7 @@ public class CustomerDao extends HibernateUtil {
         session.close();
         return customer;
     }
+
 
 }
 

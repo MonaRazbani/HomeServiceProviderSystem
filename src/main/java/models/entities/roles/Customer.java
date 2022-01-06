@@ -4,11 +4,9 @@ import lombok.Data;
 import models.entities.Instruction;
 import models.enums.Gender;
 import models.enums.UserStatus;
+import models.enums.UserType;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 @Data
@@ -18,6 +16,14 @@ public class Customer extends User {
     private List<Instruction> instructions;
 
 
+
+
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
+
     public static final class CustomerBuilder {
         private String firstName;
         private String lastName;
@@ -26,6 +32,7 @@ public class Customer extends User {
         private UserStatus status ;
         private Date creationDate ;
         private Gender gender ;
+        private UserType userType;
 
         private CustomerBuilder() {
         }
@@ -69,6 +76,11 @@ public class Customer extends User {
             return this;
         }
 
+        public CustomerBuilder withUserType(UserType userType) {
+            this.userType = userType;
+            return this;
+        }
+
         public Customer build() {
             Customer customer = new Customer();
             customer.setFirstName(firstName);
@@ -78,12 +90,8 @@ public class Customer extends User {
             customer.setStatus(status);
             customer.setCreationDate(creationDate);
             customer.setGender(gender);
+            customer.setUserType(userType);
             return customer;
         }
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

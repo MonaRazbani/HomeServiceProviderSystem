@@ -1,13 +1,18 @@
 package dao;
 
 import models.entities.Service;
+import models.entities.roles.Customer;
 import models.entities.roles.Expert;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import util.HibernateUtil;
 
 import javax.persistence.NoResultException;
+import java.util.List;
 
 public class ExpertDao extends HibernateUtil {
 
@@ -64,14 +69,29 @@ public class ExpertDao extends HibernateUtil {
         session.update(expert);
         transaction.commit();
         session.close();
-        /*Query<Expert> query1 = session.createQuery("FROM Expert expert WHERE expert.id =:id ");
-        Query<Expert> query2 = session.createQuery("FROM Service service WHERE service.id =:id ");
-
-        query1.setParameter("id",expert.getId());
-        query2.setParameter("id",service.getId());
-        Query query = session.createNativeQuery("DELETE FROM expert_service WHERE expertList_id=:expertId AND expertList_id=:serviceId ");
-        query.setParameter("expertId",expert.getId());
-        query.setParameter("serviceId",service.getId());*/
-
     }
+
+    public List<Expert> filterDynamic(String firstName, String lastName , String email) {
+        Session session = getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        Criteria criteria = session.createCriteria(Customer.class, "expert");
+        if (firstName !=null ) {
+            Criterion firstNameFilter = Restrictions.eq("expert.firstName", firstName);
+            criteria.add(firstNameFilter);
+        }
+        if (lastName!= null) {
+            Criterion lastNameFilter = Restrictions.eq("expert.lastName", lastName);
+            criteria.add(lastNameFilter);
+        }
+        if (email!= null) {
+            Criterion emailFilter = Restrictions.eq("expert.email", email);
+            criteria.add(emailFilter);
+        }
+        List found = criteria.list();
+        transaction.commit();
+        session.close();
+
+        return found;
+    }
+
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import models.enums.Gender;
 import models.enums.RoleStatus;
 import models.enums.UserStatus;
+import models.enums.UserType;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -29,6 +30,8 @@ public class User {
     private Gender gender ;
     @Enumerated(value =EnumType.STRING)
     private static RoleStatus role = RoleStatus.USER;
+    @Enumerated(value = EnumType.STRING)
+    private UserType userType;
 
     @Override
     public String toString() {

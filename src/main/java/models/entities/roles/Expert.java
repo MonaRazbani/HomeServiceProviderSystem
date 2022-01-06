@@ -4,6 +4,7 @@ import lombok.Data;
 import models.entities.Service;
 import models.enums.Gender;
 import models.enums.UserStatus;
+import models.enums.UserType;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -21,6 +22,7 @@ public class Expert extends User{
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<Service> services = new HashSet<>();
 
+
     public static final class ExpertBuilder {
         private byte[] photo;
         private int rate ;
@@ -31,6 +33,7 @@ public class Expert extends User{
         private UserStatus status ;
         private Date creationDate ;
         private Gender gender ;
+        private UserType userType;
 
         private ExpertBuilder() {
         }
@@ -84,6 +87,11 @@ public class Expert extends User{
             return this;
         }
 
+        public ExpertBuilder withUserType(UserType userType) {
+            this.userType = userType;
+            return this;
+        }
+
         public Expert build() {
             Expert expert = new Expert();
             expert.setPhoto(photo);
@@ -95,7 +103,15 @@ public class Expert extends User{
             expert.setStatus(status);
             expert.setCreationDate(creationDate);
             expert.setGender(gender);
+            expert.setUserType(userType);
             return expert;
         }
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                "rate=" + rate +
+                '}';
     }
 }

@@ -19,6 +19,12 @@ public class ServiceConfig {
         customerService.setControlInput(controlInput);
         return customerService;
 
+    } @Bean
+    public AddressService addressService (AddressDao addressDao ){
+        AddressService addressService = new AddressService();
+        addressService.setAddressDao(addressDao);
+        return addressService;
+
     }
     @Bean
     public ExpertService expertService (ExpertDao expertDao , ControlInput controlInput ,ServiceDao serviceDao){
@@ -43,12 +49,13 @@ public class ServiceConfig {
         return serviceService;
     }
     @Bean
-    public InstructionService instructionService (ServiceDao serviceDao , ExpertDao expertDao , CustomerDao customerDao, OfferDao offerDao,ControlInput controlInput,AddressDao addressDao){
+    public InstructionService instructionService (ServiceDao serviceDao , ExpertDao expertDao , CustomerDao customerDao, OfferDao offerDao,ControlInput controlInput,AddressDao addressDao,InstructionDao instructionDao){
         InstructionService instructionService = InstructionService.instance();
         instructionService.setServiceDao(serviceDao);
         instructionService.setExpertDao(expertDao);
         instructionService.setCustomerDao(customerDao);
         instructionService.setOfferDao(offerDao);
+        instructionService.setInstructionDao(instructionDao);
         instructionService.setControlInput(controlInput);
         instructionService.setAddressDao(addressDao);
 

@@ -19,6 +19,8 @@ public class Service {
     private double baseCost ;
     @ManyToOne
     private ServiceCategory serviceCategory ;
+    @OneToMany(cascade = CascadeType.ALL , mappedBy = "service")
+    private List<Instruction> instructionsOfServices;
     @ManyToMany(mappedBy = "services" )
     private List<Expert> expertList ;
 

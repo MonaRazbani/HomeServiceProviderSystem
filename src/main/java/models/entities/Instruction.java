@@ -2,7 +2,7 @@ package models.entities;
 
 import lombok.Data;
 import models.entities.roles.Customer;
-import models.enums.OrderStatus;
+import models.enums.InstructionStatus;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -21,6 +21,8 @@ public class Instruction {
     private List<Offer> offerList;
     private double suggestedPrice ;
     private String explanation ;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Service service ;
     private Date doneService;
     @OneToOne
     private Address address;
@@ -29,7 +31,7 @@ public class Instruction {
     @OneToOne
     private Offer acceptedOffer ;
     @Enumerated(value = EnumType.STRING)
-    private OrderStatus status;
+    private InstructionStatus status;
     @OneToOne
     private Comment comment ;
 

@@ -7,7 +7,7 @@ import java.io.File;
 
 public class ControlInput {
     private static ControlInput controlInput;
-    private static int maxPhotoSize =300 * 1024;
+    private static int maxPhotoSize =300000;
 
     public ControlInput() {
     }
@@ -79,6 +79,7 @@ public class ControlInput {
             return true ;
         }else {
             throw new InvalidSuggestedPrice();
+
         }
     }
 

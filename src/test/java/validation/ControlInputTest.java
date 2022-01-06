@@ -1,8 +1,13 @@
 package validation;
 
+import exceptions.InvalidRate;
+import exceptions.InvalidSuggestedPrice;
+import models.entities.Service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
 
 public class ControlInputTest {
     ControlInput controlInput;
@@ -73,5 +78,49 @@ public class ControlInputTest {
         boolean result = controlInput.isValidEmail(email);
         Assertions.assertTrue(result);
     }
+    @Test
+    void controlInput_CallIsValidPhoto_ResponseFalse() {
+        File file = new File("C:\\Users\\Asus\\Desktop\\image\\expert1.png");
+        boolean result = controlInput.isValidPhoto(file);
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    void controlInput_CallIsValidPhoto_ResponseTrue() {
+        File file = new File("C:\\Users\\Asus\\Desktop\\image\\1.jpg");
+        boolean result = controlInput.isValidPhoto(file);
+        Assertions.assertTrue(result);
+    }
+    @Test
+    void controlInput_CallIsValidSuggestedPrice_ReturnException() {
+        Service service = new Service();
+        service.setBaseCost(1000);
+        InvalidSuggestedPrice result = Assertions.assertThrows(InvalidSuggestedPrice.class,()-> controlInput.isValidSuggestedPrice(service,900));
+        Assertions.assertEquals("invalid SuggestedPrice , SuggestedPrice must be more than service base cost ",result.getMessage());
+    }
+    @Test
+    void controlInput_CallIsValidValidSuggestedPrice_ResponseTrue() {
+        Service service = new Service();
+        service.setBaseCost(1000);
+        boolean result = controlInput.isValidSuggestedPrice(service,1200);
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    void controlInput_CallIsValidRate_ReturnException() {
+
+        InvalidRate result = Assertions.assertThrows(InvalidRate.class,()-> controlInput.isValidRate(10));
+        Assertions.assertEquals(" invalid rate , rate must between 5-0",result.getMessage());
+    }
+    @Test
+    void controlInput_CallIsValidValidRate_ResponseTrue() {
+
+        boolean result = controlInput.isValidRate(5);
+        Assertions.assertTrue(result);
+    }
+
+
+
+
 
 }

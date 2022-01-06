@@ -2,7 +2,7 @@ package services;
 
 import dao.*;
 import exceptions.EditionDenied;
-import jdk.jshell.Snippet;
+import exceptions.InvalidSuggestedPrice;
 import lombok.Data;
 import models.entities.Address;
 import models.entities.Instruction;
@@ -12,19 +12,18 @@ import models.entities.roles.Expert;
 import models.enums.InstructionStatus;
 import validation.ControlInput;
 
+import javax.persistence.ConstructorResult;
 import javax.persistence.NoResultException;
 import java.util.List;
 
 @Data
 public class InstructionService {
     private ServiceDao serviceDao;
-    private ExpertDao expertDao;
-    private CustomerDao customerDao;
-    private OfferDao offerDao;
-    private ControlInput controlInput;
     private AddressDao addressDao;
     private InstructionDao instructionDao;
+    private ControlInput controlInput ;
     private static InstructionService instructionService;
+
 
     public static InstructionService instance() {
 
@@ -39,47 +38,21 @@ public class InstructionService {
         addressDao.save(address);
         try {
             Service service = serviceDao.findByName(serviceName);
-            Instruction instruction = new Instruction();
-            instruction.setCustomer(customer);
-            instruction.setExplanation(explanation);
-            instruction.setSuggestedPrice(suggestedPrice);
-            instruction.setService(service);
-            instruction.setStatus(InstructionStatus.STARTED);
-            instruction.setAddress(address);
-            instructionDao.save(instruction);
-        } catch (NoResultException noResultException) {
-            System.out.println("no service exists with this name ");
-        }
-    }
 
-    public void editInstructionExplanation(Instruction instruction, String newExplanation) {
-        instruction.setExplanation(newExplanation);
-        instructionDao.update(instruction);
-    }
-
-    public void editInstructionAddress(Instruction instruction, String addressInfo) {
-        Address address = AddressService.createAddress(addressInfo);
-        addressDao.save(address);
-        instruction.setAddress(address);
-    }
-
-    public void editInstructionSuggestedPrice(Instruction instruction, double suggestedPrice) {
-        instruction.setSuggestedPrice(suggestedPrice);
-
-    }
-
-    public void editInstructionServiceType(Instruction instruction, String serviceName) {
-        try {
             try {
-                if (instruction.getStatus().equals(InstructionStatus.STARTED) || instruction.getStatus().equals(InstructionStatus.WAITING_FOR_CHOOSING_EXPERT)) {
-                    Service service = serviceDao.findByName(serviceName);
+
+                if (controlInput.isValidSuggestedPrice(service, suggestedPrice)) {
+                    Instruction instruction = new Instruction();
+                    instruction.setCustomer(customer);
+                    instruction.setExplanation(explanation);
+                    instruction.setSuggestedPrice(suggestedPrice);
                     instruction.setService(service);
-                    instructionDao.update(instruction);
-
-                } else throw new EditionDenied();
-
-            } catch (EditionDenied editionDenied) {
-                System.out.println(editionDenied.getMessage());
+                    instruction.setStatus(InstructionStatus.STARTED);
+                    instruction.setAddress(address);
+                    instructionDao.save(instruction);
+                }
+            }catch (InvalidSuggestedPrice e){
+                System.out.println(e.getMessage());
             }
 
         } catch (NoResultException noResultException) {
@@ -87,21 +60,71 @@ public class InstructionService {
         }
     }
 
-    public void deleteInstructionFromCustomer(Instruction instruction, Customer customer) {
-        customer = customerDao.getCustomerWithInstruction(customer);
-        customer.getInstructions().remove(instruction);
-        customerDao.update(customer);
+    public void editInstructionExplanation(Instruction instruction, String newExplanation) {
+        try {
+            if (instruction.getStatus().equals(InstructionStatus.STARTED) || instruction.getStatus().equals(InstructionStatus.WAITING_FOR_CHOOSING_EXPERT)) {
+                instruction.setExplanation(newExplanation);
+                instructionDao.update(instruction);
+            }
+        } catch (EditionDenied editionDenied) {
+            System.out.println(editionDenied.getMessage());
+        }
+    }
 
+    public void editInstructionAddress(Instruction instruction, String addressInfo) {
+        try {
+        if (canEdit(instruction.getStatus())){
+                Address address = AddressService.createAddress(addressInfo);
+                addressDao.save(address);
+                instruction.setAddress(address);
+                instructionDao.update(instruction);
+            }
+        } catch (EditionDenied editionDenied) {
+            System.out.println(editionDenied.getMessage());
+        }
+    }
+
+    public void editInstructionSuggestedPrice(Instruction instruction, double suggestedPrice) {
+        try {
+            if (canEdit(instruction.getStatus())) {
+                instruction.setSuggestedPrice(suggestedPrice);
+                instructionDao.update(instruction);
+            }
+        } catch (EditionDenied e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void editInstructionServiceType(Instruction instruction, String serviceName) {
+        try {
+            try {
+                if (canEdit(instruction.getStatus())) {
+                    Service service = serviceDao.findByName(serviceName);
+                    instruction.setService(service);
+                    instructionDao.update(instruction);
+                }
+            } catch (EditionDenied e) {
+                System.out.println(e.getMessage());
+            }
+        } catch (NoResultException noResultException) {
+            System.out.println("no service exists with this name ");
+        }
     }
 
     public void deleteInstructionFromCustomer(long instructionId) {
-        Instruction instruction = instructionDao.findById(instructionId);
-        instructionDao.delete(instruction);
+        try {
+            Instruction instruction = instructionDao.findById(instructionId);
+            if (canEdit(instruction.getStatus())) {
+                instructionDao.delete(instruction);
+            }
+        } catch (EditionDenied e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public List<Instruction> findInstructionByCustomerAndStatus(Customer customer, InstructionStatus status) {
         try {
-           return  instructionDao.findInstructionByCustomerAndStatus(customer, status);
+            return instructionDao.findInstructionByCustomerAndStatus(customer, status);
         } catch (NoResultException e) {
             System.out.println("no result ");
         }
@@ -110,10 +133,16 @@ public class InstructionService {
 
     public List<Instruction> findInstructionByExpertAndStatus(Expert expert, InstructionStatus status) {
         try {
-           return  instructionDao.findInstructionByExpertAndStatus(expert, status);
+            return instructionDao.findInstructionByExpertAndStatus(expert, status);
         } catch (NoResultException e) {
             System.out.println("no result ");
         }
         return null;
+    }
+
+    private boolean canEdit(InstructionStatus status) throws EditionDenied {
+        if (status.equals(InstructionStatus.STARTED) || status.equals(InstructionStatus.WAITING_FOR_CHOOSING_EXPERT)) {
+            return true;
+        } else throw new EditionDenied();
     }
 }

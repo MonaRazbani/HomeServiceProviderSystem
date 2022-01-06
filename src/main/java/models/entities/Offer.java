@@ -19,7 +19,7 @@ public class Offer {
     private Date creationDate ;
     private double suggestedPrice ;
     private int suggestedDurationOfService ;
-    private String StartTime;
-    @ManyToOne
+    private Date startDate ;
+    @ManyToOne(fetch = FetchType.EAGER)
     private Instruction instruction;
 }

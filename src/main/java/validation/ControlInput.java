@@ -1,9 +1,7 @@
 package validation;
 
-import exceptions.InvalidEmail;
-import exceptions.InvalidName;
-import exceptions.InvalidPassword;
-import exceptions.TooLargePhotoSize;
+import exceptions.*;
+import models.entities.Service;
 
 import java.io.File;
 
@@ -75,6 +73,15 @@ public class ControlInput {
         }
         return isValid;
     }
+
+    public boolean isValidSuggestedPrice(Service service , double suggestedPrice){
+        if( suggestedPrice >= service.getBaseCost()){
+            return true ;
+        }else {
+            throw new InvalidSuggestedPrice();
+        }
+    }
+
 }
 
 

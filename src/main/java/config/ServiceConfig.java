@@ -1,6 +1,7 @@
 package config;
 
 import dao.*;
+import models.entities.Offer;
 import models.entities.Service;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,16 +50,19 @@ public class ServiceConfig {
         return serviceService;
     }
     @Bean
-    public InstructionService instructionService (ServiceDao serviceDao , ExpertDao expertDao , CustomerDao customerDao, OfferDao offerDao,ControlInput controlInput,AddressDao addressDao,InstructionDao instructionDao){
+    public InstructionService instructionService (ServiceDao serviceDao ,AddressDao addressDao,InstructionDao instructionDao,ControlInput controlInput){
         InstructionService instructionService = InstructionService.instance();
         instructionService.setServiceDao(serviceDao);
-        instructionService.setExpertDao(expertDao);
-        instructionService.setCustomerDao(customerDao);
-        instructionService.setOfferDao(offerDao);
         instructionService.setInstructionDao(instructionDao);
         instructionService.setControlInput(controlInput);
         instructionService.setAddressDao(addressDao);
-
         return instructionService;
+    }
+    @Bean
+    public OfferService offerService ( InstructionDao instructionDao, OfferDao offerDao){
+        OfferService offerService = OfferService.instance();
+        offerService.setInstructionDao(instructionDao);
+        offerService.setOfferDao(offerDao);
+        return offerService;
     }
 }

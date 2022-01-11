@@ -1,35 +1,29 @@
 package services;
 
 import dao.ServiceCategoryDao;
-import lombok.Data;
+import dto.modelDtos.ServiceCategoryDto;
 import models.entities.ServiceCategory;
 import org.hibernate.PropertyValueException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import validation.ControlInput;
-@Data
-public class ServiceCategoryService {
-    private ServiceCategoryDao serviceCategoryDao ;
-    private ControlInput controlInput;
-    private static ServiceCategoryService serviceCategoryService ;
 
-    public static ServiceCategoryService instance(){
-        if (serviceCategoryService == null)
-            serviceCategoryService = new ServiceCategoryService();
-        return serviceCategoryService;
+import javax.persistence.Access;
+
+@Service
+
+public class ServiceCategoryService {
+    private final ServiceCategoryDao serviceCategoryDao ;
+
+@Autowired
+    public ServiceCategoryService(ServiceCategoryDao serviceCategoryDao) {
+        this.serviceCategoryDao = serviceCategoryDao;
     }
 
-    public void addNewServiceCategory (String serviceCategoryName){
-        try {
-            try {
-                ServiceCategory serviceCategory = new ServiceCategory();
-                serviceCategory.setName(serviceCategoryName);
-                serviceCategoryDao.save(serviceCategory);
-            }catch (PropertyValueException propertyValueException){
-                System.out.println("service category name can't be null");
-            }
-        } catch (ConstraintViolationException exception){
-            System.out.println("service category already exist");;
-        }
+
+    public void saveNewServiceCategory (ServiceCategoryDto serviceCategoryDto){
+
 
     }
 

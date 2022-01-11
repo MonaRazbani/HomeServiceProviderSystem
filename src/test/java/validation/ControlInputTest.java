@@ -2,7 +2,7 @@ package validation;
 
 import exceptions.InvalidRate;
 import exceptions.InvalidSuggestedPrice;
-import models.entities.Service;
+import models.entities.SubService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,16 +93,16 @@ public class ControlInputTest {
     }
     @Test
     void controlInput_CallIsValidSuggestedPrice_ReturnException() {
-        Service service = new Service();
-        service.setBaseCost(1000);
-        InvalidSuggestedPrice result = Assertions.assertThrows(InvalidSuggestedPrice.class,()-> controlInput.isValidSuggestedPrice(service,900));
-        Assertions.assertEquals("invalid SuggestedPrice , SuggestedPrice must be more than service base cost ",result.getMessage());
+        SubService subService = new SubService();
+        subService.setBaseCost(1000);
+        InvalidSuggestedPrice result = Assertions.assertThrows(InvalidSuggestedPrice.class,()-> controlInput.isValidSuggestedPrice(subService,900));
+        Assertions.assertEquals("invalid SuggestedPrice , SuggestedPrice must be more than subService base cost ",result.getMessage());
     }
     @Test
     void controlInput_CallIsValidValidSuggestedPrice_ResponseTrue() {
-        Service service = new Service();
-        service.setBaseCost(1000);
-        boolean result = controlInput.isValidSuggestedPrice(service,1200);
+        SubService subService = new SubService();
+        subService.setBaseCost(1000);
+        boolean result = controlInput.isValidSuggestedPrice(subService,1200);
         Assertions.assertTrue(result);
     }
 

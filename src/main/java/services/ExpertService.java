@@ -1,91 +1,79 @@
 package services;
 
 import dao.ExpertDao;
-import dao.ServiceDao;
+import dao.SubServiceDao;
+import dto.modelDtos.SubServiceDto;
+import dto.modelDtos.roles.ExpertDto;
+import exceptions.SubServiceNotFound;
+import exceptions.WrongPassword;
 import lombok.Data;
-import models.entities.Service;
+import models.entities.SubService;
 import models.entities.roles.Expert;
-import models.enums.Gender;
-import models.enums.UserStatus;
-import models.enums.UserType;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import validation.ControlEdition;
 import validation.ControlInput;
 
-import javax.persistence.NoResultException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
+
+@Service
 @Data
 public class ExpertService {
-    private ExpertDao expertDao;
-    private ControlInput controlInput;
-    private ServiceDao serviceDao;
+    private final ExpertDao expertDao;
+    private final ControlInput controlInput;
+    private final ModelMapper modelMapper;
+    private final ControlEdition controlEdition;
+    private final SubServiceDao subServiceDao;
 
-    private static ExpertService expertService;
-
-    public static ExpertService instance() {
-
-        if (expertService == null)
-            expertService = new ExpertService();
-
-        return expertService;
+    @Autowired
+    public ExpertService(ExpertDao expertDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition, SubServiceDao subServiceDao) {
+        this.expertDao = expertDao;
+        this.controlInput = controlInput;
+        this.modelMapper = modelMapper;
+        this.controlEdition = controlEdition;
+        this.subServiceDao = subServiceDao;
     }
 
-    public void AddExpert(String expertInfo, File file) {
-        try {
-            String[] expertInfoSplit = expertInfo.split(",");
-            String firstName = expertInfoSplit[0];
-            String lastName = expertInfoSplit[1];
-            String email = expertInfoSplit[2];
-            String password = expertInfoSplit[3];
-            Gender gender = Gender.valueOf(expertInfoSplit[4]);
-            if (controlInput.isValidName(firstName)
-                    && controlInput.isValidName(lastName)
-                    && controlInput.isValidEmail(email)
-                    && controlInput.isValidPassword(password)
-                    && controlInput.isValidPhoto(file)) {
-                byte[] imageBytes = initializePhoto(file);
-                Expert expert = Expert.ExpertBuilder.anExpert()
-                        .withFirstName(firstName)
-                        .withLastName(lastName)
-                        .withEmail(email)
-                        .withPassword(password)
-                        .withGender(gender)
-                        .withStatus(UserStatus.NEW)
-                        .withRate(0)
-                        .withPhoto(imageBytes)
-                        .withUserType(UserType.CUSTOMER)
-                        .build();
-
-                expertDao.save(expert);
-            }
-
-        } catch (Throwable throwable) {
-            System.out.println(throwable.getMessage());
-        }
+    public void saveExpert(ExpertDto expertDto, String password, File file) {
+        if (controlInput.isValidExpertDtoInfo(expertDto, password, file)) {
+            byte[] imageBytes = initializePhoto(file);
+            Expert expert = modelMapper.map(expertDto, Expert.class);
+            expert.setPhoto(imageBytes);
+            expert.setPassword(password);
+            expertDao.save(expert);
+        } else
+            throw new RuntimeException("sing up fail");
     }
 
     public Expert findExpertByEmail(String email) {
-        Expert expert = null;
-        if (controlInput.isValidEmail(email)) {
-            try {
-                expert = expertDao.findByEmail(email);
 
-            } catch (NoResultException noResultException) {
-                System.out.println("Customer not found!");
-            }
+        if (controlInput.isValidEmail(email)) {
+            return findExpertByEmail(email);
         }
-        return expert;
+        throw new RuntimeException("finding fail ");
     }
 
-    public void changePasswordForExpert(Expert expert, String currentPassword, String newPassword) {
+    public ExpertDto findExpertDtoByEmail(String email) {
+        if (controlInput.isValidEmail(email)) {
+            Expert expert = findExpertByEmail(email);
+            return modelMapper.map(expert, ExpertDto.class);
+        } else
+            throw new RuntimeException("searching fail ");
+    }
+
+    public void changePasswordForExpert(ExpertDto expertDto, String currentPassword, String newPassword) {
+        Expert expert = findExpertByEmail(expertDto.getEmail());
         if (expert.getPassword().equals(currentPassword)) {
             expert.setPassword(newPassword);
-            expertDao.update(expert);
+            expertDao.save(expert);
             System.out.println("done");
-        } else System.out.println("changing password fail because you current password not correct ");
-
+        } else
+            throw new WrongPassword();
     }
 
     public byte[] initializePhoto(File file) {
@@ -101,26 +89,32 @@ public class ExpertService {
         return imageData;
     }
 
-    public void addServiceToExpertServices(String expertEmail  , String serviceName){
-        try {
-            Service service = serviceDao.findByName(serviceName);
-            Expert expert = expertDao.findByEmail(expertEmail);
-            expertDao.addExpertServices(expert,service);
-        }catch (NoResultException noResultException ) {
-            System.out.println("wrong email or service name ");
+    public void addServiceToExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
+        Expert expert = findExpertByEmail(expertDto.getEmail());
+        if (expert != null) {
+            SubService subServiceFound = findSubServiceBySubServiceDto(subServiceDto);
+            expert.getSubServices().add(subServiceFound);
+            expertDao.save(expert);
         }
-
+        throw new RuntimeException("add subService Fail");
     }
 
-    public void deleteServiceFromExpertServices(String expertEmail  , String serviceName){
-        try {
-            Service service = serviceDao.findByName(serviceName);
-            Expert expert = expertDao.findByEmail(expertEmail);
-            expertDao.removeExpertServices(expert, service);
-        }catch (NoResultException noResultException ) {
-            System.out.println("wrong email or service name ");
+    public void deleteServiceFromExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
+        Expert expert = findExpertByEmail(expertDto.getEmail());
+        if (expert != null) {
+            SubService subServiceFound = findSubServiceBySubServiceDto(subServiceDto);
+            expert.getSubServices().remove(subServiceFound);
+            expertDao.save(expert);
         }
+        throw new RuntimeException("delete subService Fail");
+    }
 
+    public SubService findSubServiceBySubServiceDto(SubServiceDto subServiceDto) {
+        List<SubService> subServicesFound = subServiceDao.findByName(subServiceDto.getName());
+        if (!subServicesFound.isEmpty()) {
+            return subServicesFound.get(0);
+        } else
+            throw new SubServiceNotFound();
     }
 
 

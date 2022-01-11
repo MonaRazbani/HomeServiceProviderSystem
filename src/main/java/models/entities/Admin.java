@@ -1,7 +1,6 @@
-package models.entities.roles;
+package models.entities;
 
 import lombok.Data;
-import models.enums.RoleStatus;
 
 import javax.persistence.*;
 
@@ -14,7 +13,5 @@ public class Admin {
     @Column(unique = true)
     private String username ;
     private String password ;
-    @Enumerated(value =EnumType.STRING)
-    private static RoleStatus role = RoleStatus.ADMIN;
 
 }

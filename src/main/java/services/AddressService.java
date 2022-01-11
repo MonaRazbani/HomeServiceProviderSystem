@@ -1,37 +1,26 @@
 package services;
 
 import dao.AddressDao;
-import lombok.Data;
+import dto.modelDtos.AddressDto;
 import models.entities.Address;
-import models.entities.roles.Customer;
-import models.enums.Gender;
-import models.enums.UserStatus;
-@Data
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+
 public class AddressService {
-    private   AddressDao addressDao ;
-    public static Address createAddress (String addressInfo ){
+    private final AddressDao addressDao ;
+    private final ModelMapper modelMapper;
+    @Autowired
+    public AddressService(AddressDao addressDao, ModelMapper modelMapper) {
+        this.addressDao = addressDao;
+        this.modelMapper = modelMapper;
+    }
 
-        try {
-            String[] AddressInfoSplit = addressInfo.split(",");
-            String city = AddressInfoSplit[0];
-            String street = AddressInfoSplit[1];
-            String alley = AddressInfoSplit[2];
-            String houseNumber = AddressInfoSplit[3];
-            String floorNumber = AddressInfoSplit[4];
-            String HouseUnitNumber = AddressInfoSplit[5];
-            Address address = Address.AddressBuilder.anAddress()
-                    .withCity(city)
-                    .withStreet(street)
-                    .withAlley(alley)
-                    .withHouseNumber(houseNumber)
-                    .withFloorNumber(floorNumber)
-                    .withHouseUnitNumber(HouseUnitNumber)
-                    .build();
+    public  Address saveNewAddressToDB (AddressDto addressDto){
+        Address address = modelMapper.map(addressDto,Address.class);
+            addressDao.save(address);
             return address;
-
-        } catch (Throwable throwable) {
-            System.out.println(throwable.getMessage());
-        }
-        return null;
     }
 }

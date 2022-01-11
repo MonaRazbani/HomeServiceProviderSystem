@@ -1,117 +1,101 @@
 package services;
 
-import dao.InstructionDao;
+import dao.OrderDao;
 import dao.OfferDao;
-import exceptions.EditionDenied;
-import lombok.Data;
-import models.entities.Instruction;
+import dto.mappingMethod.MapperObject;
+import dto.modelDtos.OfferDto;
+import dto.modelDtos.OrderDto;
+import dto.modelDtos.roles.ExpertDto;
+import exceptions.OfferNotFound;
+import models.entities.Order;
 import models.entities.Offer;
 import models.entities.roles.Expert;
-import models.enums.InstructionStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import validation.ControlEdition;
 
-import javax.persistence.NoResultException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Service
 public class OfferService {
-    private InstructionDao instructionDao;
-    private OfferDao offerDao;
-    private static OfferService offerService;
+    private final OrderDao orderDao;
+    private final OfferDao offerDao;
+    private final MapperObject mapperObject;
+    private final ControlEdition controlEdition;
 
-    public static OfferService instance() {
-
-        if (offerService == null)
-            offerService = new OfferService();
-        return offerService;
+    @Autowired
+    public OfferService(OrderDao orderDao, OfferDao offerDao, MapperObject mapperObject, ControlEdition controlEdition) {
+        this.orderDao = orderDao;
+        this.offerDao = offerDao;
+        this.mapperObject = mapperObject;
+        this.controlEdition = controlEdition;
     }
 
-    private Date creationDate;
-    private double suggestedPrice;
-    private int suggestedDurationOfService;
-    private Date startDate;
 
-    public void addNewOffer(Expert expert, double suggestedPrice, int suggestedDurationOfService, String startDateString, Instruction instruction) {
-        Offer offer = new Offer();
-        offer.setExpert(expert);
-        offer.setSuggestedDurationOfService(suggestedDurationOfService);
-        offer.setSuggestedPrice(suggestedPrice);
-        offer.setInstruction(instruction);
-        try {
+    public void saveNewOffer(ExpertDto expertDto, OrderDto orderDto, double suggestedPrice, int suggestedDurationOfService, String startDateString) throws ParseException {
+        if (controlEdition.isValidToEdit(orderDto.getStatus())) {
+            Expert expert = mapperObject.expertDtoMapToExpert(expertDto);
+            Order order = mapperObject.orderDtoMapToOrder(orderDto);
+            Offer offer = new Offer();
+            offer.setExpert(expert);
+            offer.setSuggestedDurationOfService(suggestedDurationOfService);
+            offer.setSuggestedPrice(suggestedPrice);
+            offer.setOrder(order);
             Date startDate = new SimpleDateFormat("HH:mm").parse(startDateString);
             offer.setStartDate(startDate);
             offerDao.save(offer);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            System.out.println("insert fail");
-        }
-
+        }else
+            throw new RuntimeException("saving offer fail");
     }
 
-    public void editStartDateStringOffer(Offer offer, String startDateString) {
-        try {
-            try {
-                if (canEdit(offer.getInstruction().getStatus())) {
+    public void editStartDateOffer(OfferDto offerDto, String startDateString) throws ParseException {
+                if (controlEdition.isValidToEdit(offerDto.getOrder().getStatus())) {
                     Date startDate = new SimpleDateFormat("HH:mm").parse(startDateString);
+                    Offer offer = mapperObject.offerDtoMapToOffer(offerDto);
                     offer.setStartDate(startDate);
-                    offerDao.update(offer);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        } catch (EditionDenied editionDenied) {
-            System.out.println(editionDenied.getMessage());
+                    offerDao.save(offer);
+            } else
+                throw new RuntimeException("edit StartDate Offer");
+    }
+
+    public void editOfferSuggestedPrice(OfferDto offerDto, double suggestedPrice) {
+        if (controlEdition.isValidToEdit(offerDto.getOrder().getStatus())) {
+            Offer offer = mapperObject.offerDtoMapToOffer(offerDto);
+            offer.setSuggestedPrice(suggestedPrice);
+            offerDao.save(offer);
+        } else
+            throw new RuntimeException("edit suggested Offer");
+    }
+
+    public void editSuggestedDurationOfService(OfferDto offerDto, float suggestedDurationOfService) {
+        if (controlEdition.isValidToEdit(offerDto.getOrder().getStatus())) {
+            Offer offer = mapperObject.offerDtoMapToOffer(offerDto);
+            offer.setSuggestedDurationOfService(suggestedDurationOfService);
+            offerDao.save(offer);
+        } else
+            throw new RuntimeException("edit suggested Offer fail");
+    }
+
+    public List<Offer> findOffersOfOrder(OrderDto orderDto) {
+        Order order = mapperObject.orderDtoMapToOrder(orderDto);
+        List<Offer> offers = offerDao.findByOrder(order);
+        if (!offers.isEmpty()){
+            return offers;
+        }else
+            throw new OfferNotFound();
+    }
+
+    public void deleteOfferFromOrder(OfferDto offerDto) {
+        if (controlEdition.isValidToEdit(offerDto.getOrder().getStatus()));
+        {
+            Offer offer = mapperObject.offerDtoMapToOffer(offerDto);
+            offerDao.delete(offer);
         }
     }
 
-    public void editOfferSuggestedPrice(Offer offer, double suggestedPrice) {
-        try {
-            if (canEdit(offer.getInstruction().getStatus())) {
-                offer.setSuggestedPrice(suggestedPrice);
-            }
-        } catch (EditionDenied editionDenied) {
-            System.out.println(editionDenied.getMessage());
-        }
-    }
-
-    public void editSuggestedDurationOfService(Offer offer, int suggestedDurationOfService) {
-        try {
-            if (canEdit(offer.getInstruction().getStatus())) {
-                offer.setSuggestedDurationOfService(suggestedDurationOfService);
-                offerDao.update(offer);
-            }
-        } catch (EditionDenied e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public List<Offer> findOffersOfInstruction(Instruction instruction, InstructionStatus status) {
-        try {
-            return offerDao.findOffersOfInstruction(instruction, status);
-        } catch (NoResultException e) {
-            System.out.println("no result ");
-        }
-        return null;
-    }
-
-    public void deleteOfferFromInstruction(long offerId) {
-        try {
-            Offer offer = offerDao.findById(offerId);
-            if (canEdit(offer.getInstruction().getStatus())) {
-                offerDao.delete(offer);
-            }
-        } catch (EditionDenied e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    private boolean canEdit(InstructionStatus status) throws EditionDenied {
-        if (status.equals(InstructionStatus.STARTED) || status.equals(InstructionStatus.WAITING_FOR_CHOOSING_EXPERT)) {
-            return true;
-        } else throw new EditionDenied();
-    }
 }
 
 

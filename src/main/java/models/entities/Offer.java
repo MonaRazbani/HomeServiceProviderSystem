@@ -18,8 +18,9 @@ public class Offer {
     @CreationTimestamp
     private Date creationDate ;
     private double suggestedPrice ;
-    private int suggestedDurationOfService ;
+    private float suggestedDurationOfService ;
+    @Temporal(TemporalType.TIME)
     private Date startDate ;
     @ManyToOne(fetch = FetchType.EAGER)
-    private Instruction instruction;
+    private Order order;
 }

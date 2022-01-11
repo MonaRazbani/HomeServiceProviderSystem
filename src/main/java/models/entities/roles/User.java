@@ -1,48 +1,39 @@
 package models.entities.roles;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import models.enums.Gender;
-import models.enums.RoleStatus;
 import models.enums.UserStatus;
-import models.enums.UserType;
+import models.enums.RoleType;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Data
-@MappedSuperclass
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id ;
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    private long id;
     private String firstName;
     private String lastName;
-@Column(unique = true)
+    @Column(unique = true)
     private String email;
     private String password;
     @Enumerated(value = EnumType.STRING)
-    private UserStatus status ;
+    private UserStatus status;
     @CreationTimestamp
-    private Date creationDate ;
+    private Date creationDate;
     @Enumerated(value = EnumType.STRING)
-    private Gender gender ;
-    @Enumerated(value =EnumType.STRING)
-    private static RoleStatus role = RoleStatus.USER;
+    private Gender gender;
     @Enumerated(value = EnumType.STRING)
-    private UserType userType;
+    private RoleType roleType;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", status=" + status +
-                ", creationDate=" + creationDate +
-                ", gender=" + gender +
-                '}';
-    }
+
 }

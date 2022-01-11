@@ -1,5 +1,5 @@
 package models.enums;
 
-public enum UserType {
+public enum RoleType {
     CUSTOMER , EXPERT;
 }

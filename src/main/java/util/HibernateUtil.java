@@ -1,6 +1,7 @@
 package util;
 
 import models.entities.*;
+import models.entities.Admin;
 import models.entities.roles.Customer;
 import models.entities.roles.Expert;
 import models.entities.roles.User;
@@ -32,12 +33,13 @@ public class HibernateUtil {
                     configuration.addAnnotatedClass(User.class);
                     configuration.addAnnotatedClass(Customer.class);
                     configuration.addAnnotatedClass(Expert.class);
-                    configuration.addAnnotatedClass(Instruction.class);
+                    configuration.addAnnotatedClass(Order.class);
                     configuration.addAnnotatedClass(Offer.class);
                     configuration.addAnnotatedClass(ServiceCategory.class);
-                    configuration.addAnnotatedClass(Service.class);
+                    configuration.addAnnotatedClass(SubService.class);
                     configuration.addAnnotatedClass(Address.class);
                     configuration.addAnnotatedClass(Comment.class);
+                    configuration.addAnnotatedClass(Admin.class);
                     ServiceRegistry serviceRegistry = (new StandardServiceRegistryBuilder()).applySettings(configuration.getProperties()).build();
                     sessionFactory = configuration.buildSessionFactory(serviceRegistry);
                 } catch (Exception var3) {

@@ -1,82 +1,83 @@
 package services;
 
 import dao.CustomerDao;
-import dao.ExpertDao;
-import lombok.Getter;
-import lombok.Setter;
+import dto.modelDtos.roles.CustomerDto;
+import exceptions.CustomerNotFound;
+import exceptions.WrongPassword;
 import models.entities.roles.Customer;
-import models.enums.Gender;
-import models.enums.UserStatus;
-import models.enums.UserType;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import validation.ControlEdition;
 import validation.ControlInput;
 
-import javax.persistence.NoResultException;
+import java.util.List;
 
-@Getter
-@Setter
+@Service
 public class CustomerService {
-    private CustomerDao customerDao ;
-    private ControlInput controlInput ;
-    private static CustomerService customerService;
+    private final CustomerDao customerDao;
+    private final ControlInput controlInput;
+    private final ModelMapper modelMapper;
+    private final ControlEdition controlEdition;
 
-    public static CustomerService instance() {
-
-        if (customerService == null)
-            customerService = new CustomerService();
-
-        return customerService;
+    @Autowired
+    public CustomerService(CustomerDao customerDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition) {
+        this.customerDao = customerDao;
+        this.controlInput = controlInput;
+        this.modelMapper = modelMapper;
+        this.controlEdition = controlEdition;
     }
 
-    public void AddCustomer(String customerInfo) {
-        try {
-            String[] customerInfoSplit = customerInfo.split(",");
-            String firstName = customerInfoSplit[0];
-            String lastName = customerInfoSplit[1];
-            String email = customerInfoSplit[2];
-            String password = customerInfoSplit[3];
-            Gender gender = Gender.valueOf(customerInfoSplit[4]);
-            if (controlInput.isValidName(firstName)
-                    && controlInput.isValidName(lastName)
-                    && controlInput.isValidEmail(email)
-                    && controlInput.isValidPassword(password)) {
-                Customer customer = Customer.CustomerBuilder.aCustomer()
-                        .withFirstName(firstName)
-                        .withLastName(lastName)
-                        .withGender(gender)
-                        .withEmail(email)
-                        .withPassword(password)
-                        .withStatus(UserStatus.NEW)
-                        .withUserType(UserType.CUSTOMER)
-                        .build();
 
-                customerDao.save(customer);
-            }
+    public void saveCustomer(CustomerDto customerDto, String password) {
+        if (controlInput.isValidCustomerDtoInfo(customerDto, password)) {
 
-        } catch (Throwable throwable) {
-            System.out.println(throwable.getMessage());
-        }
+            Customer customer = modelMapper.map(customerDto, Customer.class);
+            customer.setPassword(password);
+            customerDao.save(customer);
+
+        } else
+            throw new RuntimeException("signup Fail");
+    }
+
+    public void updateCustomer(CustomerDto customerDto) {
+        Customer customer = modelMapper.map(customerDto, Customer.class);
+        customerDao.save(customer);
+
+    }
+
+
+    public CustomerDto findCustomerDtoByEmail(String email) {
+        if (controlInput.isValidEmail(email)) {
+            List<Customer> customers = customerDao.findByEmail(email);
+            if (!customers.isEmpty()) {
+                Customer customer = customers.get(0);
+                CustomerDto customerDto = modelMapper.map(customer, CustomerDto.class);
+                return customerDto;
+            } else throw new CustomerNotFound();
+        } else
+            throw new RuntimeException("searching fail ");
     }
 
     public Customer findCustomerByEmail(String email) {
-        Customer customer = null;
         if (controlInput.isValidEmail(email)) {
-            try {
-                customer = customerDao.findByEmail(email);
-
-            } catch (NoResultException noResultException) {
-                System.out.println("Customer not found!");
-            }
-        }
-        return customer;
+            List<Customer> customers = customerDao.findByEmail(email);
+            if (!customers.isEmpty()) {
+                Customer customer = customers.get(0);
+                return customer;
+            } else throw new CustomerNotFound();
+        } else
+            throw new RuntimeException("searching fail ");
     }
 
-    public void changePasswordForCustomer(Customer customer , String currentPassword , String newPassword){
-        if (customer.getPassword().equals(currentPassword)){
+    public void changePasswordForCustomer(CustomerDto customerDto, String currentPassword, String newPassword) {
+        Customer customer = findCustomerByEmail(customerDto.getEmail());
+        if (customer.getPassword().equals(currentPassword)) {
             customer.setPassword(newPassword);
-            customerDao.update(customer);
+            customerDao.save(customer);
             System.out.println("done");
-        }else System.out.println("changing password fail because you current password not correct ");
-
+        } else
+            throw new WrongPassword();
     }
 
 }

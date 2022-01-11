@@ -1,52 +1,53 @@
 package services;
 
 import dao.CommentDao;
-import dao.InstructionDao;
+import dto.modelDtos.CommentDto;
+import exceptions.EditionDenied;
 import exceptions.InvalidRate;
-import lombok.Data;
 import models.entities.Comment;
-import models.entities.Instruction;
+import models.entities.Order;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import validation.ControlEdition;
 import validation.ControlInput;
 
-@Data
+@Service
 public class CommentService {
-    private InstructionDao instructionDao;
-    private CommentDao commentDao;
-    private ControlInput controlInput;
-    private static CommentService commentService;
+    private final CommentDao commentDao;
+    private final ControlInput controlInput;
+    private final ModelMapper modelMapper;
+    private final ControlEdition controlEdition ;
 
-    public static CommentService instance() {
-
-        if (commentService == null)
-            commentService = new CommentService();
-        return commentService;
+    @Autowired
+    public CommentService(CommentDao commentDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition) {
+        this.commentDao = commentDao;
+        this.controlInput = controlInput;
+        this.modelMapper = modelMapper;
+        this.controlEdition = controlEdition;
     }
 
-    public void addNewComment(Instruction instruction, int rate, String comment) {
-        try {
-            if (controlInput.isValidRate(rate)) {
-                Comment comment1 = new Comment();
-                comment1.setRate(rate);
-                comment1.setInstruction(instruction);
-                comment1.setComment(comment);
-                commentDao.save(comment1);
-            }
-        } catch (InvalidRate e) {
-            System.out.println(e.getMessage());
-        }
+
+    public void saveOrUpdateComment(CommentDto commentDto) {
+            if (controlInput.isValidRate(commentDto.getRate())){
+                Comment comment = modelMapper.map(commentDto,Comment.class);
+                Order order = modelMapper.map(commentDto.getOrderDto(),Order.class);
+                comment.setOrder(order);
+                commentDao.save(comment);
+            }else
+                 throw new InvalidRate();
     }
 
-    public void addNewComment(Instruction instruction, int rate) {
-        try {
-            if (controlInput.isValidRate(rate)) {
-                Comment comment1 = new Comment();
-                comment1.setRate(rate);
-                comment1.setInstruction(instruction);
-                commentDao.save(comment1);
-            }
-        } catch (InvalidRate e) {
-            System.out.println(e.getMessage());
-        }
+    public void DeleteComment (CommentDto commentDto){
+        if (controlEdition.isValidToEdit(commentDto.getOrderDto().getStatus())){
+            Comment comment = modelMapper.map(commentDto,Comment.class);
+            Order order = modelMapper.map(commentDto.getOrderDto(),Order.class);
+            comment.setOrder(order);
+            commentDao.delete(comment);
+
+        }else
+            throw new EditionDenied() ;
     }
+
 
 }

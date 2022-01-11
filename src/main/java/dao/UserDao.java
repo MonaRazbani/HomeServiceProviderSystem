@@ -1,8 +1,7 @@
 package dao;
 
-import models.entities.roles.Customer;
 import models.entities.roles.User;
-import models.enums.UserType;
+import models.enums.RoleType;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -23,7 +22,7 @@ public class UserDao extends HibernateUtil{
             return userDao;
         }
 
-    public List<User> filterDynamic(String firstName, String lastName , String email, UserType userType) {
+    public List<User> filterDynamic(String firstName, String lastName , String email, RoleType roleType) {
         Session session = getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         Criteria criteria = session.createCriteria(User.class, "user");
@@ -39,7 +38,7 @@ public class UserDao extends HibernateUtil{
             Criterion emailFilter = Restrictions.eq("user.email", email);
             criteria.add(emailFilter);
         }
-        if (userType!=null){
+        if (roleType !=null){
             Criterion userTypeFilter = Restrictions.eq("user.userType", email);
             criteria.add(userTypeFilter);
         }

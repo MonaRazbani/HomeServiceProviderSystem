@@ -1,45 +1,34 @@
 package services;
 
 import dao.ServiceCategoryDao;
-import dao.ServiceDao;
+import dao.SubServiceDao;
+import dto.mappingMethod.MapperObject;
+import dto.modelDtos.SubServiceDto;
 import exceptions.NoCategoryServiceForService;
-import lombok.Data;
-import models.entities.Service;
 import models.entities.ServiceCategory;
-import models.entities.roles.Expert;
+import models.entities.SubService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.NoResultException;
 
-@Data
+@Service
 public class ServiceService {
-    private ServiceDao serviceDao ;
-    private ServiceCategoryDao serviceCategoryDao ;
-    private static ServiceService serviceService ;
+    private final SubServiceDao subServiceDao;
+    private final ServiceCategoryDao serviceCategoryDao ;
+    private final MapperObject mapperObject ;
 
-    public static ServiceService instance(){
-        if (serviceService == null)
-            serviceService = new ServiceService();
-        return serviceService;
+    @Autowired
+    public ServiceService(SubServiceDao subServiceDao, ServiceCategoryDao serviceCategoryDao, MapperObject mapperObject) {
+        this.subServiceDao = subServiceDao;
+        this.serviceCategoryDao = serviceCategoryDao;
+        this.mapperObject = mapperObject;
     }
 
-
-    public void addNewService (String serviceName , String explanation , double baseCost , String serviceCategoryName){
-        Service service = new Service();
-        service.setName(serviceName);
-        service.setExplanation(explanation);
-        service.setBaseCost(baseCost);
-        try {
-            ServiceCategory serviceCategory = serviceCategoryDao.findByName(serviceCategoryName);
-            service.setServiceCategory(serviceCategory);
-        }catch (NoResultException noResultException){
-            System.out.println("there in no service category by this name first add service category");
-        }
-        try {
-            if (service.getServiceCategory() == null)
+    public void saveNewService (SubServiceDto subServiceDto){
+        SubService subService = mapperObject.subServiceDtoMapToSubService(subServiceDto);
+            if (subService.getServiceCategory() == null)
                 throw new NoCategoryServiceForService();
-            serviceDao.save(service);
-        }catch (NoCategoryServiceForService noCategoryServiceForService){
-            System.out.println(noCategoryServiceForService.getMessage());
-        }
+            subServiceDao.save(subService);
     }
 }

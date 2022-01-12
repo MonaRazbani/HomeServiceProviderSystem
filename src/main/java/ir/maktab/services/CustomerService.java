@@ -71,13 +71,15 @@ public class CustomerService {
     }
 
     public void changePasswordForCustomer(CustomerDto customerDto, String currentPassword, String newPassword) {
-        Customer customer = findCustomerByEmail(customerDto.getEmail());
-        if (customer.getPassword().equals(currentPassword)) {
-            customer.setPassword(newPassword);
-            customerDao.save(customer);
-            System.out.println("done");
-        } else
-            throw new WrongPassword();
+        if (controlInput.isValidPassword(newPassword)) {
+            Customer customer = findCustomerByEmail(customerDto.getEmail());
+            if (customer.getPassword().equals(currentPassword)) {
+                customer.setPassword(newPassword);
+                customerDao.save(customer);
+                System.out.println("done");
+            } else
+                throw new WrongPassword();
+        }
     }
 
 }

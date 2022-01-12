@@ -3,11 +3,13 @@ package ir.maktab.services;
 import ir.maktab.dao.AddressDao;
 import ir.maktab.dao.OrderDao;
 import ir.maktab.dao.SubServiceDao;
+import ir.maktab.dto.mappingMethod.MapperObject;
 import ir.maktab.dto.modelDtos.AddressDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
+import ir.maktab.exceptions.InvalidSuggestedPrice;
 import ir.maktab.exceptions.OrderNotFound;
 import ir.maktab.exceptions.SubServiceNotFound;
 import ir.maktab.models.entities.Address;
@@ -17,24 +19,29 @@ import ir.maktab.models.entities.roles.Customer;
 import ir.maktab.models.entities.roles.Expert;
 import ir.maktab.models.enums.OrderStatus;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService {
     private final ControlInput controlInput;
-    private final ModelMapper modelMapper;
+    private final MapperObject mapperObject;
     private final ControlEdition controlEdition;
     private final OrderDao orderDao;
     private final AddressDao addressDao;
     private final SubServiceDao subServiceDao ;
+    private final ModelMapper modelMapper;
 
-    public OrderService( ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition, OrderDao orderDao,  AddressDao addressDao, SubServiceDao subServiceDao) {
+    @Autowired
+    public OrderService(ControlInput controlInput, ModelMapper modelMapper, MapperObject mapperObject, ControlEdition controlEdition, OrderDao orderDao, AddressDao addressDao, SubServiceDao subServiceDao) {
         this.controlInput = controlInput;
-        this.modelMapper = modelMapper;
+    this.mapperObject = mapperObject;
+    this.modelMapper = modelMapper;
         this.controlEdition = controlEdition;
         this.orderDao = orderDao;
         this.addressDao = addressDao;
@@ -42,7 +49,7 @@ public class OrderService {
     }
 
 
-    public void saveNewOrder(CustomerDto customerDto, double suggestedPrice, String explanation, AddressDto addressDto, SubServiceDto subServiceDto) {
+    public void saveOrder(CustomerDto customerDto, double suggestedPrice, String explanation, AddressDto addressDto, SubServiceDto subServiceDto) {
         Address address = modelMapper.map(addressDto, Address.class);
         Customer customer = modelMapper.map(customerDto, Customer.class);
         SubService subService = modelMapper.map(subServiceDto, SubService.class);
@@ -57,7 +64,7 @@ public class OrderService {
             orderDao.save(newOrder);
         }
         else
-            throw new RuntimeException("saving order fail");
+            throw new InvalidSuggestedPrice();
     }
 
     public void editOrderExplanation(OrderDto orderDto, String newExplanation) {
@@ -86,7 +93,6 @@ public class OrderService {
         }else
             throw new RuntimeException("edit Order SuggestedPrice fail");
     }
-
 
     public void editOrderServiceType(OrderDto orderDto, SubServiceDto subServiceDto) {
         if (controlEdition.isValidToEdit(orderDto.getStatus())) {
@@ -126,9 +132,9 @@ public class OrderService {
     }
 
     public SubService findSubServiceBySubServiceDto(SubServiceDto subServiceDto) {
-        List<SubService> subServicesFound = subServiceDao.findByName(subServiceDto.getName());
-        if (!subServicesFound.isEmpty()) {
-            return subServicesFound.get(0);
+        Optional<SubService> subService= subServiceDao.findByName(subServiceDto.getName());
+        if (!subService.isEmpty()) {
+            return subService.get();
         } else
             throw new SubServiceNotFound();
     }

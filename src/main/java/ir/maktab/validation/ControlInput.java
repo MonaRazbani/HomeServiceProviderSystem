@@ -32,7 +32,7 @@ public class ControlInput {
     }
 
     public boolean isValidPhoto(File file) {
-        int maxPhotoSize = 300;
+        int maxPhotoSize = 300000;
         if (file.length() < maxPhotoSize)
             return true;
         else

@@ -33,7 +33,7 @@ public class CustomerService {
 
     public void saveCustomer(CustomerDto customerDto, String password) {
         if (controlInput.isValidCustomerDtoInfo(customerDto, password)) {
-            if (!customerDao.findByEmail(customerDto.getEmail()).isPresent()) {
+            if (customerDao.findByEmail(customerDto.getEmail()).isEmpty()) {
                 Customer customer = modelMapper.map(customerDto, Customer.class);
                 customer.setPassword(password);
                 customerDao.save(customer);
@@ -81,5 +81,6 @@ public class CustomerService {
                 throw new WrongPassword();
         }
     }
+
 
 }

@@ -3,17 +3,13 @@ package ir.maktab.services;
 import ir.maktab.config.SpringConfig;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.exceptions.*;
-import ir.maktab.models.entities.SubService;
 import ir.maktab.models.entities.roles.Customer;
-import ir.maktab.models.enums.Gender;
 import ir.maktab.models.enums.RoleType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.io.File;
 
 public class CustomerServiceTest {
     CustomerService customerService;

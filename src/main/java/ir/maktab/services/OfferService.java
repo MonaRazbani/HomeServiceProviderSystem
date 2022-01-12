@@ -10,6 +10,8 @@ import ir.maktab.exceptions.OfferNotFound;
 import ir.maktab.models.entities.Order;
 import ir.maktab.models.entities.Offer;
 import ir.maktab.models.entities.roles.Expert;
+import ir.maktab.models.enums.OfferStatus;
+import ir.maktab.models.enums.OrderStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ir.maktab.validation.ControlEdition;
@@ -34,8 +36,7 @@ public class OfferService {
         this.controlEdition = controlEdition;
     }
 
-
-    public void saveNewOffer(ExpertDto expertDto, OrderDto orderDto, double suggestedPrice, int suggestedDurationOfService, String startDateString) throws ParseException {
+    public void saveOffer(ExpertDto expertDto, OrderDto orderDto, double suggestedPrice, int suggestedDurationOfService, String startDateString) throws ParseException {
         if (controlEdition.isValidToEdit(orderDto.getStatus())) {
             Expert expert = mapperObject.expertDtoMapToExpert(expertDto);
             Order order = mapperObject.orderDtoMapToOrder(orderDto);
@@ -46,7 +47,11 @@ public class OfferService {
             offer.setOrder(order);
             Date startDate = new SimpleDateFormat("HH:mm").parse(startDateString);
             offer.setStartDate(startDate);
+            offer.setStatus(OfferStatus.WAITING_FOR_ACCEPT);
             offerDao.save(offer);
+
+            offer.getOrder().setStatus(OrderStatus.WAITING_FOR_CHOOSING_EXPERT);
+            orderDao.save(offer.getOrder());
         }else
             throw new RuntimeException("saving offer fail");
     }
@@ -95,6 +100,19 @@ public class OfferService {
             offerDao.delete(offer);
         }
     }
+
+    public void acceptOfferForOrder(OfferDto offerDto){
+        Offer offer = mapperObject.offerDtoMapToOffer(offerDto);
+        offer.setStatus(OfferStatus.ACCEPT);
+        offerDao.save(offer);
+        offer.getOrder().setExpert(offer.getExpert());
+        offer.getOrder().setStatus(OrderStatus.WAITING_FOR_COMING_EXPERT_TO_YOUR_PLACE);
+        orderDao.save(offer.getOrder());
+
+
+    }
+
+
 
 }
 

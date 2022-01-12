@@ -1,5 +1,6 @@
 package ir.maktab.models.entities;
 
+import ir.maktab.models.enums.OfferStatus;
 import lombok.Data;
 import ir.maktab.models.entities.roles.Expert;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,4 +24,6 @@ public class Offer {
     private Date startDate ;
     @ManyToOne(fetch = FetchType.EAGER)
     private Order order;
+    @Enumerated(EnumType.STRING)
+    private OfferStatus status ;
 }

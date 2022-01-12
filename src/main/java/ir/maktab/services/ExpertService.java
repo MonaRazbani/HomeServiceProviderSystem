@@ -3,9 +3,10 @@ package ir.maktab.services;
 import ir.maktab.dao.ExpertDao;
 import ir.maktab.dao.SubServiceDao;
 import ir.maktab.dto.modelDtos.SubServiceDto;
+import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
-import ir.maktab.exceptions.SubServiceNotFound;
-import ir.maktab.exceptions.WrongPassword;
+import ir.maktab.exceptions.*;
+import ir.maktab.models.entities.roles.Customer;
 import lombok.Data;
 import ir.maktab.models.entities.SubService;
 import ir.maktab.models.entities.roles.Expert;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -40,40 +42,52 @@ public class ExpertService {
     }
 
     public void saveExpert(ExpertDto expertDto, String password, File file) {
-        if (controlInput.isValidExpertDtoInfo(expertDto, password, file)) {
-            byte[] imageBytes = initializePhoto(file);
-            Expert expert = modelMapper.map(expertDto, Expert.class);
-            expert.setPhoto(imageBytes);
-            expert.setPassword(password);
-            expertDao.save(expert);
+
+            if (controlInput.isValidExpertDtoInfo(expertDto, password, file)) {
+                if (expertDao.findByEmail(expertDto.getEmail()).isEmpty()) {
+                byte[] imageBytes = initializePhoto(file);
+                Expert expert = modelMapper.map(expertDto, Expert.class);
+                expert.setPhoto(imageBytes);
+                expert.setPassword(password);
+                expertDao.save(expert);
+
+            }
+            else
+                throw new DuplicateEmail();
         } else
             throw new RuntimeException("sing up fail");
     }
 
-    public Expert findExpertByEmail(String email) {
-
-        if (controlInput.isValidEmail(email)) {
-            return findExpertByEmail(email);
-        }
-        throw new RuntimeException("finding fail ");
-    }
-
     public ExpertDto findExpertDtoByEmail(String email) {
         if (controlInput.isValidEmail(email)) {
-            Expert expert = findExpertByEmail(email);
-            return modelMapper.map(expert, ExpertDto.class);
+            Optional<Expert> expert = expertDao.findByEmail(email);
+            if (expert.isPresent()) {
+                return modelMapper.map(expert.get(), ExpertDto.class);
+            } else throw new ExpertNotFound();
+        } else
+            throw new RuntimeException("searching fail ");
+    }
+    public Expert findExpertByEmail(String email) {
+        if (controlInput.isValidEmail(email)) {
+            Optional<Expert> expert = expertDao.findByEmail(email);
+            if (expert.isPresent()) {
+                return expert.get() ;
+            } else throw new ExpertNotFound();
         } else
             throw new RuntimeException("searching fail ");
     }
 
     public void changePasswordForExpert(ExpertDto expertDto, String currentPassword, String newPassword) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
-        if (expert.getPassword().equals(currentPassword)) {
-            expert.setPassword(newPassword);
-            expertDao.save(expert);
-            System.out.println("done");
-        } else
-            throw new WrongPassword();
+        if (controlInput.isValidPassword(newPassword)) {
+            if (expert.getPassword().equals(currentPassword)) {
+                expert.setPassword(newPassword);
+                expertDao.save(expert);
+                System.out.println("done");
+            } else
+                throw new WrongPassword();
+        }else
+            throw new InvalidPassword();
     }
 
     public byte[] initializePhoto(File file) {
@@ -110,9 +124,9 @@ public class ExpertService {
     }
 
     public SubService findSubServiceBySubServiceDto(SubServiceDto subServiceDto) {
-        List<SubService> subServicesFound = subServiceDao.findByName(subServiceDto.getName());
-        if (!subServicesFound.isEmpty()) {
-            return subServicesFound.get(0);
+        Optional<SubService> subService = subServiceDao.findByName(subServiceDto.getName());
+        if (!subService.isEmpty()) {
+            return subService.get();
         } else
             throw new SubServiceNotFound();
     }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 public class MapperObject {
     private final ModelMapper modelMapper;
+    public final static long fixedIdentificationCode =1000000;
 
     public MapperObject(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
@@ -68,7 +69,8 @@ public class MapperObject {
     }
 
     public  AddressDto addressMapToAddressDto(Address address){
-        return modelMapper.map(address,AddressDto.class);
+        AddressDto addressDto = modelMapper.map(address, AddressDto.class);
+        return addressDto ;
     }
 
     public Order orderDtoMapToOrder(OrderDto orderDto){

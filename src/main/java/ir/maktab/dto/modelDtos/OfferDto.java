@@ -1,6 +1,7 @@
 package ir.maktab.dto.modelDtos;
 
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
+import ir.maktab.models.enums.OfferStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,4 +20,5 @@ public class OfferDto {
     private float suggestedDurationOfService ;
     private Date startDate ;
     private OrderDto order;
+    private OfferStatus status;
 }

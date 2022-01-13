@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -102,8 +103,8 @@ public class OfferService {
 
     public List<Offer> findByOfferSortedByPriceAndExpertRate(Order orderDto) {
         Order order = modelMapper.map(orderDto, Order.class);
-        List<Offer> offers = findByOfferSortedByPriceAndExpertRate(order);
-        offers.sort((o1, o2) -> Float.compare(o1.getExpert().getRate(), o2.getExpert().getRate()));
+        List<Offer> offers = offerDao.findByOrderOrderBySuggestedPriceAsc(order);
+        offers.sort(Comparator.comparing(Offer::getExpert));
         return offers;
     }
 

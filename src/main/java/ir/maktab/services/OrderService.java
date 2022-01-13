@@ -3,12 +3,12 @@ package ir.maktab.services;
 import ir.maktab.dao.AddressDao;
 import ir.maktab.dao.OrderDao;
 import ir.maktab.dao.SubServiceDao;
-import ir.maktab.dto.mappingMethod.MapperObject;
 import ir.maktab.dto.modelDtos.AddressDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
+import ir.maktab.exceptions.EditionDenied;
 import ir.maktab.exceptions.InvalidSuggestedPrice;
 import ir.maktab.exceptions.OrderNotFound;
 import ir.maktab.exceptions.SubServiceNotFound;
@@ -18,11 +18,11 @@ import ir.maktab.models.entities.SubService;
 import ir.maktab.models.entities.roles.Customer;
 import ir.maktab.models.entities.roles.Expert;
 import ir.maktab.models.enums.OrderStatus;
+import ir.maktab.validation.ControlEdition;
+import ir.maktab.validation.ControlInput;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ir.maktab.validation.ControlEdition;
-import ir.maktab.validation.ControlInput;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,18 +30,17 @@ import java.util.Optional;
 @Service
 public class OrderService {
     private final ControlInput controlInput;
-    private final MapperObject mapperObject;
     private final ControlEdition controlEdition;
     private final OrderDao orderDao;
     private final AddressDao addressDao;
-    private final SubServiceDao subServiceDao ;
+    private final SubServiceDao subServiceDao;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public OrderService(ControlInput controlInput, ModelMapper modelMapper, MapperObject mapperObject, ControlEdition controlEdition, OrderDao orderDao, AddressDao addressDao, SubServiceDao subServiceDao) {
+    public OrderService(ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition,
+                        OrderDao orderDao, AddressDao addressDao, SubServiceDao subServiceDao) {
         this.controlInput = controlInput;
-    this.mapperObject = mapperObject;
-    this.modelMapper = modelMapper;
+        this.modelMapper = modelMapper;
         this.controlEdition = controlEdition;
         this.orderDao = orderDao;
         this.addressDao = addressDao;
@@ -49,7 +48,7 @@ public class OrderService {
     }
 
 
-    public void saveOrder(CustomerDto customerDto, double suggestedPrice, String explanation, AddressDto addressDto, SubServiceDto subServiceDto) {
+    public Order saveOrder(CustomerDto customerDto, double suggestedPrice, String explanation, AddressDto addressDto, SubServiceDto subServiceDto) {
         Address address = modelMapper.map(addressDto, Address.class);
         Customer customer = modelMapper.map(customerDto, Customer.class);
         SubService subService = modelMapper.map(subServiceDto, SubService.class);
@@ -61,61 +60,53 @@ public class OrderService {
             newOrder.setSubService(subService);
             newOrder.setStatus(OrderStatus.STARTED);
             newOrder.setAddress(address);
-            orderDao.save(newOrder);
-        }
-        else
+            return orderDao.save(newOrder);
+
+        } else
             throw new InvalidSuggestedPrice();
     }
 
     public void editOrderExplanation(OrderDto orderDto, String newExplanation) {
-        Order order = modelMapper.map(orderDto,Order.class);
-            if (controlEdition.isValidToEdit(order.getStatus())) {
-                orderDto.setExplanation(newExplanation);
-                orderDao.save(order);
-            }else
-                throw new RuntimeException("edit Order Explanation fail");
+        Order order = modelMapper.map(orderDto, Order.class);
+        if (controlEdition.isValidToEdit(order.getStatus())) {
+            order.setExplanation(newExplanation);
+            orderDao.save(order);
+        } else
+            throw new RuntimeException("edit Order Explanation fail");
     }
 
-    public void editOrderAddress(OrderDto orderDto, AddressDto newAddressDto) {
-        if (controlEdition.isValidToEdit(orderDto.getStatus())){
+    public AddressDto editOrderAddress(OrderDto orderDto, AddressDto newAddressDto) {
+        if (controlEdition.isValidToEdit(orderDto.getStatus())) {
+
             newAddressDto.setId(orderDto.getAddress().getId());
-            Address newAddress = modelMapper.map(newAddressDto,Address.class);
-                addressDao.save(newAddress);
-        }else
+            Address newAddress = modelMapper.map(newAddressDto, Address.class);
+
+            Address addressChanged = addressDao.save(newAddress);
+            return modelMapper.map(addressChanged, AddressDto.class);
+        } else
             throw new RuntimeException("edit Order Address Fail");
     }
 
-    public void editOrderSuggestedPrice(OrderDto orderDto , double suggestedPrice) {
-        Order order = modelMapper.map(orderDto,Order.class);
-        if (controlEdition.isValidToEdit(order.getStatus())) {
+    public void editOrderSuggestedPrice(OrderDto orderDto, double suggestedPrice) {
             orderDto.setSuggestedPrice(suggestedPrice);
-            orderDao.save(order);
-        }else
-            throw new RuntimeException("edit Order SuggestedPrice fail");
+            updateOrder(orderDto);
     }
 
     public void editOrderServiceType(OrderDto orderDto, SubServiceDto subServiceDto) {
-        if (controlEdition.isValidToEdit(orderDto.getStatus())) {
-            Order order = modelMapper.map(orderDto, Order.class);
-            SubService subService = findSubServiceBySubServiceDto(subServiceDto);
-            if (subService != null) {
-                order.setSubService(subService);
-                orderDao.save(order);
-            }
-        }else
-            throw new RuntimeException("edit Order subService fail");
+        orderDto.setSubService(subServiceDto);
+        updateOrder(orderDto);
     }
 
-    public void deleteOrderFromCustomer(OrderDto orderDto) {
+    public void deleteOrder(OrderDto orderDto) {
         if (controlEdition.isValidToEdit(orderDto.getStatus())) {
             Order order = modelMapper.map(orderDto, Order.class);
             orderDao.delete(order);
-        }else
+        } else
             throw new RuntimeException("delete Order fail");
     }
 
     public List<Order> findOrderByCustomerAndStatus(CustomerDto customerDto, OrderStatus status) {
-        Customer customer = modelMapper.map(customerDto,Customer.class);
+        Customer customer = modelMapper.map(customerDto, Customer.class);
         List<Order> orders = orderDao.findByCustomerAndStatus(customer, status);
         if (!orders.isEmpty())
             return orders;
@@ -124,19 +115,38 @@ public class OrderService {
     }
 
     public List<Order> findOrderByExpertAndStatus(ExpertDto expertDto, OrderStatus status) {
-        Expert expert = modelMapper.map(expertDto,Expert.class);
+        Expert expert = modelMapper.map(expertDto, Expert.class);
         List<Order> orders = orderDao.findByExpertAndStatus(expert, status);
         if (!orders.isEmpty())
             return orders;
         else throw new OrderNotFound();
     }
 
-    public SubService findSubServiceBySubServiceDto(SubServiceDto subServiceDto) {
-        Optional<SubService> subService= subServiceDao.findByName(subServiceDto.getName());
-        if (!subService.isEmpty()) {
-            return subService.get();
+
+    public OrderDto findOrderDtoById(long id) {
+        Optional<Order> order = orderDao.findById(id);
+        if (order.isPresent()) {
+            Order orderFound = order.get();
+            OrderDto orderDto = modelMapper.map(orderFound, OrderDto.class);
+            return orderDto;
         } else
-            throw new SubServiceNotFound();
+            throw new OrderNotFound();
+    }
+
+    public Order findOrderById(long id) {
+        Optional<Order> order = orderDao.findById(id);
+        if (order.isPresent())
+            return order.get();
+        else
+            throw new OrderNotFound();
+    }
+
+    public void updateOrder(OrderDto orderDto) {
+        Order order = findOrderById(orderDto.getId());
+        if (controlEdition.isValidToEdit(order.getStatus())) {
+            orderDao.save(order);
+        } else
+            throw new EditionDenied();
     }
 
 }

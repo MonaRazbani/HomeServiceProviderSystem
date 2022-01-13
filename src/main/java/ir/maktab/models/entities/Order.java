@@ -27,7 +27,7 @@ public class Order {
     @ManyToOne(fetch = FetchType.EAGER)
     private SubService subService;
     private Date performedOrder ;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     private Address address;
     @CreationTimestamp
     private Date creation ;

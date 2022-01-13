@@ -67,12 +67,8 @@ public class OrderService {
     }
 
     public void editOrderExplanation(OrderDto orderDto, String newExplanation) {
-        Order order = modelMapper.map(orderDto, Order.class);
-        if (controlEdition.isValidToEdit(order.getStatus())) {
-            order.setExplanation(newExplanation);
-            orderDao.save(order);
-        } else
-            throw new RuntimeException("edit Order Explanation fail");
+        orderDto.setExplanation(newExplanation);
+        updateOrder(orderDto);
     }
 
     public AddressDto editOrderAddress(OrderDto orderDto, AddressDto newAddressDto) {
@@ -88,8 +84,8 @@ public class OrderService {
     }
 
     public void editOrderSuggestedPrice(OrderDto orderDto, double suggestedPrice) {
-            orderDto.setSuggestedPrice(suggestedPrice);
-            updateOrder(orderDto);
+        orderDto.setSuggestedPrice(suggestedPrice);
+        updateOrder(orderDto);
     }
 
     public void editOrderServiceType(OrderDto orderDto, SubServiceDto subServiceDto) {
@@ -144,6 +140,15 @@ public class OrderService {
     public void updateOrder(OrderDto orderDto) {
         Order order = findOrderById(orderDto.getId());
         if (controlEdition.isValidToEdit(order.getStatus())) {
+            orderDao.save(order);
+        } else
+            throw new EditionDenied();
+    }
+
+    public void setOrderDtoStatusDone(OrderDto orderDto) {
+        Order order = findOrderById(orderDto.getId());
+        if (controlEdition.isValidToEdit(order.getStatus())) {
+            order.setStatus(OrderStatus.DONE);
             orderDao.save(order);
         } else
             throw new EditionDenied();

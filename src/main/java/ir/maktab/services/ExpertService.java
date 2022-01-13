@@ -3,23 +3,20 @@ package ir.maktab.services;
 import ir.maktab.dao.ExpertDao;
 import ir.maktab.dao.SubServiceDao;
 import ir.maktab.dto.modelDtos.SubServiceDto;
-import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.*;
-import ir.maktab.models.entities.roles.Customer;
-import lombok.Data;
 import ir.maktab.models.entities.SubService;
 import ir.maktab.models.entities.roles.Expert;
+import ir.maktab.validation.ControlEdition;
+import ir.maktab.validation.ControlInput;
+import lombok.Data;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ir.maktab.validation.ControlEdition;
-import ir.maktab.validation.ControlInput;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -43,16 +40,15 @@ public class ExpertService {
 
     public void saveExpert(ExpertDto expertDto, String password, File file) {
 
-            if (controlInput.isValidExpertDtoInfo(expertDto, password, file)) {
-                if (expertDao.findByEmail(expertDto.getEmail()).isEmpty()) {
+        if (controlInput.isValidExpertDtoInfo(expertDto, password, file)) {
+            if (expertDao.findByEmail(expertDto.getEmail()).isEmpty()) {
                 byte[] imageBytes = initializePhoto(file);
                 Expert expert = modelMapper.map(expertDto, Expert.class);
                 expert.setPhoto(imageBytes);
                 expert.setPassword(password);
                 expertDao.save(expert);
 
-            }
-            else
+            } else
                 throw new DuplicateEmail();
         } else
             throw new RuntimeException("sing up fail");
@@ -67,11 +63,12 @@ public class ExpertService {
         } else
             throw new RuntimeException("searching fail ");
     }
+
     public Expert findExpertByEmail(String email) {
         if (controlInput.isValidEmail(email)) {
             Optional<Expert> expert = expertDao.findByEmail(email);
             if (expert.isPresent()) {
-                return expert.get() ;
+                return expert.get();
             } else throw new ExpertNotFound();
         } else
             throw new RuntimeException("searching fail ");
@@ -86,7 +83,7 @@ public class ExpertService {
                 System.out.println("done");
             } else
                 throw new WrongPassword();
-        }else
+        } else
             throw new InvalidPassword();
     }
 

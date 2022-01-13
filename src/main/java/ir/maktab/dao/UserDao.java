@@ -1,46 +1,49 @@
-/*
 package ir.maktab.dao;
 
+import ir.maktab.models.entities.SubService;
 import ir.maktab.models.entities.roles.User;
 import ir.maktab.models.enums.RoleType;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-import ir.maktab.util.HibernateUtil;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
-import java.ir.maktab.util.List;
+import javax.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 
-public class UserDao extends HibernateUtil{
+@Repository
+public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
 
-    public List<User> filterDynamic(String firstName, String lastName , String email, RoleType roleType) {
-        Session session = getSessionFactory().openSession();
-        Transaction transaction = session.beginTransaction();
-        Criteria criteria = session.createCriteria(User.class, "user");
-        if (firstName !=null ) {
-            Criterion firstNameFilter = Restrictions.eq("user.firstName", firstName);
-            criteria.add(firstNameFilter);
-        }
-        if (lastName!= null) {
-            Criterion lastNameFilter = Restrictions.eq("user.lastName", lastName);
-            criteria.add(lastNameFilter);
-        }
-        if (email!= null) {
-            Criterion emailFilter = Restrictions.eq("user.email", email);
-            criteria.add(emailFilter);
-        }
-        if (roleType !=null){
-            Criterion userTypeFilter = Restrictions.eq("user.userType", email);
-            criteria.add(userTypeFilter);
-        }
-        List found = criteria.list();
-        transaction.commit();
-        session.close();
+    static Specification<User> filterDynamic(String firstName, String lastName, String email, RoleType roleType, SubService subService) {
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (firstName != null) {
+                Predicate firstNameFilter = criteriaBuilder.equal(root.get("firstName"), firstName);
+                predicates.add(firstNameFilter);
 
-        return found;
+            }
+            if (lastName != null) {
+                Predicate lastNameFilter = criteriaBuilder.equal(root.get("lastName"), lastName);
+                predicates.add(lastNameFilter);
+            }
+            if (email != null) {
+                Predicate emailFilter = criteriaBuilder.equal(root.get("email"), email);
+                predicates.add(emailFilter);
+            }
+            if (roleType != null) {
+                Predicate rolTypeFilter = criteriaBuilder.equal(root.get("rolType"), roleType);
+                predicates.add(rolTypeFilter);
+
+            }
+            if (subService != null) {
+                Predicate subServiceFilter = criteriaBuilder.equal(root.get("subService"), subService);
+                predicates.add(subServiceFilter);
+
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
     }
-
 }
-*/

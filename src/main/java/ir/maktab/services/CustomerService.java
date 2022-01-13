@@ -12,7 +12,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,14 +19,12 @@ public class CustomerService {
     private final CustomerDao customerDao;
     private final ControlInput controlInput;
     private final ModelMapper modelMapper;
-    private final ControlEdition controlEdition;
 
     @Autowired
     public CustomerService(CustomerDao customerDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition) {
         this.customerDao = customerDao;
         this.controlInput = controlInput;
         this.modelMapper = modelMapper;
-        this.controlEdition = controlEdition;
     }
 
 

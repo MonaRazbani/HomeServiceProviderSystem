@@ -32,6 +32,14 @@ public class ServiceCategoryService {
             throw new DuplicateServiceCategory();
     }
 
+    public void updateServiceCategory(ServiceCategoryDto serviceCategoryDto) {
+        if (serviceCategoryDao.findByName(serviceCategoryDto.getName()).isPresent()) {
+            ServiceCategory newServiceCategory = modelMapper.map(serviceCategoryDto, ServiceCategory.class);
+            serviceCategoryDao.save(newServiceCategory);
+        } else
+            throw new ServiceCategoryNotFound();
+    }
+
     public ServiceCategory findByName(String name) {
         Optional<ServiceCategory> serviceCategory = serviceCategoryDao.findByName(name);
         if (serviceCategory.isPresent()) {

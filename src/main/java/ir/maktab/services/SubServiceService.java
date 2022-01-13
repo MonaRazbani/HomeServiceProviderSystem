@@ -34,6 +34,15 @@ public class SubServiceService {
         } else
             throw new DuplicateSubService();
     }
+    public void updateSubService(SubServiceDto subServiceDto) {
+        SubService subService = modelMapper.map(subServiceDto, SubService.class);
+        if (subServiceDao.findByName(subService.getName()).isPresent()) {
+            if (subService.getServiceCategory() == null)
+                throw new NoCategoryServiceForService();
+            subServiceDao.save(subService);
+        } else
+            throw new SubServiceNotFound();
+    }
 
 
     public SubService findByName(String name) {

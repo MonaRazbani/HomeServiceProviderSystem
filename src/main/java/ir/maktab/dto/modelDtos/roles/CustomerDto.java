@@ -12,12 +12,6 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerDto {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Gender gender;
-    private UserStatus status;
-    private RoleType roleType;
+public class CustomerDto extends UserDto{
 
 }

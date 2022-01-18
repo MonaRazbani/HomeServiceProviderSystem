@@ -23,6 +23,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     private long id;
+    @Column(columnDefinition = "BINARY(16)",unique = true)
+    private UUID identificationCode;
     private String firstName;
     private String lastName;
     @Column(unique = true)
@@ -36,6 +38,7 @@ public class User {
     private Gender gender;
     @Enumerated(value = EnumType.STRING)
     private RoleType roleType;
+    private double credit;
 
 
 }

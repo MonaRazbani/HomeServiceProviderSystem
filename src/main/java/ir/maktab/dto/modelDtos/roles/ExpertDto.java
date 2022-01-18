@@ -11,12 +11,7 @@ import ir.maktab.models.enums.UserStatus;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExpertDto {
-    private String firstName;
-    private String lastName;
-    private String email;
-    private UserStatus status;
-    private RoleType roleType;
+public class ExpertDto extends UserDto{
     private byte[] photo;
     private float rate ;
 }

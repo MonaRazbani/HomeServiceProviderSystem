@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
@@ -20,6 +19,7 @@ public class UserDto {
     private String firstName;
     private String lastName;
     private String email;
+    private String password;
     private UserStatus status;
     private RoleType roleType;
     private Gender gender;

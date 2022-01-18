@@ -2,17 +2,19 @@ package ir.maktab.services;
 
 import ir.maktab.dao.CustomerDao;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
+import ir.maktab.exceptions.CommentNotFound;
 import ir.maktab.exceptions.CustomerNotFound;
 import ir.maktab.exceptions.DuplicateEmail;
 import ir.maktab.exceptions.WrongPassword;
+import ir.maktab.models.entities.Comment;
 import ir.maktab.models.entities.roles.Customer;
-import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CustomerService {
@@ -21,18 +23,19 @@ public class CustomerService {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public CustomerService(CustomerDao customerDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition) {
+    public CustomerService(CustomerDao customerDao, ControlInput controlInput, ModelMapper modelMapper) {
         this.customerDao = customerDao;
         this.controlInput = controlInput;
         this.modelMapper = modelMapper;
     }
 
 
-    public void saveCustomer(CustomerDto customerDto, String password) {
-        if (controlInput.isValidCustomerDtoInfo(customerDto, password)) {
+    public void saveCustomer(CustomerDto customerDto) {
+        if (controlInput.isValidCustomerDtoInfo(customerDto)) {
+
             if (customerDao.findByEmail(customerDto.getEmail()).isEmpty()) {
                 Customer customer = modelMapper.map(customerDto, Customer.class);
-                customer.setPassword(password);
+                customer.setIdentificationCode(UUID.randomUUID());
                 customerDao.save(customer);
             } else
                 throw new DuplicateEmail();
@@ -42,20 +45,12 @@ public class CustomerService {
 
     public void updateCustomer(CustomerDto customerDto) {
         Customer customer = modelMapper.map(customerDto, Customer.class);
+        long customerId = findCustomerId(customerDto.getEmail());
+        customer.setId(customerId);
         customerDao.save(customer);
 
     }
 
-
-    public CustomerDto findCustomerDtoByEmail(String email) {
-        if (controlInput.isValidEmail(email)) {
-            Optional<Customer> customer = customerDao.findByEmail(email);
-            if (customer.isPresent()) {
-                return modelMapper.map(customer.get(), CustomerDto.class);
-            } else throw new CustomerNotFound();
-        } else
-            throw new RuntimeException("searching fail ");
-    }
 
     public Customer findCustomerByEmail(String email) {
         if (controlInput.isValidEmail(email)) {
@@ -77,6 +72,13 @@ public class CustomerService {
             } else
                 throw new WrongPassword();
         }
+    }
+
+
+
+    public long findCustomerId(String email){
+        Customer customer = findCustomerByEmail(email);
+        return customer.getId();
     }
 
 

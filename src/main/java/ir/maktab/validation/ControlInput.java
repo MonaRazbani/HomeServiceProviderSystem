@@ -52,11 +52,11 @@ public class ControlInput {
         else return false;
     }
 
-    public boolean isValidCustomerDtoInfo(CustomerDto customerDto, String password) {
+    public boolean isValidCustomerDtoInfo(CustomerDto customerDto) {
         return isValidName(customerDto.getFirstName())
                 && isValidName(customerDto.getLastName())
                 && isValidEmail(customerDto.getEmail())
-                && isValidPassword(password);
+                && isValidPassword(customerDto.getPassword());
     }
 
     public boolean isValidExpertDtoInfo(ExpertDto expertDto, String password, File file) {

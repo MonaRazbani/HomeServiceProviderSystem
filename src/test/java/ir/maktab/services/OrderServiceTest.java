@@ -1,13 +1,13 @@
 package ir.maktab.services;
 
 import ir.maktab.config.SpringConfig;
-import ir.maktab.dto.modelDtos.*;
+import ir.maktab.dto.modelDtos.AddressDto;
+import ir.maktab.dto.modelDtos.OrderDto;
+import ir.maktab.dto.modelDtos.ServiceCategoryDto;
+import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
-import ir.maktab.exceptions.DuplicateServiceCategory;
 import ir.maktab.exceptions.EditionDenied;
-import ir.maktab.exceptions.WrongPassword;
-import ir.maktab.models.entities.Address;
 import ir.maktab.models.entities.Order;
 import ir.maktab.models.enums.OrderStatus;
 import ir.maktab.models.enums.RoleType;
@@ -16,8 +16,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import java.util.List;
 
 public class OrderServiceTest {
     OrderService orderService;

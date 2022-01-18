@@ -19,7 +19,7 @@ public class CustomerServiceTest {
     void init() {
         ApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
         customerService = context.getBean(CustomerService.class);
-        customerDto = CustomerDto.builder().
+        customerDto = (CustomerDto) CustomerDto.builder().
                 firstName("mona").
                 lastName("raz").
                 email("mona@gmail.com").
@@ -31,19 +31,19 @@ public class CustomerServiceTest {
     @Test
     void customerService_CallsSaveCustomer_CheckWithFindByEmail_ResponseTrue() {
         String password = "123456mona";
-        customerService.saveCustomer(customerDto, password);
-        CustomerDto customerDtoByEmail = customerService.findCustomerDtoByEmail(customerDto.getEmail());
-        Assertions.assertEquals(customerDto.getEmail(), customerDtoByEmail.getEmail());
-        Assertions.assertEquals(customerDto.getFirstName(), customerDtoByEmail.getFirstName());
-        Assertions.assertEquals(customerDto.getLastName(), customerDtoByEmail.getLastName());
-        Assertions.assertEquals(customerDto.getRoleType(), customerDtoByEmail.getRoleType());
+        customerService.saveCustomer(customerDto);
+        Customer customerByEmail = customerService.findCustomerByEmail(customerDto.getEmail());
+        Assertions.assertEquals(customerDto.getEmail(), customerByEmail.getEmail());
+        Assertions.assertEquals(customerDto.getFirstName(), customerByEmail.getFirstName());
+        Assertions.assertEquals(customerDto.getLastName(), customerByEmail.getLastName());
+        Assertions.assertEquals(customerDto.getRoleType(), customerByEmail.getRoleType());
     }
 
     @Test
     void customerService_CallsSaveCustomer_ReturnException() {
         String password = "123456mona";
-        customerService.saveCustomer(customerDto, password);
-        DuplicateEmail result = Assertions.assertThrows(DuplicateEmail.class, () -> customerService.saveCustomer(customerDto, password));
+        customerService.saveCustomer(customerDto);
+        DuplicateEmail result = Assertions.assertThrows(DuplicateEmail.class, () -> customerService.saveCustomer(customerDto));
         Assertions.assertEquals("This email has been used before", result.getMessage());
     }
     @Test
@@ -60,26 +60,26 @@ public class CustomerServiceTest {
     void customerService_CallsFindCustomerDtoByEmail_UseInvalidEmail_ReturnException() {
         // String password = "123456mona";
         //customerService.saveCustomer(customerDto, password); //use it when hibernate.hbm2ddl.auto is 'create' or 'create_drop'
-        InvalidEmail result = Assertions.assertThrows(InvalidEmail.class, () -> customerService.findCustomerDtoByEmail("mana@gmail"));
+        InvalidEmail result = Assertions.assertThrows(InvalidEmail.class, () -> customerService.findCustomerByEmail("mana@gmail"));
         Assertions.assertEquals("invalid email", result.getMessage());
     }
     @Test
     void customerService_CallsFindCustomerDtoByEmail_UseUnSaveEmail_ReturnException() {
         //String password = "123456mona";
         //customerService.saveCustomer(customerDto, password); //use it when hibernate.hbm2ddl.auto is 'create' or 'create_drop'
-        CustomerNotFound result = Assertions.assertThrows(CustomerNotFound.class, () -> customerService.findCustomerDtoByEmail("ali@gmail.com"));
+        CustomerNotFound result = Assertions.assertThrows(CustomerNotFound.class, () -> customerService.findCustomerByEmail("ali@gmail.com"));
         Assertions.assertEquals("customer not found", result.getMessage());
     }
 
  @Test
     void customerService_CallsFindCustomerDtoByEmail_ResponseTrue(){
         String password = "123456mona";
-        customerService.saveCustomer(customerDto, password);
-        CustomerDto customerDtoByEmail = customerService.findCustomerDtoByEmail(customerDto.getEmail());
-        Assertions.assertEquals(customerDtoByEmail.getEmail(), customerDtoByEmail.getEmail());
-        Assertions.assertEquals(customerDtoByEmail.getFirstName(), customerDtoByEmail.getFirstName());
-        Assertions.assertEquals(customerDtoByEmail.getLastName(), customerDtoByEmail.getLastName());
-        Assertions.assertEquals(customerDtoByEmail.getRoleType(), customerDtoByEmail.getRoleType());
+        customerService.saveCustomer(customerDto);
+        Customer customerByEmail = customerService.findCustomerByEmail(customerDto.getEmail());
+        Assertions.assertEquals(customerByEmail.getEmail(), customerByEmail.getEmail());
+        Assertions.assertEquals(customerByEmail.getFirstName(), customerByEmail.getFirstName());
+        Assertions.assertEquals(customerByEmail.getLastName(), customerByEmail.getLastName());
+        Assertions.assertEquals(customerByEmail.getRoleType(), customerByEmail.getRoleType());
     }
     @Test
     void customerService_CallsFindCustomerByEmail_UseInvalidEmail_ReturnException() {

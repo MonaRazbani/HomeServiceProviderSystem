@@ -59,7 +59,7 @@ public class ControlInput {
                 && isValidPassword(customerDto.getPassword());
     }
 
-    public boolean isValidExpertDtoInfo(ExpertDto expertDto, String password, File file) {
+    public boolean isValidExpertDtoInfo(ExpertDto expertDto) {
         return isValidName(expertDto.getFirstName())
                 && isValidName(expertDto.getLastName())
                 && isValidEmail(expertDto.getEmail())

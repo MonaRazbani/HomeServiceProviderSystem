@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -27,41 +28,30 @@ public class ExpertService {
     private final ControlInput controlInput;
     private final ModelMapper modelMapper;
     private final ControlEdition controlEdition;
-    private final SubServiceDao subServiceDao;
+    private final SubServiceService subServiceService;
 
     @Autowired
-    public ExpertService(ExpertDao expertDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition, SubServiceDao subServiceDao) {
+    public ExpertService(ExpertDao expertDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition, SubServiceService subServiceService) {
         this.expertDao = expertDao;
         this.controlInput = controlInput;
         this.modelMapper = modelMapper;
         this.controlEdition = controlEdition;
-        this.subServiceDao = subServiceDao;
+        this.subServiceService = subServiceService;
     }
 
-    public void saveExpert(ExpertDto expertDto, String password, File file) {
+    public void saveExpert(ExpertDto expertDto) {
 
-        if (controlInput.isValidExpertDtoInfo(expertDto, password, file)) {
+        if (controlInput.isValidExpertDtoInfo(expertDto)) {
             if (expertDao.findByEmail(expertDto.getEmail()).isEmpty()) {
-                byte[] imageBytes = initializePhoto(file);
+
                 Expert expert = modelMapper.map(expertDto, Expert.class);
-                expert.setPhoto(imageBytes);
-                expert.setPassword(password);
+                expert.setIdentificationCode(UUID.randomUUID());
                 expertDao.save(expert);
 
             } else
                 throw new DuplicateEmail();
         } else
             throw new RuntimeException("sing up fail");
-    }
-
-    public ExpertDto findExpertDtoByEmail(String email) {
-        if (controlInput.isValidEmail(email)) {
-            Optional<Expert> expert = expertDao.findByEmail(email);
-            if (expert.isPresent()) {
-                return modelMapper.map(expert.get(), ExpertDto.class);
-            } else throw new ExpertNotFound();
-        } else
-            throw new RuntimeException("searching fail ");
     }
 
     public Expert findExpertByEmail(String email) {
@@ -100,11 +90,11 @@ public class ExpertService {
         return imageData;
     }
 
-    public void addServiceToExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
+    public void addSubServiceToExpertSubServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
         if (expert != null) {
-            SubService subServiceFound = findSubServiceBySubServiceDto(subServiceDto);
-            expert.getSubServices().add(subServiceFound);
+            SubService subService = subServiceService.findByName(subServiceDto.getName());
+            expert.getSubServices().add(subService);
             expertDao.save(expert);
         }
         throw new RuntimeException("add subService Fail");
@@ -113,19 +103,12 @@ public class ExpertService {
     public void deleteServiceFromExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
         if (expert != null) {
-            SubService subServiceFound = findSubServiceBySubServiceDto(subServiceDto);
+            SubService subServiceFound = subServiceService.findByName(subServiceDto.getName());
+
             expert.getSubServices().remove(subServiceFound);
             expertDao.save(expert);
         }
         throw new RuntimeException("delete subService Fail");
-    }
-
-    public SubService findSubServiceBySubServiceDto(SubServiceDto subServiceDto) {
-        Optional<SubService> subService = subServiceDao.findByName(subServiceDto.getName());
-        if (!subService.isEmpty()) {
-            return subService.get();
-        } else
-            throw new SubServiceNotFound();
     }
 
 

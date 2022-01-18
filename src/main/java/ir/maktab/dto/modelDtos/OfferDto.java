@@ -7,14 +7,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.Date;
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class OfferDto {
 
-    private long id ;
+    private UUID identificationCode;
     private ExpertDto expert ;
     private double suggestedPrice ;
     private float suggestedDurationOfService ;

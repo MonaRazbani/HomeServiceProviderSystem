@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -14,6 +15,8 @@ public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id ;
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID identificationCode;
     @ManyToOne(fetch = FetchType.EAGER)
     private Expert expert ;
     @CreationTimestamp

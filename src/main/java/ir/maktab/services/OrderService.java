@@ -74,7 +74,8 @@ public class OrderService {
     public AddressDto editOrderAddress(OrderDto orderDto, AddressDto newAddressDto) {
         if (controlEdition.isValidToEdit(orderDto.getStatus())) {
 
-            newAddressDto.setId(orderDto.getAddress().getId());
+            newAddressDto.setIdentificationCode(orderDto.getAddress().getIdentificationCode()
+            );
             Address newAddress = modelMapper.map(newAddressDto, Address.class);
 
             Address addressChanged = addressDao.save(newAddress);

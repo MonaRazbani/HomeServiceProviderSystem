@@ -12,7 +12,6 @@ import ir.maktab.models.enums.UserStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExpertDto {
-    private long id;
     private String firstName;
     private String lastName;
     private String email;

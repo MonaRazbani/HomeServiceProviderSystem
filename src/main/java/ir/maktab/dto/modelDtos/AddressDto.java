@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressDto {
-    private long id;
+    private UUID identificationCode;
     private String city ;
     private String street ;
     private String alley ;

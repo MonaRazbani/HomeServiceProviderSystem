@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface OrderDao extends PagingAndSortingRepository<Order,Long> {
@@ -18,5 +19,6 @@ public interface OrderDao extends PagingAndSortingRepository<Order,Long> {
     List<Order> findByExpertAndStatus(Expert expert, OrderStatus status) ;
 
     Optional<Order> findById(long id);
+    Optional<Order> findByIdentificationCode(UUID identificationCode);
 
 }

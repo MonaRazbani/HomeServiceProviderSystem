@@ -1,6 +1,5 @@
 package ir.maktab.services;
 
-import ir.maktab.dao.AddressDao;
 import ir.maktab.dao.OrderDao;
 import ir.maktab.dao.SubServiceDao;
 import ir.maktab.dto.modelDtos.AddressDto;
@@ -11,10 +10,7 @@ import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.EditionDenied;
 import ir.maktab.exceptions.InvalidSuggestedPrice;
 import ir.maktab.exceptions.OrderNotFound;
-import ir.maktab.exceptions.SubServiceNotFound;
-import ir.maktab.models.entities.Address;
 import ir.maktab.models.entities.Order;
-import ir.maktab.models.entities.SubService;
 import ir.maktab.models.entities.roles.Customer;
 import ir.maktab.models.entities.roles.Expert;
 import ir.maktab.models.enums.OrderStatus;
@@ -26,41 +22,39 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrderService {
     private final ControlInput controlInput;
     private final ControlEdition controlEdition;
     private final OrderDao orderDao;
-    private final AddressDao addressDao;
+    private final AddressService addressService;
+    private final CustomerService customerService;
+    private final ExpertService expertService;
     private final SubServiceDao subServiceDao;
     private final ModelMapper modelMapper;
 
     @Autowired
     public OrderService(ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition,
-                        OrderDao orderDao, AddressDao addressDao, SubServiceDao subServiceDao) {
+                        OrderDao orderDao, AddressService addressService, CustomerService customerService,
+                        ExpertService expertService, SubServiceDao subServiceDao) {
         this.controlInput = controlInput;
         this.modelMapper = modelMapper;
         this.controlEdition = controlEdition;
         this.orderDao = orderDao;
-        this.addressDao = addressDao;
+        this.addressService = addressService;
+        this.customerService = customerService;
+        this.expertService = expertService;
         this.subServiceDao = subServiceDao;
     }
 
 
-    public Order saveOrder(CustomerDto customerDto, double suggestedPrice, String explanation, AddressDto addressDto, SubServiceDto subServiceDto) {
-        Address address = modelMapper.map(addressDto, Address.class);
-        Customer customer = modelMapper.map(customerDto, Customer.class);
-        SubService subService = modelMapper.map(subServiceDto, SubService.class);
-        if (controlInput.isValidSuggestedPrice(subService, suggestedPrice)) {
-            Order newOrder = new Order();
-            newOrder.setCustomer(customer);
-            newOrder.setExplanation(explanation);
-            newOrder.setSuggestedPrice(suggestedPrice);
-            newOrder.setSubService(subService);
-            newOrder.setStatus(OrderStatus.STARTED);
-            newOrder.setAddress(address);
-            return orderDao.save(newOrder);
+    public Order saveOrder(OrderDto orderDto) {
+        Order order = modelMapper.map(orderDto, Order.class);
+        if (controlInput.isValidSuggestedPrice(order.getSubService(), order.getSuggestedPrice())) {
+            order.setIdentificationCode(UUID.randomUUID());
+            return orderDao.save(order);
 
         } else
             throw new InvalidSuggestedPrice();
@@ -71,15 +65,12 @@ public class OrderService {
         updateOrder(orderDto);
     }
 
-    public AddressDto editOrderAddress(OrderDto orderDto, AddressDto newAddressDto) {
+    public void editOrderAddress(OrderDto orderDto, AddressDto newAddressDto) {
         if (controlEdition.isValidToEdit(orderDto.getStatus())) {
 
-            newAddressDto.setIdentificationCode(orderDto.getAddress().getIdentificationCode()
-            );
-            Address newAddress = modelMapper.map(newAddressDto, Address.class);
+            newAddressDto.setIdentificationCode(orderDto.getAddress().getIdentificationCode());
+            addressService.updateAddress(newAddressDto);
 
-            Address addressChanged = addressDao.save(newAddress);
-            return modelMapper.map(addressChanged, AddressDto.class);
         } else
             throw new RuntimeException("edit Order Address Fail");
     }
@@ -96,14 +87,19 @@ public class OrderService {
 
     public void deleteOrder(OrderDto orderDto) {
         if (controlEdition.isValidToEdit(orderDto.getStatus())) {
+
             Order order = modelMapper.map(orderDto, Order.class);
+            long orderId = findOrderId(orderDto.getIdentificationCode());
+            order.setId(orderId);
+
             orderDao.delete(order);
         } else
             throw new RuntimeException("delete Order fail");
     }
 
     public List<Order> findOrderByCustomerAndStatus(CustomerDto customerDto, OrderStatus status) {
-        Customer customer = modelMapper.map(customerDto, Customer.class);
+
+        Customer customer = customerService.findCustomerByEmail(customerDto.getEmail());
         List<Order> orders = orderDao.findByCustomerAndStatus(customer, status);
         if (!orders.isEmpty())
             return orders;
@@ -112,22 +108,12 @@ public class OrderService {
     }
 
     public List<Order> findOrderByExpertAndStatus(ExpertDto expertDto, OrderStatus status) {
-        Expert expert = modelMapper.map(expertDto, Expert.class);
+
+        Expert expert = expertService.findExpertByEmail(expertDto.getEmail());
         List<Order> orders = orderDao.findByExpertAndStatus(expert, status);
         if (!orders.isEmpty())
             return orders;
         else throw new OrderNotFound();
-    }
-
-
-    public OrderDto findOrderDtoById(long id) {
-        Optional<Order> order = orderDao.findById(id);
-        if (order.isPresent()) {
-            Order orderFound = order.get();
-            OrderDto orderDto = modelMapper.map(orderFound, OrderDto.class);
-            return orderDto;
-        } else
-            throw new OrderNotFound();
     }
 
     public Order findOrderById(long id) {
@@ -138,16 +124,33 @@ public class OrderService {
             throw new OrderNotFound();
     }
 
+    public Order findOrderByIdentificationCode(UUID identificationCode) {
+        Optional<Order> order = orderDao.findByIdentificationCode(identificationCode);
+        if (order.isPresent())
+            return order.get();
+        else
+            throw new OrderNotFound();
+    }
+
+    public long findOrderId (UUID identificationCode)
+    {
+        Order order = findOrderByIdentificationCode(identificationCode);
+        return order.getId();
+    }
+
     public void updateOrder(OrderDto orderDto) {
-        Order order = findOrderById(orderDto.getId());
+        Order order = modelMapper.map(orderDto,Order.class);
+
         if (controlEdition.isValidToEdit(order.getStatus())) {
+            long orderId = findOrderId(order.getIdentificationCode());
+            order.setId(orderId);
             orderDao.save(order);
         } else
             throw new EditionDenied();
     }
 
     public void setOrderDtoStatusDone(OrderDto orderDto) {
-        Order order = findOrderById(orderDto.getId());
+        Order order = findOrderByIdentificationCode(orderDto.getIdentificationCode());
         if (controlEdition.isValidToEdit(order.getStatus())) {
             order.setStatus(OrderStatus.DONE);
             orderDao.save(order);

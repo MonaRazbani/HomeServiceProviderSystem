@@ -148,6 +148,15 @@ public class OrderService {
         } else
             throw new EditionDenied();
     }
+    public void updateOrder(Order order) {
+
+        if (controlEdition.isValidToEdit(order.getStatus())) {
+            long orderId = findOrderId(order.getIdentificationCode());
+            order.setId(orderId);
+            orderDao.save(order);
+        } else
+            throw new EditionDenied();
+    }
 
     public void setOrderDtoStatusDone(OrderDto orderDto) {
         Order order = findOrderByIdentificationCode(orderDto.getIdentificationCode());

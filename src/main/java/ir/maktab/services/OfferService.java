@@ -21,18 +21,16 @@ import java.util.*;
 @Service
 public class OfferService {
     private final OrderService orderService;
-    private final CustomerService customerService;
     private final ExpertService expertService;
     private final OfferDao offerDao;
     private final ModelMapper modelMapper;
     private final ControlEdition controlEdition;
 
     @Autowired
-    public OfferService(OrderService orderService, CustomerService customerService,
+    public OfferService(OrderService orderService,
                         ExpertService expertService, OfferDao offerDao,
                         ModelMapper modelMapper, ControlEdition controlEdition) {
         this.orderService = orderService;
-        this.customerService = customerService;
         this.expertService = expertService;
         this.offerDao = offerDao;
         this.modelMapper = modelMapper;

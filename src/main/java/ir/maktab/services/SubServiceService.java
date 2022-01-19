@@ -26,11 +26,13 @@ public class SubServiceService {
     }
 
     public void saveSubService(SubServiceDto subServiceDto) {
-        SubService subService = modelMapper.map(subServiceDto, SubService.class);
-        if (subServiceDao.findByName(subService.getName()).isEmpty()) {
-            if (subService.getServiceCategory() == null)
+        SubService newSubService = modelMapper.map(subServiceDto, SubService.class);
+        Optional<SubService> oldSubService = subServiceDao.findByName(newSubService.getName());
+        if (oldSubService.isEmpty()) {
+            if (newSubService.getServiceCategory() == null)
                 throw new NoCategoryServiceForService();
-            subServiceDao.save(subService);
+            newSubService.setId(oldSubService.get().getId());
+            subServiceDao.save(newSubService);
         } else
             throw new DuplicateSubService();
     }

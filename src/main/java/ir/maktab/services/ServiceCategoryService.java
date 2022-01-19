@@ -33,8 +33,10 @@ public class ServiceCategoryService {
     }
 
     public void updateServiceCategory(ServiceCategoryDto serviceCategoryDto) {
-        if (serviceCategoryDao.findByName(serviceCategoryDto.getName()).isPresent()) {
+        Optional<ServiceCategory> oldServiceCategory = serviceCategoryDao.findByName(serviceCategoryDto.getName());
+        if (oldServiceCategory.isPresent()) {
             ServiceCategory newServiceCategory = modelMapper.map(serviceCategoryDto, ServiceCategory.class);
+            newServiceCategory.setId(oldServiceCategory.get().getId());
             serviceCategoryDao.save(newServiceCategory);
         } else
             throw new ServiceCategoryNotFound();

@@ -112,7 +112,7 @@ public class OfferService {
     }
 
     public void updateOffer(OfferDto offerDto) {
-        Offer offer = modelMapper.map(offerDto,Offer.class);
+        Offer offer = modelMapper.map(offerDto, Offer.class);
         if (controlEdition.isValidToEdit(offer.getOrder().getStatus())) {
             long offerId = findOfferId(offer.getIdentificationCode());
             offer.setId(offerId);
@@ -130,12 +130,10 @@ public class OfferService {
             throw new OfferNotFound();
     }
 
-    public long findOfferId(UUID identificationCode)
-    {
+    public long findOfferId(UUID identificationCode) {
         Offer offer = findOrderByIdentificationCode(identificationCode);
         return offer.getId();
     }
-
 
 
     public Offer findOfferById(long id) {

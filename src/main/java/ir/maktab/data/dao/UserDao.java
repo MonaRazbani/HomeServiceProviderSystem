@@ -1,22 +1,15 @@
 package ir.maktab.data.dao;
 
-import ir.maktab.data.models.entities.SubService;
 import ir.maktab.data.models.entities.roles.User;
-import ir.maktab.data.models.enums.RoleType;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.criteria.Predicate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
 
-    static Specification<User> filterDynamic(String firstName, String lastName, String email, RoleType roleType, SubService subService) {
+   /* static Specification<User> filterDynamic(String firstName, String lastName, String email, RoleType roleType, SubService subService) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (firstName != null) {
@@ -45,5 +38,5 @@ public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExec
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         };
-    }
+    }*/
 }

@@ -31,14 +31,14 @@ public class OrderService {
     private final OrderDao orderDao;
     private final AddressServiceImp addressServiceImp;
     private final CustomerServiceImp customerServiceImp;
-    private final ExpertService expertService;
+    private final ExpertServiceImp expertService;
     private final SubServiceDao subServiceDao;
     private final ModelMapper modelMapper;
 
     @Autowired
     public OrderService(ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition,
                         OrderDao orderDao, AddressServiceImp addressServiceImp, CustomerServiceImp customerServiceImp,
-                        ExpertService expertService, SubServiceDao subServiceDao) {
+                        ExpertServiceImp expertService, SubServiceDao subServiceDao) {
         this.controlInput = controlInput;
         this.modelMapper = modelMapper;
         this.controlEdition = controlEdition;

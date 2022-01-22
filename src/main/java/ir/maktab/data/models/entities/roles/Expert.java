@@ -18,8 +18,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class Expert extends User implements Comparable<Expert> {
     @Lob
-    @Column(name = "photo", columnDefinition = "BLOB")
-    private byte[] photo;
+    @Column(name = "profilePhoto", columnDefinition = "BLOB")
+    private byte[] profilePhoto;
 
     private float rate;
 

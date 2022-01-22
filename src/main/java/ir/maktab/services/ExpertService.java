@@ -1,118 +1,24 @@
 package ir.maktab.services;
 
-import ir.maktab.data.dao.ExpertDao;
+import ir.maktab.data.models.entities.roles.Expert;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
-import ir.maktab.exceptions.DuplicateEmail;
-import ir.maktab.exceptions.ExpertNotFound;
-import ir.maktab.exceptions.InvalidPassword;
-import ir.maktab.exceptions.WrongPassword;
-import ir.maktab.data.models.entities.SubService;
-import ir.maktab.data.models.entities.roles.Expert;
-import ir.maktab.validation.ControlEdition;
-import ir.maktab.validation.ControlInput;
-import lombok.Data;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
+public interface ExpertService {
+    ExpertDto saveExpert(ExpertDto expertDto, CommonsMultipartFile profilePhoto);
 
+    ExpertDto updateExpert(ExpertDto expertDto);
 
-@Service
-@Data
-public class ExpertService {
-    private final ExpertDao expertDao;
-    private final ControlInput controlInput;
-    private final ModelMapper modelMapper;
-    private final ControlEdition controlEdition;
-    private final SubServiceService subServiceService;
+    Expert findExpertByEmail(String email);
 
-    @Autowired
-    public ExpertService(ExpertDao expertDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition, SubServiceService subServiceService) {
-        this.expertDao = expertDao;
-        this.controlInput = controlInput;
-        this.modelMapper = modelMapper;
-        this.controlEdition = controlEdition;
-        this.subServiceService = subServiceService;
-    }
+    long findExpertId(String email);
 
-    public Expert saveExpert(ExpertDto expertDto) {
+    void changePasswordForExpert(ExpertDto expertDto, String currentPassword, String newPassword);
 
-        if (controlInput.isValidExpertDtoInfo(expertDto)) {
-            if (expertDao.findByEmail(expertDto.getEmail()).isEmpty()) {
+    void addSubServiceToExpertSubServices(ExpertDto expertDto, SubServiceDto subServiceDto);
 
-                Expert expert = modelMapper.map(expertDto, Expert.class);
-                expert.setIdentificationCode(UUID.randomUUID());
-                return expertDao.save(expert);
-
-            } else
-                throw new DuplicateEmail();
-        } else
-            throw new RuntimeException("sing up fail");
-    }
-
-    public Expert findExpertByEmail(String email) {
-        if (controlInput.isValidEmail(email)) {
-            Optional<Expert> expert = expertDao.findByEmail(email);
-            if (expert.isPresent()) {
-                return expert.get();
-            } else throw new ExpertNotFound();
-        } else
-            throw new RuntimeException("searching fail ");
-    }
-
-    public void changePasswordForExpert(ExpertDto expertDto, String currentPassword, String newPassword) {
-        Expert expert = findExpertByEmail(expertDto.getEmail());
-        if (controlInput.isValidPassword(newPassword)) {
-            if (expert.getPassword().equals(currentPassword)) {
-                expert.setPassword(newPassword);
-                expertDao.save(expert);
-                System.out.println("done");
-            } else
-                throw new WrongPassword();
-        } else
-            throw new InvalidPassword();
-    }
-
-    public byte[] initializePhoto(File file) {
-        byte[] imageData = new byte[(int) file.length()];
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            fileInputStream.read(imageData);
-            fileInputStream.close();
-
-        } catch (IOException e) {
-            e.getMessage();
-        }
-        return imageData;
-    }
-
-    public void addSubServiceToExpertSubServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
-        Expert expert = findExpertByEmail(expertDto.getEmail());
-        if (expert != null) {
-            SubService subService = subServiceService.findByName(subServiceDto.getName());
-            expert.getSubServices().add(subService);
-            expertDao.save(expert);
-        }
-        throw new RuntimeException("add subService Fail");
-    }
-
-    public void deleteServiceFromExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
-        Expert expert = findExpertByEmail(expertDto.getEmail());
-        if (expert != null) {
-            SubService subServiceFound = subServiceService.findByName(subServiceDto.getName());
-
-            expert.getSubServices().remove(subServiceFound);
-            expertDao.save(expert);
-        }
-        throw new RuntimeException("delete subService Fail");
-    }
+    void deleteServiceFromExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto);
 
 
 }
-

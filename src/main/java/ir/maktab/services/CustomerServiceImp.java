@@ -12,25 +12,22 @@ import ir.maktab.data.models.entities.roles.Customer;
 import ir.maktab.data.models.enums.RoleType;
 import ir.maktab.data.models.enums.UserStatus;
 import ir.maktab.validation.ControlInput;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerServiceImp implements CustomerService {
     private final CustomerDao customerDao;
     private final ControlInput controlInput;
     private final ModelMapper modelMapper;
 
-    @Autowired
-    public CustomerServiceImp(CustomerDao customerDao, ControlInput controlInput, ModelMapper modelMapper) {
-        this.customerDao = customerDao;
-        this.controlInput = controlInput;
-        this.modelMapper = modelMapper;
-    }
 
     @Override
     public CustomerDto saveCustomer(CustomerDto customerDto) {

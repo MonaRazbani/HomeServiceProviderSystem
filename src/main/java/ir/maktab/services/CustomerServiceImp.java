@@ -58,7 +58,7 @@ public class CustomerServiceImp implements CustomerService {
     @Override
     public CustomerDto loginCustomer(CustomerDto customerDto) {
         Customer customer = modelMapper.map(customerDto, Customer.class);
-        Optional<Customer> found = customerDao.findByEmailAndPassword(customer);
+        Optional<Customer> found = customerDao.findByEmailAndPassword(customer.getEmail(),customer.getPassword());
         if (found.isPresent()){
             return modelMapper.map(found,CustomerDto.class);
         }else

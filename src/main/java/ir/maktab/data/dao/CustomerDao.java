@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface CustomerDao extends JpaRepository<Customer,Long> {
     Optional<Customer> findByEmail (String email);
     Optional<Customer> findByIdentificationCode(UUID identificationCode);
-    Optional<Customer> findByEmailAndPassword(Customer customer);
+    Optional<Customer> findByEmailAndPassword(String email, String password);
 
     }
 

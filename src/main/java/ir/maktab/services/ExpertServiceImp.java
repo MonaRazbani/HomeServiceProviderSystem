@@ -25,7 +25,7 @@ public class ExpertServiceImp implements ExpertService {
     private final ControlInput controlInput;
     private final ModelMapper modelMapper;
     private final ControlEdition controlEdition;
-    private final SubServiceService subServiceService;
+    private final SubServiceServiceImp subServiceServiceImp;
 
     @Override
     public ExpertDto saveExpert(ExpertDto expertDto,CommonsMultipartFile profilePhoto) {
@@ -84,7 +84,7 @@ public class ExpertServiceImp implements ExpertService {
     public void addSubServiceToExpertSubServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
         if (expert != null) {
-            SubService subService = subServiceService.findByName(subServiceDto.getName());
+            SubService subService = subServiceServiceImp.findByName(subServiceDto.getName());
             expert.getSubServices().add(subService);
             expertDao.save(expert);
         }
@@ -95,7 +95,7 @@ public class ExpertServiceImp implements ExpertService {
     public void deleteServiceFromExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
         if (expert != null) {
-            SubService subServiceFound = subServiceService.findByName(subServiceDto.getName());
+            SubService subServiceFound = subServiceServiceImp.findByName(subServiceDto.getName());
             expert.getSubServices().remove(subServiceFound);
             expertDao.save(expert);
         }

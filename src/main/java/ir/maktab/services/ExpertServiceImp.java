@@ -28,16 +28,26 @@ public class ExpertServiceImp implements ExpertService {
     private final SubServiceServiceImp subServiceServiceImp;
 
     @Override
-    public ExpertDto saveExpert(ExpertDto expertDto,CommonsMultipartFile profilePhoto) {
+    public ExpertDto saveExpert(ExpertDto expertDto, CommonsMultipartFile profilePhoto) {
 
-            if (expertDao.findByEmail(expertDto.getEmail()).isEmpty()) {
-                Expert expert = modelMapper.map(expertDto, Expert.class);
-                expert.setProfilePhoto(profilePhoto.getBytes());
-                Expert save = expertDao.save(expert);
-                return modelMapper.map(save,ExpertDto.class);
+        if (expertDao.findByEmail(expertDto.getEmail()).isEmpty()) {
+            Expert expert = modelMapper.map(expertDto, Expert.class);
+            expert.setProfilePhoto(profilePhoto.getBytes());
+            Expert save = expertDao.save(expert);
+            return modelMapper.map(save, ExpertDto.class);
 
-            } else
-                throw new DuplicateEmail();
+        } else
+            throw new DuplicateEmail();
+    }
+
+    @Override
+    public ExpertDto loginExpert(ExpertDto expertDto) {
+        Expert expert = modelMapper.map(expertDto, Expert.class);
+        Optional<Expert> found = expertDao.findByEmailAndPassword(expert.getEmail(), expert.getPassword());
+        if (found.isPresent()) {
+            return modelMapper.map(found, ExpertDto.class);
+        } else
+            throw new ExpertNotFound();
     }
 
 
@@ -64,14 +74,14 @@ public class ExpertServiceImp implements ExpertService {
     @Override
     public void changePasswordForExpert(ExpertDto expertDto, String currentPassword, String newPassword) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
-            if (expert.getPassword().equals(currentPassword)) {
-                long expertId = findExpertId(expert.getEmail());
-                expert.setId(expertId);
-                expert.setPassword(newPassword);
-                expertDao.save(expert);
-                System.out.println("done");
-            } else
-                throw new WrongPassword();
+        if (expert.getPassword().equals(currentPassword)) {
+            long expertId = findExpertId(expert.getEmail());
+            expert.setId(expertId);
+            expert.setPassword(newPassword);
+            expertDao.save(expert);
+            System.out.println("done");
+        } else
+            throw new WrongPassword();
     }
 
     @Override
@@ -101,8 +111,6 @@ public class ExpertServiceImp implements ExpertService {
         }
         throw new RuntimeException("delete subService Fail");
     }
-
-
 
 
 }

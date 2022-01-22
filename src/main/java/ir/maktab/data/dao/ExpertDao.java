@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface ExpertDao extends PagingAndSortingRepository<Expert,Long> {
    Optional<Expert> findByEmail(String email);
-
+Optional<Expert> findByEmailAndPassword(String email, String password);
 }

@@ -62,7 +62,7 @@ public class CustomerServiceImp implements CustomerService {
         if (found.isPresent()){
             return modelMapper.map(found,CustomerDto.class);
         }else
-            throw new CommentNotFound();
+            throw new CustomerNotFound();
     }
 
     @Override

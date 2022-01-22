@@ -1,0 +1,101 @@
+package ir.maktab.services;
+
+import ir.maktab.data.dao.CustomerDao;
+import ir.maktab.data.models.entities.Address;
+import ir.maktab.dto.modelDtos.AddressDto;
+import ir.maktab.dto.modelDtos.roles.CustomerDto;
+import ir.maktab.exceptions.CommentNotFound;
+import ir.maktab.exceptions.CustomerNotFound;
+import ir.maktab.exceptions.DuplicateEmail;
+import ir.maktab.exceptions.WrongPassword;
+import ir.maktab.data.models.entities.roles.Customer;
+import ir.maktab.data.models.enums.RoleType;
+import ir.maktab.data.models.enums.UserStatus;
+import ir.maktab.validation.ControlInput;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class CustomerServiceImp implements CustomerService {
+    private final CustomerDao customerDao;
+    private final ControlInput controlInput;
+    private final ModelMapper modelMapper;
+
+    @Autowired
+    public CustomerServiceImp(CustomerDao customerDao, ControlInput controlInput, ModelMapper modelMapper) {
+        this.customerDao = customerDao;
+        this.controlInput = controlInput;
+        this.modelMapper = modelMapper;
+    }
+
+    @Override
+    public CustomerDto saveCustomer(CustomerDto customerDto) {
+        if (controlInput.isValidCustomerDtoInfo(customerDto)) {
+
+            if (customerDao.findByEmail(customerDto.getEmail()).isEmpty()) {
+                Customer customer = modelMapper.map(customerDto, Customer.class);
+                customer.setRoleType(RoleType.CUSTOMER);
+                customer.setStatus(UserStatus.NEW);
+                Customer save = customerDao.save(customer);
+                return modelMapper.map(save, CustomerDto.class);
+            } else
+                throw new DuplicateEmail();
+        } else
+            throw new RuntimeException("signup Fail");
+    }
+
+    @Override
+    public CustomerDto updateCustomer(CustomerDto customerDto) {
+        Customer customer = modelMapper.map(customerDto, Customer.class);
+        long customerId = findCustomerId(customerDto.getEmail());
+        customer.setId(customerId);
+        Customer save = customerDao.save(customer);
+        return modelMapper.map(save, CustomerDto.class);
+
+    }
+
+    @Override
+    public CustomerDto loginCustomer(CustomerDto customerDto) {
+        Customer customer = modelMapper.map(customerDto, Customer.class);
+        Optional<Customer> found = customerDao.findByEmailAndPassword(customer);
+        if (found.isPresent()){
+            return modelMapper.map(found,CustomerDto.class);
+        }else
+            throw new CommentNotFound();
+    }
+
+    @Override
+    public Customer findCustomerByEmail(String email) {
+        if (controlInput.isValidEmail(email)) {
+            Optional<Customer> customer = customerDao.findByEmail(email);
+            if (customer.isPresent()) {
+                return customer.get();
+            } else throw new CustomerNotFound();
+        } else
+            throw new RuntimeException("searching fail ");
+    }
+
+    @Override
+    public void changePasswordForCustomer(CustomerDto customerDto, String currentPassword, String newPassword) {
+        if (controlInput.isValidPassword(newPassword)) {
+            Customer customer = findCustomerByEmail(customerDto.getEmail());
+            if (customer.getPassword().equals(currentPassword)) {
+                customer.setPassword(newPassword);
+                customerDao.save(customer);
+                System.out.println("done");
+            } else
+                throw new WrongPassword();
+        }
+    }
+
+    @Override
+    public long findCustomerId(String email){
+        Customer customer = findCustomerByEmail(email);
+        return customer.getId();
+    }
+
+}

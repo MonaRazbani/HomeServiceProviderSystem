@@ -1,7 +1,7 @@
 package ir.maktab.validation;
 
 import ir.maktab.exceptions.EditionDenied;
-import ir.maktab.models.enums.OrderStatus;
+import ir.maktab.data.models.enums.OrderStatus;
 import org.springframework.stereotype.Component;
 
 @Component

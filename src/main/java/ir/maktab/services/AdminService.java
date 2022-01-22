@@ -1,12 +1,12 @@
 package ir.maktab.services;
 
-import ir.maktab.dao.AdminDao;
-import ir.maktab.dao.UserDao;
+import ir.maktab.data.dao.AdminDao;
+import ir.maktab.data.dao.UserDao;
 import ir.maktab.dto.modelDtos.AdminDto;
-import ir.maktab.models.entities.Admin;
-import ir.maktab.models.entities.SubService;
-import ir.maktab.models.entities.roles.User;
-import ir.maktab.models.enums.RoleType;
+import ir.maktab.data.models.entities.Admin;
+import ir.maktab.data.models.entities.SubService;
+import ir.maktab.data.models.entities.roles.User;
+import ir.maktab.data.models.enums.RoleType;
 import ir.maktab.validation.ControlInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

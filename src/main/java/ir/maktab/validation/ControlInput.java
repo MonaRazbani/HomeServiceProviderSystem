@@ -3,7 +3,7 @@ package ir.maktab.validation;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.*;
-import ir.maktab.models.entities.SubService;
+import ir.maktab.data.models.entities.SubService;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -62,9 +62,9 @@ public class ControlInput {
     public boolean isValidExpertDtoInfo(ExpertDto expertDto) {
         return isValidName(expertDto.getFirstName())
                 && isValidName(expertDto.getLastName())
-                && isValidEmail(expertDto.getEmail())
-                && isValidPhoto(file)
-                && isValidPassword(password);
+                && isValidEmail(expertDto.getEmail());
+//                && isValidPhoto(file)
+//                && isValidPassword(password);
     }
 }
 

@@ -1,10 +1,10 @@
 package ir.maktab.services;
 
-import ir.maktab.dao.ServiceCategoryDao;
+import ir.maktab.data.dao.ServiceCategoryDao;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
 import ir.maktab.exceptions.DuplicateServiceCategory;
 import ir.maktab.exceptions.ServiceCategoryNotFound;
-import ir.maktab.models.entities.ServiceCategory;
+import ir.maktab.data.models.entities.ServiceCategory;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

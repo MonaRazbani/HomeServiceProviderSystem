@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ir.maktab.models.enums.OrderStatus;
+import ir.maktab.data.models.enums.OrderStatus;
 
 import javax.persistence.Column;
 import java.util.Date;

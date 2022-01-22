@@ -1,14 +1,14 @@
 package ir.maktab.services;
 
-import ir.maktab.dao.OfferDao;
+import ir.maktab.data.dao.OfferDao;
 import ir.maktab.dto.modelDtos.OfferDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.exceptions.EditionDenied;
 import ir.maktab.exceptions.OfferNotFound;
-import ir.maktab.models.entities.Offer;
-import ir.maktab.models.entities.Order;
-import ir.maktab.models.enums.OfferStatus;
-import ir.maktab.models.enums.OrderStatus;
+import ir.maktab.data.models.entities.Offer;
+import ir.maktab.data.models.entities.Order;
+import ir.maktab.data.models.enums.OfferStatus;
+import ir.maktab.data.models.enums.OrderStatus;
 import ir.maktab.validation.ControlEdition;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

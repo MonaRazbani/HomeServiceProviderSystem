@@ -1,14 +1,14 @@
 package ir.maktab.services;
 
-import ir.maktab.dao.ExpertDao;
+import ir.maktab.data.dao.ExpertDao;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.DuplicateEmail;
 import ir.maktab.exceptions.ExpertNotFound;
 import ir.maktab.exceptions.InvalidPassword;
 import ir.maktab.exceptions.WrongPassword;
-import ir.maktab.models.entities.SubService;
-import ir.maktab.models.entities.roles.Expert;
+import ir.maktab.data.models.entities.SubService;
+import ir.maktab.data.models.entities.roles.Expert;
 import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
 import lombok.Data;
@@ -41,14 +41,14 @@ public class ExpertService {
         this.subServiceService = subServiceService;
     }
 
-    public void saveExpert(ExpertDto expertDto) {
+    public Expert saveExpert(ExpertDto expertDto) {
 
         if (controlInput.isValidExpertDtoInfo(expertDto)) {
             if (expertDao.findByEmail(expertDto.getEmail()).isEmpty()) {
 
                 Expert expert = modelMapper.map(expertDto, Expert.class);
                 expert.setIdentificationCode(UUID.randomUUID());
-                expertDao.save(expert);
+                return expertDao.save(expert);
 
             } else
                 throw new DuplicateEmail();

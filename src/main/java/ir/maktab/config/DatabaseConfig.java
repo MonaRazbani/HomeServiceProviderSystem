@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.ir.maktab.util.Properties;
-@EnableJpaRepositories(basePackages = "ir.maktab.data.ir.maktab.dao" )//enable spring data Jpa & path ir.maktab.dao package
+@EnableJpaRepositories(basePackages = "ir.maktab.data.ir.maktab.data.dao" )//enable spring data Jpa & path ir.maktab.data.dao package
 @PropertySource("classpath:database.properties")
 @Configuration
 @EnableTransactionManagement // for managing transactions by ioc container
@@ -88,7 +88,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-@EnableJpaRepositories(basePackages = "ir.maktab.dao")
+@EnableJpaRepositories(basePackages = "ir.maktab.data.dao")
 @PropertySource("classpath:database.properties")
 @Configuration
 @EnableTransactionManagement
@@ -112,7 +112,7 @@ public class DatabaseConfig {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        entityManagerFactoryBean.setPackagesToScan("ir.maktab.models");
+        entityManagerFactoryBean.setPackagesToScan("ir.maktab.model");
 
         entityManagerFactoryBean.setJpaProperties(hibernateProperties());
 

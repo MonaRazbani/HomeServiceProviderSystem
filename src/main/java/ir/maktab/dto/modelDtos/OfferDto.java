@@ -1,13 +1,12 @@
 package ir.maktab.dto.modelDtos;
 
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
-import ir.maktab.models.enums.OfferStatus;
+import ir.maktab.data.models.enums.OfferStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.util.Date;
 import java.util.UUID;
 

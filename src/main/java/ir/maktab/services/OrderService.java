@@ -1,7 +1,7 @@
 package ir.maktab.services;
 
-import ir.maktab.dao.OrderDao;
-import ir.maktab.dao.SubServiceDao;
+import ir.maktab.data.dao.OrderDao;
+import ir.maktab.data.dao.SubServiceDao;
 import ir.maktab.dto.modelDtos.AddressDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
@@ -10,10 +10,10 @@ import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.EditionDenied;
 import ir.maktab.exceptions.InvalidSuggestedPrice;
 import ir.maktab.exceptions.OrderNotFound;
-import ir.maktab.models.entities.Order;
-import ir.maktab.models.entities.roles.Customer;
-import ir.maktab.models.entities.roles.Expert;
-import ir.maktab.models.enums.OrderStatus;
+import ir.maktab.data.models.entities.Order;
+import ir.maktab.data.models.entities.roles.Customer;
+import ir.maktab.data.models.entities.roles.Expert;
+import ir.maktab.data.models.enums.OrderStatus;
 import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
 import org.modelmapper.ModelMapper;
@@ -29,22 +29,22 @@ public class OrderService {
     private final ControlInput controlInput;
     private final ControlEdition controlEdition;
     private final OrderDao orderDao;
-    private final AddressService addressService;
-    private final CustomerService customerService;
+    private final AddressServiceImp addressServiceImp;
+    private final CustomerServiceImp customerServiceImp;
     private final ExpertService expertService;
     private final SubServiceDao subServiceDao;
     private final ModelMapper modelMapper;
 
     @Autowired
     public OrderService(ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition,
-                        OrderDao orderDao, AddressService addressService, CustomerService customerService,
+                        OrderDao orderDao, AddressServiceImp addressServiceImp, CustomerServiceImp customerServiceImp,
                         ExpertService expertService, SubServiceDao subServiceDao) {
         this.controlInput = controlInput;
         this.modelMapper = modelMapper;
         this.controlEdition = controlEdition;
         this.orderDao = orderDao;
-        this.addressService = addressService;
-        this.customerService = customerService;
+        this.addressServiceImp = addressServiceImp;
+        this.customerServiceImp = customerServiceImp;
         this.expertService = expertService;
         this.subServiceDao = subServiceDao;
     }
@@ -69,7 +69,7 @@ public class OrderService {
         if (controlEdition.isValidToEdit(orderDto.getStatus())) {
 
             newAddressDto.setIdentificationCode(orderDto.getAddress().getIdentificationCode());
-            addressService.updateAddress(newAddressDto);
+            addressServiceImp.updateAddress(newAddressDto);
 
         } else
             throw new RuntimeException("edit Order Address Fail");
@@ -99,7 +99,7 @@ public class OrderService {
 
     public List<Order> findOrderByCustomerAndStatus(CustomerDto customerDto, OrderStatus status) {
 
-        Customer customer = customerService.findCustomerByEmail(customerDto.getEmail());
+        Customer customer = customerServiceImp.findCustomerByEmail(customerDto.getEmail());
         List<Order> orders = orderDao.findByCustomerAndStatus(customer, status);
         if (!orders.isEmpty())
             return orders;

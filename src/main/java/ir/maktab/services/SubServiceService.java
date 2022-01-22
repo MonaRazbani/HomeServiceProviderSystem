@@ -1,11 +1,11 @@
 package ir.maktab.services;
 
-import ir.maktab.dao.SubServiceDao;
+import ir.maktab.data.dao.SubServiceDao;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.exceptions.DuplicateSubService;
 import ir.maktab.exceptions.NoCategoryServiceForService;
 import ir.maktab.exceptions.SubServiceNotFound;
-import ir.maktab.models.entities.SubService;
+import ir.maktab.data.models.entities.SubService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -20,7 +20,8 @@
         <div class="row">
             <div class="col-6-sm">
                 <form:form cssClass="p-1 my-5 mx-5" cssStyle="position: absolute" modelAttribute="expertDto"
-                           enctype="multipart/form-data" action="signup" method="post">
+                           enctype="multipart/form-data" action="submitSignup" method="post">
+                    <p class="text-danger">${error}</p>
                 <table class="table table-bordered table-striped text-dark">
                     <tr>
                         <td>

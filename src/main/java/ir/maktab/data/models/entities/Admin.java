@@ -11,9 +11,10 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id ;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username ;
 
+    @Column(nullable = false)
     private String password ;
 
 }

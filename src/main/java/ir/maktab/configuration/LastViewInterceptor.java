@@ -1,4 +1,4 @@
-package ir.maktab.config;
+package ir.maktab.configuration;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public class LastViewInterceptor implements HandlerInterceptor {
+public class LastViewInterceptor /*extends HandlerInterceptorAdapter*/ implements HandlerInterceptor {
 
     public static final String LAST_VIEW_ATTRIBUTE = LastViewInterceptor.class.getName() + ".lastView";
 
@@ -17,5 +17,6 @@ public class LastViewInterceptor implements HandlerInterceptor {
             HttpSession session = request.getSession(true);
             session.setAttribute(LAST_VIEW_ATTRIBUTE, modelAndView.getViewName());
         }
+//        super.postHandle(request, response, handler, modelAndView);
     }
 }

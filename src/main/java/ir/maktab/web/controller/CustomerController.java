@@ -1,6 +1,6 @@
 package ir.maktab.web.controller;
 
-import ir.maktab.config.LastViewInterceptor;
+import ir.maktab.configuration.LastViewInterceptor;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.exceptions.CustomerNotFound;
@@ -27,30 +27,29 @@ import java.util.Map;
 public class CustomerController {
     private final CustomerService customerService;
 
-
     @GetMapping(value = "/signup")
     public ModelAndView showSignupPage() {
-        return new ModelAndView("/customer/signup", "customerDto", new CustomerDto());
+        return new ModelAndView("customer/signup", "customerDto", new CustomerDto());
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/submitSignup")
     public String registerCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerSignup.class) CustomerDto customerDto, Model model) {
 
         customerService.saveCustomer(customerDto);
         model.addAttribute("orderDto", new OrderDto());
-        return "/customer/dashboard";
+        return "customer/dashboard";
     }
 
     @GetMapping("/login")
     public ModelAndView showLoginPage() {
-        return new ModelAndView("/customer/login", "customerDto", new CustomerDto());
+        return new ModelAndView("customer/login", "customerDto", new CustomerDto());
     }
 
-    @PostMapping("/login")
+    @PostMapping("/submitLogin")
     public String loginCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerLogin.class) CustomerDto customerDto,
                                 Model model) {
         customerService.loginCustomer(customerDto);
-        return "/customer/dashboard";
+        return "customer/dashboard";
     }
 
 
@@ -70,13 +69,13 @@ public class CustomerController {
         Map<String, Object> model = new HashMap<>();
         model.put("customerDto", new CustomerDto());
         model.put("error", ex.getMessage());
-        return new ModelAndView("/customer/login", model);
+        return new ModelAndView("customer/login", model);
     }
     @ExceptionHandler(value = DuplicateEmail.class)
     public ModelAndView signupExceptionHandler(DuplicateEmail ex) {
         Map<String, Object> model = new HashMap<>();
         model.put("customerDto", new CustomerDto());
         model.put("error", ex.getMessage());
-        return new ModelAndView("/customer/signup", model);
+        return new ModelAndView("customer/signup", model);
     }
 }

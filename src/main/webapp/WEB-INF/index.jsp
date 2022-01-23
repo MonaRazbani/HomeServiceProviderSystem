@@ -1,18 +1,9 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: Asus
-  Date: 1/23/2022
-  Time: 9:09 PM
-  To change this template use File | Settings | File Templates.
---%>
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <!doctype html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
@@ -64,14 +55,16 @@
             <div class="col-sm-6">
                 <div class="col-sm-12"style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" >
                     <h1>Home Service Provider</h1>
-                    <button type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg ">log in as customer</button>
-                    <button type="button" class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as expert </button>
+                    <a href="/customer/signup" type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg ">log in as customer</a>
+                    <a href="/expert/signup" type="button" class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as expert </a>
                     <button type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as admin </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
 </div>
 </body>
 </html>

@@ -1,15 +1,12 @@
 package ir.maktab.web.controller;
 
-import ir.maktab.config.LastViewInterceptor;
+import ir.maktab.configuration.LastViewInterceptor;
 import ir.maktab.dto.modelDtos.OrderDto;
-import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.CustomerNotFound;
 import ir.maktab.exceptions.DuplicateEmail;
 import ir.maktab.exceptions.ExpertNotFound;
 import ir.maktab.services.ExpertService;
-import ir.maktab.services.validation.OnCustomerLogin;
-import ir.maktab.services.validation.OnCustomerSignup;
 import ir.maktab.services.validation.OnExpertLogin;
 import ir.maktab.services.validation.OnExpertSignup;
 import lombok.RequiredArgsConstructor;
@@ -35,27 +32,27 @@ public class ExpertController {
 
     @GetMapping(value = "/signup")
     public ModelAndView showSignupPage() {
-        return new ModelAndView("/expert/signup", "expertDto", new ExpertDto());
+        return new ModelAndView("expert/signup", "expertDto", new ExpertDto());
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/submitSignup")
     public String registerCustomer(@ModelAttribute("expertDto") @Validated(OnExpertSignup.class) ExpertDto expertDto, @RequestParam("image") CommonsMultipartFile image, Model model) {
 
-        expertService.saveExpert(expertDto,image);
+        expertService.saveExpert(expertDto, image);
         model.addAttribute("orderDto", new OrderDto());
-        return "/expert/dashboard";
+        return "expert/dashboard";
     }
 
     @GetMapping("/login")
     public ModelAndView showLoginPage() {
-        return new ModelAndView("/expert/login", "expertDto", new ExpertDto());
+        return new ModelAndView("expert/login", "expertDto", new ExpertDto());
     }
 
-    @PostMapping("/login")
+    @PostMapping("/submitLogin")
     public String loginCustomer(@ModelAttribute("ExpertDto") @Validated(OnExpertLogin.class) ExpertDto expertDto,
                                 Model model) {
         expertService.loginExpert(expertDto);
-        return "/expert/dashboard";
+        return "expert/dashboard";
     }
 
 
@@ -75,13 +72,14 @@ public class ExpertController {
         Map<String, Object> model = new HashMap<>();
         model.put("expertDto", new ExpertDto());
         model.put("error", ex.getMessage());
-        return new ModelAndView("/expert/login", model);
+        return new ModelAndView("expert/login", model);
     }
+
     @ExceptionHandler(value = DuplicateEmail.class)
     public ModelAndView signupExceptionHandler(DuplicateEmail ex) {
         Map<String, Object> model = new HashMap<>();
         model.put("expertDto", new ExpertDto());
         model.put("error", ex.getMessage());
-        return new ModelAndView("/expert/signup", model);
+        return new ModelAndView("expert/signup", model);
     }
 }

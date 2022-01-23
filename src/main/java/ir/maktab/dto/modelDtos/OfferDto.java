@@ -6,7 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,10 +20,20 @@ import java.util.UUID;
 public class OfferDto {
 
     private UUID identificationCode;
+
     private ExpertDto expert ;
+
+    @NotNull
+    @NumberFormat
     private double suggestedPrice ;
+
+    @NotNull
+    @NumberFormat
     private float suggestedDurationOfService ;
+    @DateTimeFormat(pattern = "hh:mm")
+    @NotNull
     private Date startDate ;
+
     private OrderDto order;
     private OfferStatus status;
 }

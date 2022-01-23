@@ -1,10 +1,7 @@
 package ir.maktab.services;
 
 import ir.maktab.data.dao.CustomerDao;
-import ir.maktab.data.models.entities.Address;
-import ir.maktab.dto.modelDtos.AddressDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
-import ir.maktab.exceptions.CommentNotFound;
 import ir.maktab.exceptions.CustomerNotFound;
 import ir.maktab.exceptions.DuplicateEmail;
 import ir.maktab.exceptions.WrongPassword;
@@ -16,10 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

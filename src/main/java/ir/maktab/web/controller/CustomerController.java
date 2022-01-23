@@ -1,46 +1,82 @@
 package ir.maktab.web.controller;
 
+import ir.maktab.config.LastViewInterceptor;
+import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
+import ir.maktab.exceptions.CustomerNotFound;
 import ir.maktab.exceptions.DuplicateEmail;
-import ir.maktab.services.CustomerServiceImp;
-import org.springframework.beans.factory.annotation.Autowired;
+import ir.maktab.services.CustomerService;
+import ir.maktab.services.validation.OnCustomerLogin;
+import ir.maktab.services.validation.OnCustomerSignup;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.BindException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
-@RequestMapping(value = "/customer")
+@RequiredArgsConstructor
+@RequestMapping("/customer")
+
 public class CustomerController {
-
-    @Autowired
-    private CustomerServiceImp customerServiceImp;
+    private final CustomerService customerService;
 
 
-    @GetMapping(value = "/signUp")
-    public ModelAndView showRegisterPage() {
-        ModelAndView signUp = new ModelAndView("signUp");
-        signUp.addObject("customerDto", new CustomerDto());
-        return signUp;
+    @GetMapping(value = "/signup")
+    public ModelAndView showSignupPage() {
+        return new ModelAndView("/customer/signup", "customerDto", new CustomerDto());
     }
 
-    @RequestMapping(value = "/signUpProcess" ,method = RequestMethod.POST)
-    public String saveCustomer(@Valid @ModelAttribute("customerDto") CustomerDto customerDto, BindingResult bindingResult, Model signUp) {
-        try {
-            if (!bindingResult.hasErrors()) {
-                signUp.addAttribute("customerDto", customerDto);
-                customerServiceImp.saveCustomer(customerDto);
-                return "dashboard";
-            } else
-                return "customerSignUp";
-        } catch (DuplicateEmail duplicateEmail) {
+    @PostMapping("/signup")
+    public String registerCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerSignup.class) CustomerDto customerDto, Model model) {
 
-            signUp.addAttribute("message", duplicateEmail.getMessage());
-            return "customerSignUp";
+        customerService.saveCustomer(customerDto);
+        model.addAttribute("orderDto", new OrderDto());
+        return "/customer/dashboard";
+    }
 
-        }
+    @GetMapping("/login")
+    public ModelAndView showLoginPage() {
+        return new ModelAndView("/customer/login", "customerDto", new CustomerDto());
+    }
+
+    @PostMapping("/login")
+    public String loginCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerLogin.class) CustomerDto customerDto,
+                                Model model) {
+        customerService.loginCustomer(customerDto);
+        return "/customer/dashboard";
+    }
+
+
+    @GetMapping("/dashboard")
+    public ModelAndView showDashboard() {
+        return null;
+    }
+
+    @ExceptionHandler(value = BindException.class)
+    public ModelAndView bindExceptionHandler(BindException ex, HttpServletRequest request) {
+        String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);
+        return new ModelAndView(lastView, ex.getBindingResult().getModel());
+    }
+
+    @ExceptionHandler(value = CustomerNotFound.class)
+    public ModelAndView loginExceptionHandler(CustomerNotFound ex) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("customerDto", new CustomerDto());
+        model.put("error", ex.getMessage());
+        return new ModelAndView("/customer/login", model);
+    }
+    @ExceptionHandler(value = DuplicateEmail.class)
+    public ModelAndView signupExceptionHandler(DuplicateEmail ex) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("customerDto", new CustomerDto());
+        model.put("error", ex.getMessage());
+        return new ModelAndView("/customer/signup", model);
     }
 }

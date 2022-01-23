@@ -4,6 +4,7 @@ import ir.maktab.data.dao.AddressDao;
 import ir.maktab.data.models.entities.Address;
 import ir.maktab.dto.modelDtos.AddressDto;
 import ir.maktab.exceptions.AddressNotFound;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,16 +13,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-
+@RequiredArgsConstructor
 public class AddressServiceImp implements AddressService {
     private final AddressDao addressDao;
     private final ModelMapper modelMapper;
 
-    @Autowired
-    public AddressServiceImp(AddressDao addressDao, ModelMapper modelMapper) {
-        this.addressDao = addressDao;
-        this.modelMapper = modelMapper;
-    }
+
 
     @Override
     public AddressDto saveAddress(AddressDto addressDto) {

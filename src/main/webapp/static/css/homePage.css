@@ -1,0 +1,39 @@
+html,body{
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin:0 ;
+  }
+  * {
+    box-sizing: border-box;
+
+  }
+
+.container {
+    
+    position: relative;
+
+  }
+  
+  .centered {
+    line-height: 25px;
+    position: absolute;
+    top: 30%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    padding-top: 15px;
+    padding-bottom: 15px;
+
+   
+  }
+  .forHeader{
+    line-height: 25px;
+    position: absolute;
+    top: 30%;
+    left: 5%;
+    transform: translate(-50%, -50%);
+    padding-top: 15px;
+    padding-bottom: 15px;
+
+   
+  }

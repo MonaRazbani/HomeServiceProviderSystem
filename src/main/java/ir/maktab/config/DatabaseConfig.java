@@ -112,7 +112,7 @@ public class DatabaseConfig {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        entityManagerFactoryBean.setPackagesToScan("ir.maktab.model");
+        entityManagerFactoryBean.setPackagesToScan("ir.maktab.data.models");
 
         entityManagerFactoryBean.setJpaProperties(hibernateProperties());
 

@@ -10,8 +10,8 @@ import ir.maktab.data.models.entities.Order;
 import ir.maktab.data.models.enums.OfferStatus;
 import ir.maktab.data.models.enums.OrderStatus;
 import ir.maktab.validation.ControlEdition;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -19,13 +19,23 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
+
 public class OfferServiceImp implements OfferService{
     private final OrderServiceImp orderServiceImp;
     private final ExpertServiceImp expertService;
     private final OfferDao offerDao;
     private final ModelMapper modelMapper;
     private final ControlEdition controlEdition;
+
+    @Autowired
+    public OfferServiceImp(OrderServiceImp orderServiceImp, ExpertServiceImp expertService, OfferDao offerDao, ModelMapper modelMapper,
+                           ControlEdition controlEdition) {
+        this.orderServiceImp = orderServiceImp;
+        this.expertService = expertService;
+        this.offerDao = offerDao;
+        this.modelMapper = modelMapper;
+        this.controlEdition = controlEdition;
+    }
 
 
     @Override

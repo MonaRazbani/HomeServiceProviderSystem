@@ -8,27 +8,20 @@ import ir.maktab.exceptions.EditionDenied;
 import ir.maktab.exceptions.InvalidRate;
 import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CommentServiceImp implements CommentService {
     private final CommentDao commentDao;
     private final ControlInput controlInput;
     private final ModelMapper modelMapper;
     private final ControlEdition controlEdition;
-
-    @Autowired
-    public CommentServiceImp(CommentDao commentDao, ControlInput controlInput, ModelMapper modelMapper, ControlEdition controlEdition) {
-        this.commentDao = commentDao;
-        this.controlInput = controlInput;
-        this.modelMapper = modelMapper;
-        this.controlEdition = controlEdition;
-    }
 
     @Override
     public void saveComment(CommentDto commentDto) {

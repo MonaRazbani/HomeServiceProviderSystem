@@ -11,7 +11,7 @@
 <div style="position: relative;">
         <div class="row">
             <div class="col-6-sm">
-                <form:form cssClass="p-1 my-5 mx-5" modelAttribute="subService"
+                <form:form cssClass="p-1 my-5 mx-5" modelAttribute="subServiceDto"
                            enctype="multipart/form-data" action="addSubServiceProcess" method="post">
                     <p class="text-danger">${error}</p>
                     <table class="table table-bordered table-striped text-dark">
@@ -58,10 +58,10 @@
                         </tr>
                         <tr>
                             serviceCategory:
-                            <form:select path="serviceCategory">
+                            <form:select path="serviceCategoryName">
 
-                            <c:forEach items="${serviceCategoryDtoAll}" var="serviceCategory">
-                                <form:option value="${serviceCategory.name}" label="${serviceCategory.name}"/>
+                            <c:forEach items="${serviceCategoryNameAll}" var="serviceCategory">
+                                <form:option value="${serviceCategory}" label="${serviceCategory}"/>
                             </c:forEach>
 
                         </form:select>

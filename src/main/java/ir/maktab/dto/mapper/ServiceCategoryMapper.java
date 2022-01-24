@@ -9,9 +9,9 @@ public class ServiceCategoryMapper {
                 .name(serviceCategoryDto.getName())
                 .build();
     }
-    public static ServiceCategory toServiceCategoryDto(ServiceCategory serviceCategory) {
-        return ServiceCategory.builder()
-                .name(serviceCategory.getName())
-                .build();
+    public static ServiceCategoryDto toServiceCategoryDto(ServiceCategory serviceCategory) {
+        ServiceCategoryDto serviceCategoryDto = new ServiceCategoryDto();
+        serviceCategoryDto.setName(serviceCategory.getName());
+        return serviceCategoryDto;
     }
 }

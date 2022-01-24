@@ -30,6 +30,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -76,10 +77,13 @@ public class AdminController {
     }
     @GetMapping(value = "/addSubService")
     public ModelAndView showAddSubServicePage(){
-        List<ServiceCategoryDto> serviceCategoryDtoAll= serviceCategoryService.findAll();
+        List<String> serviceCategoryNameAll= serviceCategoryService.findAll().
+                stream().
+                map(serviceCategoryDto -> serviceCategoryDto.getName()).
+                collect(Collectors.toList());
         Map<String, Object> model = new HashMap<>();
-        model.put("subService", new SubServiceDto());
-        model.put("serviceCategoryDtoAll",serviceCategoryDtoAll);
+        model.put("subServiceDto", new SubServiceDto());
+        model.put("serviceCategoryNameAll",serviceCategoryNameAll);
 
         return new ModelAndView("admin/addSubService",model);
     }

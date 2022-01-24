@@ -1,6 +1,7 @@
 package ir.maktab.services;
 
 import ir.maktab.data.dao.SubServiceDao;
+import ir.maktab.data.models.entities.ServiceCategory;
 import ir.maktab.dto.mapper.SubServiceMapper;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.exceptions.DuplicateSubService;
@@ -21,18 +22,18 @@ import java.util.stream.Collectors;
 public class SubServiceServiceImp implements SubServiceService{
     private final SubServiceDao subServiceDao;
     private final ModelMapper modelMapper;
+    private final ServiceCategoryService serviceCategoryService;
 
     @Override
     public void saveSubService(SubServiceDto subServiceDto) {
         SubService newSubService = SubServiceMapper.toSubService(subServiceDto);
-        Optional<SubService> oldSubService = subServiceDao.findByName(newSubService.getName());
-        if (oldSubService.isEmpty()) {
-            if (newSubService.getServiceCategory() == null)
-                throw new NoCategoryServiceForService();
-            newSubService.setId(oldSubService.get().getId());
-            subServiceDao.save(newSubService);
-        } else
+        ServiceCategory serviceCategory = serviceCategoryService.findByName(newSubService.getServiceCategory().getName());
+        newSubService.setServiceCategory(serviceCategory);
+        Optional<SubService> found = subServiceDao.findByName(newSubService.getName());
+        if (!found.isEmpty()) {
             throw new DuplicateSubService();
+        } else
+            subServiceDao.save(newSubService);
     }
 
     @Override
@@ -59,7 +60,7 @@ public class SubServiceServiceImp implements SubServiceService{
     public List<SubServiceDto> findAll() {
         return subServiceDao.findAll()
                 .stream()
-                .map(subService -> modelMapper.map(subService, SubServiceDto.class))
+                .map(subService -> SubServiceMapper.toSubServiceDto(subService))
                 .collect(Collectors.toList());
     }
 }

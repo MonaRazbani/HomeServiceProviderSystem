@@ -7,7 +7,8 @@ import ir.maktab.dto.modelDtos.roles.UserDto;
 import java.util.List;
 
 public interface AdminService {
-     void saveAdmin(AdminDto adminDto, String password) ;
+
+     void saveAdmin(AdminDto adminDto) ;
 
      AdminDto loginAdmin(AdminDto adminDto) ;
 

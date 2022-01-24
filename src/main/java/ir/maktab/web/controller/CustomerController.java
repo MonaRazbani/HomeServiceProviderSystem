@@ -33,10 +33,10 @@ public class CustomerController {
     }
 
     @PostMapping("/submitSignup")
-    public String registerCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerSignup.class) CustomerDto customerDto, Model model) {
+    public String registerCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerSignup.class) CustomerDto customerDto) {
 
         customerService.saveCustomer(customerDto);
-        model.addAttribute("orderDto", new OrderDto());
+
         return "customer/dashboard";
     }
 
@@ -57,7 +57,6 @@ public class CustomerController {
     public ModelAndView showDashboard() {
         return null;
     }
-
     @ExceptionHandler(value = BindException.class)
     public ModelAndView bindExceptionHandler(BindException ex, HttpServletRequest request) {
         String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);

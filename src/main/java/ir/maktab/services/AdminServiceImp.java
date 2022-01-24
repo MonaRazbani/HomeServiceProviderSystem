@@ -33,19 +33,16 @@ public class AdminServiceImp implements AdminService{
     private final ModelMapper modelMapper;
 
     @Override
-    public void saveAdmin(AdminDto adminDto, String password) {
-        if (controlInput.isValidPassword(password)) {
-            Admin admin = new Admin();
-            admin.setUsername(adminDto.getUsername());
-            admin.setPassword(password);
+    public void saveAdmin(AdminDto adminDto) {
+            Admin admin =modelMapper.map(adminDto ,Admin.class);
             adminDao.save(admin);
-        }
+
     }
 
     @Override
     public AdminDto loginAdmin(AdminDto adminDto) {
         Admin admin = modelMapper.map(adminDto, Admin.class);
-        Optional<Customer> found = adminDao.findByUsernameAndPassword(admin.getUsername(), admin.getPassword());
+        Optional<Admin> found = adminDao.findByUsernameAndPassword(admin.getUsername(), admin.getPassword());
         if (found.isPresent()) {
             return modelMapper.map(found, AdminDto.class);
         } else

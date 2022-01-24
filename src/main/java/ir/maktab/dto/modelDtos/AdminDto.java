@@ -12,6 +12,5 @@ public class AdminDto {
     private String username ;
 
     @NotNull(message = "You can't leave this empty.")
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "Invalid email")
     private String password ;
 }

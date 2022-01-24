@@ -19,8 +19,9 @@
     <div class="box" style="position:absolute">
         <div class="row">
             <div class="col-6-sm">
-                <form:form cssClass="p-1 my-5 mx-5" cssStyle="position: absolute" modelAttribute="expertDto"
+                <form:form cssClass="p-1 my-5 mx-5" modelAttribute="expertDto"
                            enctype="multipart/form-data" action="submitSignup" method="post">
+                    <p class="text-danger">${error}</p>
                     <table class="table table-bordered table-striped text-dark">
                         <tr>
                             <td>
@@ -32,12 +33,15 @@
                         </tr>
                         <tr>
                             <td>
+                            </td>
+                            <td>
                                 <form:errors path="firstName" cssClass="text-danger"/>
                             </td>
                         </tr>
                         <tr>
+
                             <td>
-                                <form:label path="lastName">firstName :</form:label>
+                                <form:label path="lastName">last name :</form:label>
                             </td>
                             <td>
                                 <form:input path="lastName" name="lastName"/>
@@ -50,6 +54,25 @@
                                 <form:errors path="lastName" cssClass="text-danger"/>
                             </td>
                         </tr>
+                        <tr>
+
+                        <tr>
+                            <td>
+                                <form:label path="email">email :</form:label>
+                            </td>
+                            <td>
+                                <form:input path="email" name="email"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                <form:errors path="email" cssClass="text-danger"/>
+                            </td>
+                        </tr>
+                        <tr>
+
                         <tr>
                             <td>
                                 <form:label path="password">password :</form:label>
@@ -66,6 +89,17 @@
                             </td>
                         </tr>
                         <tr>
+
+                        <tr>
+                            <td>
+                                gender:
+                                female <form:checkbox path="gender" value="FEMALE"/>
+                                male<form:checkbox path="gender" value="MALE"/>
+                            </td>
+                        </tr>
+                        <tr>
+
+                        <tr>
                             <td>
                                 <label>Upload Profile Image :</label>
                             </td>
@@ -73,30 +107,28 @@
                                 <input type="file" id="image" name="image">
                             </td>
                         </tr>
+
                         <tr>
-                            <td>
-                                <form:button name="signup">signup</form:button>
+                            <form:button name="submitSignup">submitSignup</form:button>
                             </td>
                         </tr>
                     </table>
                 </form:form>
-
             </div>
         </div>
     </div>
-
 </div>
-</div>
-<script>
-    const imageFile = document.getElementById("image");
 
-    imageFile.onchange = function () {
-        const maxAllowedSize = 300 * 1024;
-        if (this.files[0].size > maxAllowedSize) {
-            alert("Image File is too big!");
-            this.value = "";
+    <script>
+        const imageFile = document.getElementById("image");
+
+        imageFile.onchange = function () {
+            const maxAllowedSize = 300 * 1024;
+            if (this.files[0].size > maxAllowedSize) {
+                alert("Image File is too big!");
+                this.value = "";
+            }
         }
-    }
-</script>
+    </script>
 </body>
 </html>

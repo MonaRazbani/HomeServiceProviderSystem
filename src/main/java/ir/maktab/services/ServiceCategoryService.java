@@ -2,10 +2,8 @@ package ir.maktab.services;
 
 import ir.maktab.data.models.entities.ServiceCategory;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
-import ir.maktab.exceptions.DuplicateServiceCategory;
-import ir.maktab.exceptions.ServiceCategoryNotFound;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface ServiceCategoryService {
 
@@ -14,5 +12,6 @@ public interface ServiceCategoryService {
     void updateServiceCategory(ServiceCategoryDto serviceCategoryDto);
 
     ServiceCategory findByName(String name);
+    List<ServiceCategoryDto> findAll();
 
 }

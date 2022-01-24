@@ -5,7 +5,6 @@
 <html lang="en">
 <head>
 
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/homePage.css">
 </head>
@@ -57,7 +56,7 @@
                     <h1>Home Service Provider</h1>
                     <a href="/customer/signup" type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg ">log in as customer</a>
                     <a href="/expert/signup" type="button" class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as expert </a>
-                    <button type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as admin </button>
+                    <a href="/admin/login" type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as admin </a>
                 </div>
             </div>
         </div>

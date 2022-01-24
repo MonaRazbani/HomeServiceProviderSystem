@@ -3,13 +3,16 @@ package ir.maktab.services;
 import ir.maktab.data.dao.ServiceCategoryDao;
 import ir.maktab.data.models.entities.ServiceCategory;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
+import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.exceptions.DuplicateServiceCategory;
 import ir.maktab.exceptions.ServiceCategoryNotFound;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +47,13 @@ public class ServiceCategoryServiceImp implements ServiceCategoryService {
             return serviceCategory.get();
         } else
             throw new ServiceCategoryNotFound();
+    }
+    @Override
+    public List<ServiceCategoryDto> findAll() {
+        return serviceCategoryDao.findAll()
+                .stream()
+                .map(serviceCategory -> modelMapper.map(serviceCategory,ServiceCategoryDto.class))
+                .collect(Collectors.toList());
     }
 
 }

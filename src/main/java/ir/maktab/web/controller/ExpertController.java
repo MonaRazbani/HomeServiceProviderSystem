@@ -36,11 +36,12 @@ public class ExpertController {
     }
 
     @PostMapping("/submitSignup")
-    public String registerCustomer(@ModelAttribute("expertDto") @Validated(OnExpertSignup.class) ExpertDto expertDto, @RequestParam("image") CommonsMultipartFile image, Model model) {
+    public ModelAndView registerCustomer(@ModelAttribute("expertDto") @Validated(OnExpertSignup.class) ExpertDto expertDto,
+                                   @RequestParam("image") CommonsMultipartFile image,ModelAndView modelAndView) {
 
         expertService.saveExpert(expertDto, image);
-        model.addAttribute("orderDto", new OrderDto());
-        return "expert/dashboard";
+        modelAndView.setViewName("expert/dashboard");
+        return modelAndView;
     }
 
     @GetMapping("/login")
@@ -61,6 +62,7 @@ public class ExpertController {
         return null;
     }
 
+/*
     @ExceptionHandler(value = BindException.class)
     public ModelAndView bindExceptionHandler(BindException ex, HttpServletRequest request) {
         String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);
@@ -68,7 +70,7 @@ public class ExpertController {
     }
 
     @ExceptionHandler(value = ExpertNotFound.class)
-    public ModelAndView loginExceptionHandler(CustomerNotFound ex) {
+    public ModelAndView loginExceptionHandler(ExpertNotFound ex) {
         Map<String, Object> model = new HashMap<>();
         model.put("expertDto", new ExpertDto());
         model.put("error", ex.getMessage());
@@ -81,5 +83,5 @@ public class ExpertController {
         model.put("expertDto", new ExpertDto());
         model.put("error", ex.getMessage());
         return new ModelAndView("expert/signup", model);
-    }
+    }*/
 }

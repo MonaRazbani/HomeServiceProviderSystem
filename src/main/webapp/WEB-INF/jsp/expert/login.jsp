@@ -10,8 +10,8 @@
 </head>
 <body>
 <div class="btn-group mt-5 mx-5">
-    <a href="<c:url value="/expert/signup"/>" class="btn btn-outline-primary active">signup</a>
-    <a href="<c:url value="/expert/login"/>" class="btn btn-outline-primary">Login</a>
+    <a href="<c:url value="/expert/signup"/>" class="btn btn-outline-primary">signup</a>
+    <a href="<c:url value="/expert/login"/>" class="btn btn-outline-primary active">Login</a>
 </div>
 <div style="position: relative;">
     <div class="bg-image">
@@ -19,52 +19,56 @@
     <div class="box" style="position:absolute">
         <div class="row">
             <div class="col-6-sm">
-                <form:form cssClass="p-1 my-5 mx-5" cssStyle="position: absolute" modelAttribute="expertDto"
-                           enctype="multipart/form-data" action="submitSignup" method="post">
+                <form:form cssClass="p-1 my-5 mx-5" modelAttribute="expertDto"
+                           enctype="multipart/form-data" action="submitLogin" method="post">
                     <p class="text-danger">${error}</p>
-                <table class="table table-bordered table-striped text-dark">
-                    <tr>
-                        <td>
-                            <form:label path="email">email :</form:label>
-                        </td>
-                        <td>
-                            <form:input path="email" name="email"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                        </td>
-                        <td>
-                            <form:errors path="email" cssClass="text-danger"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <form:label path="password">password :</form:label>
-                        </td>
-                        <td>
-                            <form:input path="password" name="password"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                        </td>
-                        <td>
-                            <form:errors path="password" cssClass="text-danger"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <form:button name="signup">signup</form:button>
-                        </td>
-                    </tr>
-                </table>
-                </form:form>
+                    <table class="table table-bordered table-striped text-dark">
 
+                        <tr>
+                            <td>
+                                <form:label path="email">email :</form:label>
+                            </td>
+                            <td>
+                                <form:input path="email" name="email"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                <form:errors path="email" cssClass="text-danger"/>
+                            </td>
+                        </tr>
+                        <tr>
+
+                        <tr>
+                            <td>
+                                <form:label path="password">password :</form:label>
+                            </td>
+                            <td>
+                                <form:input path="password" name="password"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                            </td>
+                            <td>
+                                <form:errors path="password" cssClass="text-danger"/>
+                            </td>
+                        </tr>
+
+                        <td>
+                            <tr>
+                                <form:button class="btn btn-outline-primary" name="submitLogin">submitLogin</form:button>
+                                </td>
+                            </tr>
+                        </td>
+
+                    </table>
+                </form:form>
             </div>
         </div>
     </div>
-
 </div>
 </div>
 </body>

@@ -18,8 +18,9 @@
             <div class="col-sm-6">
                 <div class="col-sm-12"style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;" >
                     <h1>r</h1>
-                    <a href="/admin/searchUser" type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg ">log in as customer</a>
-                    <a href="/a/signup" type="button" class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as expert </a>
+                    <a href="/admin/searchUser" type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg ">search user</a>
+                    <a href="/admin/addSubService" type="button" class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> add subService </a>
+                    <a href="/admin/addServiceCategory" type="button" class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> add ServiceCategory </a>
                     <button type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as admin </button>
                 </div>
             </div>

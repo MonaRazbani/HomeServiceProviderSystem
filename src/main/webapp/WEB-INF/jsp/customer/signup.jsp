@@ -19,7 +19,7 @@
     <div class="box" style="position:absolute">
         <div class="row">
             <div class="col-6-sm">
-                <form:form cssClass="p-1 my-5 mx-5" cssStyle="position: absolute" modelAttribute="customerDto"
+                <form:form cssClass="p-1 my-5 mx-5" modelAttribute="customerDto"
                            enctype="multipart/form-data" action="submitSignup" method="post">
                     <p class="text-danger">${error}</p>
                     <table class="table table-bordered table-striped text-dark">
@@ -38,9 +38,10 @@
                                 <form:errors path="firstName" cssClass="text-danger"/>
                             </td>
                         </tr>
+
                         <tr>
                             <td>
-                                <form:label path="lastName">firstName :</form:label>
+                                <form:label path="lastName">last name :</form:label>
                             </td>
                             <td>
                                 <form:input path="lastName" name="lastName"/>
@@ -53,6 +54,8 @@
                                 <form:errors path="lastName" cssClass="text-danger"/>
                             </td>
                         </tr>
+                        <tr>
+
                         <tr>
                             <td>
                                 <form:label path="email">email :</form:label>
@@ -69,6 +72,8 @@
                             </td>
                         </tr>
                         <tr>
+
+                        <tr>
                             <td>
                                 <form:label path="password">password :</form:label>
                             </td>
@@ -83,16 +88,25 @@
                                 <form:errors path="password" cssClass="text-danger"/>
                             </td>
                         </tr>
-                        <form:button name="signup">signup</form:button>
-                        </td>
+                        <tr>
+
+                        <tr>
+                            <td>
+                                gender:
+                                female <form:checkbox path="gender" value="FEMALE"/>
+                                male<form:checkbox path="gender" value="MALE"/>
+                            </td>
+                        </tr>
+                        <tr>
+
+                            <form:button name="submitSignup">submitSignup</form:button>
+                            </td>
                         </tr>
                     </table>
                 </form:form>
-
             </div>
         </div>
     </div>
-
 </div>
 </div>
 </body>

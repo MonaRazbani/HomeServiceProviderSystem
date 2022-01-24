@@ -26,18 +26,14 @@ public class CustomerServiceImp implements CustomerService {
 
     @Override
     public CustomerDto saveCustomer(CustomerDto customerDto) {
-        if (controlInput.isValidCustomerDtoInfo(customerDto)) {
-
-            if (customerDao.findByEmail(customerDto.getEmail()).isEmpty()) {
-                Customer customer = modelMapper.map(customerDto, Customer.class);
-                customer.setRoleType(RoleType.CUSTOMER);
-                customer.setStatus(UserStatus.NEW);
-                Customer save = customerDao.save(customer);
-                return modelMapper.map(save, CustomerDto.class);
-            } else
-                throw new DuplicateEmail();
+        if (customerDao.findByEmail(customerDto.getEmail()).isEmpty()) {
+            Customer customer = modelMapper.map(customerDto, Customer.class);
+            customer.setRoleType(RoleType.CUSTOMER);
+            customer.setStatus(UserStatus.NEW);
+            Customer save = customerDao.save(customer);
+            return modelMapper.map(save, CustomerDto.class);
         } else
-            throw new RuntimeException("signup Fail");
+            throw new DuplicateEmail();
     }
 
     @Override

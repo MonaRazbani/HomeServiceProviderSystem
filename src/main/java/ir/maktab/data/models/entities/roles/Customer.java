@@ -11,11 +11,7 @@ import java.util.List;
 @Data
 @Entity
 @SuperBuilder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Customer extends User {
-    @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
-    private List<Order> orders;
 
 }

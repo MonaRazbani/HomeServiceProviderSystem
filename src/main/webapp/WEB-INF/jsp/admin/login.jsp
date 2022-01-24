@@ -10,8 +10,7 @@
 </head>
 <body>
 <div class="btn-group mt-5 mx-5">
-    <a href="<c:url value="/expert/signup"/>" class="btn btn-outline-primary active">signup</a>
-    <a href="<c:url value="/expert/login"/>" class="btn btn-outline-primary">Login</a>
+
 </div>
 <div style="position: relative;">
     <div class="bg-image">
@@ -65,7 +64,6 @@
         </div>
     </div>
 
-</div>
 </div>
 </body>
 </html>

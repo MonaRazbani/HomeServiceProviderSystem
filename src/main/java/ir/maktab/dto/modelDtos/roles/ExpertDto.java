@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExpertDto extends UserDto{
-    @NotNull(message = "You can't leave this empty.", groups = { OnExpertSignup.class})
     private byte[] photo;
     private float rate ;
+    private String rateString;
 }

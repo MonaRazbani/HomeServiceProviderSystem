@@ -1,6 +1,7 @@
 package ir.maktab.services;
 
 import ir.maktab.data.dao.SubServiceDao;
+import ir.maktab.dto.mapper.SubServiceMapper;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.exceptions.DuplicateSubService;
 import ir.maktab.exceptions.NoCategoryServiceForService;
@@ -8,10 +9,11 @@ import ir.maktab.exceptions.SubServiceNotFound;
 import ir.maktab.data.models.entities.SubService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class SubServiceServiceImp implements SubServiceService{
 
     @Override
     public void saveSubService(SubServiceDto subServiceDto) {
-        SubService newSubService = modelMapper.map(subServiceDto, SubService.class);
+        SubService newSubService = SubServiceMapper.toSubService(subServiceDto);
         Optional<SubService> oldSubService = subServiceDao.findByName(newSubService.getName());
         if (oldSubService.isEmpty()) {
             if (newSubService.getServiceCategory() == null)
@@ -53,4 +55,11 @@ public class SubServiceServiceImp implements SubServiceService{
             throw new SubServiceNotFound();
     }
 
+    @Override
+    public List<SubServiceDto> findAll() {
+        return subServiceDao.findAll()
+                .stream()
+                .map(subService -> modelMapper.map(subService, SubServiceDto.class))
+                .collect(Collectors.toList());
+    }
 }

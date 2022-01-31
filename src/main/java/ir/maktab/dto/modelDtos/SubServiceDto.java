@@ -12,10 +12,13 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubServiceDto {
-    private String name ;
+    private String name;
     private String explanation;
-    private String baseCost ;
+    private String baseCost;
     @NotNull(message = "select serviceCategory")
     private String serviceCategoryName;
 
+    public SubServiceDto(String subServiceName) {
+        this.name = subServiceName;
+    }
 }

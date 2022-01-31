@@ -47,7 +47,7 @@ public class ExpertServiceImp implements ExpertService {
         Expert expert = modelMapper.map(expertDto, Expert.class);
         Optional<Expert> found = expertDao.findByEmailAndPassword(expert.getEmail(), expert.getPassword());
         if (found.isPresent()) {
-            return modelMapper.map(found, ExpertDto.class);
+            return modelMapper.map(found.get(), ExpertDto.class);
         } else
             throw new ExpertNotFound();
     }
@@ -93,14 +93,14 @@ public class ExpertServiceImp implements ExpertService {
     }
 
     @Override
-    public void addSubServiceToExpertSubServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
+    public void addSubServiceToExpertSubServices(ExpertDto expertDto, String subServiceName) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
         if (expert != null) {
-            SubService subService = subServiceServiceImp.findByName(subServiceDto.getName());
+            SubService subService = subServiceServiceImp.findByName(subServiceName);
             expert.getSubServices().add(subService);
             expertDao.save(expert);
         }
-        throw new RuntimeException("add subService Fail");
+         else throw new RuntimeException("add subService Fail");
     }
 
     @Override

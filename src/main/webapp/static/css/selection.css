@@ -20,6 +20,7 @@ html,body{
     filter: blur(8px);
     -webkit-filter: blur(8px);
     height: 100%;
+    width : 100%;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -27,15 +28,16 @@ html,body{
 }
 .box {
     align-items: center;
-    width: 600px;
+    width: 500px;
+    padding: 50px;
+    margin: 20px;
     background-color: rgb(244, 245, 244);
     position :absolute;
     border-radius: 6px;
-    top: 50%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
-    padding: 20px;
     text-align: center;
 
 }

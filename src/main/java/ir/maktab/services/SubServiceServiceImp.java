@@ -60,7 +60,17 @@ public class SubServiceServiceImp implements SubServiceService{
     public List<SubServiceDto> findAll() {
         return subServiceDao.findAll()
                 .stream()
-                .map(subService -> SubServiceMapper.toSubServiceDto(subService))
+                .map(SubServiceMapper::toSubServiceDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SubServiceDto> findSubServicesOfServiceCategory(String serviceCategoryName) {
+        ServiceCategory serviceCategory = serviceCategoryService.findByName(serviceCategoryName);
+
+        return subServiceDao.findByServiceCategory(serviceCategory).
+                stream().
+                map(SubServiceMapper::toSubServiceDto).
+                collect(Collectors.toList());
     }
 }

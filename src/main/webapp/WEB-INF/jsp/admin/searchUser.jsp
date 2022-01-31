@@ -45,8 +45,8 @@
         <tr>
             <td>
                 roleType:
-                BreakFast<form:checkbox path="roleType" value="customer"/>
-                Lunch<form:checkbox path="roleType" value="expert"/>
+                CUSTOMER<form:checkbox path="roleType" value="CUSTOMER"/>
+                EXPERT<form:checkbox path="roleType" value="EXPERT"/>
             </td>
         <tr>
             subService:<form:select path="subService">

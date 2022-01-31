@@ -1,5 +1,6 @@
 package ir.maktab.data.dao;
 
+import ir.maktab.data.models.entities.ServiceCategory;
 import ir.maktab.data.models.entities.SubService;
 import ir.maktab.dto.filterDto.ProjectionSunServiceDto;
 import jdk.jfr.Registered;
@@ -13,6 +14,9 @@ import java.util.Optional;
 @Registered
 public interface SubServiceDao extends JpaRepository<SubService,Long> , JpaSpecificationExecutor<SubService> {
     Optional<SubService> findByName (String name);
+
+    List<SubService> findByServiceCategory(ServiceCategory serviceCategory);
+
     @Query("select s.name as name from SubService s")
     List<ProjectionSunServiceDto> findOnlyName();
 }

@@ -6,19 +6,20 @@
     <title>Register Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/css/signup.css">
+    <link rel="stylesheet" href="/static/css/customerSignup.css">
 </head>
 <body>
-<div class="btn-group mt-5 mx-5">
-    <a href="<c:url value="/expert/signup"/>" class="btn btn-outline-primary">signup</a>
-    <a href="<c:url value="/expert/login"/>" class="btn btn-outline-primary active">Login</a>
-</div>
+
 <div style="position: relative;">
     <div class="bg-image">
     </div>
     <div class="box" style="position:absolute">
-        <div class="row">
-            <div class="col-6-sm">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="btn-group mt-5 mx-5">
+                    <a href="<c:url value="/expert/signup"/>" class="btn btn-outline-primary active">signup</a>
+                    <a href="<c:url value="/expert/login"/>" class="btn btn-outline-primary">Login</a>
+                </div>
                 <form:form cssClass="p-1 my-5 mx-5" modelAttribute="expertDto"
                            enctype="multipart/form-data" action="submitLogin" method="post">
                     <p class="text-danger">${error}</p>
@@ -56,20 +57,15 @@
                                 <form:errors path="password" cssClass="text-danger"/>
                             </td>
                         </tr>
-
-                        <td>
-                            <tr>
-                                <form:button class="btn btn-outline-primary" name="submitLogin">submitLogin</form:button>
-                                </td>
-                            </tr>
-                        </td>
-
                     </table>
+                    <form:button name="login">login</form:button>
                 </form:form>
+                <%--    <a href="/expert/dashboard" type="button"
+                       class=" col-sm-6 justify-center btn btn-secondary btn-md mt-3 shadow-lg">
+                        select</a>--%>
             </div>
         </div>
     </div>
-</div>
 </div>
 </body>
 </html>

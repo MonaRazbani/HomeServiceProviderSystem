@@ -12,6 +12,7 @@ public interface ServiceCategoryService {
     void updateServiceCategory(ServiceCategoryDto serviceCategoryDto);
 
     ServiceCategory findByName(String name);
+
     List<ServiceCategoryDto> findAll();
 
 }

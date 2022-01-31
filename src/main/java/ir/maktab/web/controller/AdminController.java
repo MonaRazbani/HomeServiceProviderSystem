@@ -1,25 +1,19 @@
 package ir.maktab.web.controller;
 
 import ir.maktab.configuration.LastViewInterceptor;
-import ir.maktab.data.models.entities.ServiceCategory;
-import ir.maktab.data.models.entities.SubService;
 import ir.maktab.dto.filterDto.UserCategoryDto;
 import ir.maktab.dto.modelDtos.AdminDto;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
-import ir.maktab.dto.modelDtos.roles.CustomerDto;
-import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.dto.modelDtos.roles.UserDto;
 import ir.maktab.exceptions.AdminNotFound;
 import ir.maktab.exceptions.BadFilterSearching;
-import ir.maktab.exceptions.DuplicateEmail;
 import ir.maktab.exceptions.DuplicateSubService;
 import ir.maktab.services.AdminService;
 import ir.maktab.services.ServiceCategoryService;
 import ir.maktab.services.SubServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -39,8 +33,7 @@ import java.util.stream.Collectors;
 public class AdminController {
     private final AdminService adminService;
     private final SubServiceService subServiceService;
-    private final ServiceCategoryService serviceCategoryService ;
-
+    private final ServiceCategoryService serviceCategoryService;
 
 
     @GetMapping("/login")
@@ -56,58 +49,59 @@ public class AdminController {
 
 
     @GetMapping("/searchUser")
-    public ModelAndView showSearchUserPage( HttpSession session){
+    public ModelAndView showSearchUserPage(HttpSession session) {
         List<SubServiceDto> serviceServiceDtoAll = subServiceService.findAll();
 
-        session.setAttribute("serviceServiceDtoAll",serviceServiceDtoAll);
+        session.setAttribute("serviceServiceDtoAll", serviceServiceDtoAll);
 
         Map<String, Object> model = new HashMap<>();
         model.put("userCategoryDto", new UserCategoryDto());
-        model.put("serviceServiceDtoAll",serviceServiceDtoAll);
+        model.put("serviceServiceDtoAll", serviceServiceDtoAll);
 
-        return new ModelAndView("admin/searchUser",model);
+        return new ModelAndView("admin/searchUser", model);
     }
 
     @PostMapping("/searchUserProcess")
-    public ModelAndView searchUser(@ModelAttribute("userCategoryDto") UserCategoryDto userCategoryDto, ModelAndView modelAndView){
+    public ModelAndView searchUser(@ModelAttribute("userCategoryDto") UserCategoryDto userCategoryDto, ModelAndView modelAndView) {
         List<UserDto> userDtoList = adminService.UserDynamicSearch(userCategoryDto);
-        modelAndView.addObject("userDtoList",userDtoList);
+        modelAndView.addObject("userDtoList", userDtoList);
         modelAndView.setViewName("admin/searchUser");
         return modelAndView;
     }
+
     @GetMapping(value = "/addSubService")
-    public ModelAndView showAddSubServicePage(){
-        List<String> serviceCategoryNameAll= serviceCategoryService.findAll().
+    public ModelAndView showAddSubServicePage() {
+        List<String> serviceCategoryNameAll = serviceCategoryService.findAll().
                 stream().
-                map(serviceCategoryDto -> serviceCategoryDto.getName()).
+                map(ServiceCategoryDto::getName).
                 collect(Collectors.toList());
         Map<String, Object> model = new HashMap<>();
         model.put("subServiceDto", new SubServiceDto());
-        model.put("serviceCategoryNameAll",serviceCategoryNameAll);
+        model.put("serviceCategoryNameAll", serviceCategoryNameAll);
 
-        return new ModelAndView("admin/addSubService",model);
+        return new ModelAndView("admin/addSubService", model);
     }
 
     @PostMapping("/addSubServiceProcess")
-    public String addSubService(@ModelAttribute("subServiceDto")SubServiceDto subServiceDto){
+    public String addSubService(@ModelAttribute("subServiceDto") SubServiceDto subServiceDto) {
         subServiceService.saveSubService(subServiceDto);
 
         return "admin/dashboard";
     }
 
     @GetMapping("/addServiceCategory")
-    public ModelAndView showAddServiceCategory (){
-        return new ModelAndView("admin/addServiceCategory","serviceCategoryDto",new ServiceCategoryDto());
+    public ModelAndView showAddServiceCategory() {
+        return new ModelAndView("admin/addServiceCategory", "serviceCategoryDto", new ServiceCategoryDto());
     }
 
     @PostMapping("/addServiceCategoryProcess")
-    public String addServiceCategory(@ModelAttribute("serviceCategoryDto")ServiceCategoryDto serviceCategoryDto){
+    public String addServiceCategory(@ModelAttribute("serviceCategoryDto") ServiceCategoryDto serviceCategoryDto) {
         serviceCategoryService.saveServiceCategory(serviceCategoryDto);
         return "admin/dashboard";
     }
 
 
-    @ExceptionHandler(value = BindException.class)
+    @ExceptionHandler(value = BindException.class)//
     public ModelAndView bindExceptionHandler(BindException ex, HttpServletRequest request) {
         String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);
         return new ModelAndView(lastView, ex.getBindingResult().getModel());

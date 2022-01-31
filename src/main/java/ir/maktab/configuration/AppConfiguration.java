@@ -24,4 +24,9 @@ public class AppConfiguration {
         commonsMultipartResolver.setMaxUploadSizePerFile(300 * 1024*1024);
         return commonsMultipartResolver;
     }
+
+  /*  @Bean
+    public CustomExceptionHandler customExceptionHandler(){
+        return new CustomExceptionHandler();
+    }*/
 }

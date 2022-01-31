@@ -15,4 +15,6 @@ public interface SubServiceService {
 
     List<SubServiceDto> findAll();
 
+    List<SubServiceDto> findSubServicesOfServiceCategory(String serviceCategoryName);
+
 }

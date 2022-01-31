@@ -18,7 +18,7 @@ public interface ExpertService {
 
     void changePasswordForExpert(ExpertDto expertDto, String currentPassword, String newPassword);
 
-    void addSubServiceToExpertSubServices(ExpertDto expertDto, SubServiceDto subServiceDto);
+    void addSubServiceToExpertSubServices(ExpertDto expertDto, String SubServiceName);
 
     void deleteServiceFromExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto);
 

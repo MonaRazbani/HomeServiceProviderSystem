@@ -60,7 +60,7 @@
 
                         <td>
                         <tr>
-                            <form:button class="btn btn-outline-primary" name="submitLogin">submitLogin</form:button>
+                            <form:button name="login">login</form:button>
                             </td>
                         </tr>
                         </td>

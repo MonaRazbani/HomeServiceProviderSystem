@@ -22,7 +22,7 @@ public class ServiceCategory {
     private String name ;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "serviceCategory",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "serviceCategory",fetch = FetchType.LAZY)
     private List<SubService> subServiceList = new ArrayList<>();
 
 }

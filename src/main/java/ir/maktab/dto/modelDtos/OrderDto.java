@@ -21,8 +21,8 @@ public class OrderDto {
     @Column(columnDefinition = "BINARY(16)")
     private UUID identificationCode;
     private CustomerDto customer;
-    private double suggestedPrice ;
-    private String explanation ;
+    private double suggestedPrice;
+    private String explanation;
     private SubServiceDto subService;
     private Date doneService;
     private AddressDto address;
@@ -30,4 +30,9 @@ public class OrderDto {
     private OrderStatus status;
     private CommentDto comment;
 
+    public OrderDto(CustomerDto customerDto, SubServiceDto subServiceDto) {
+        this.customer = customerDto;
+        this.subService = subServiceDto;
+
+    }
 }

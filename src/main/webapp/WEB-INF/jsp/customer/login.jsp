@@ -1,4 +1,3 @@
-
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -7,20 +6,21 @@
     <title>login Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/css/signup.css">
+    <link rel="stylesheet" href="/static/css/customerSignup.css">
 </head>
 <body>
-<div class="btn-group mt-5 mx-5">
-    <a href="<c:url value="/customer/signup"/>" class="btn btn-outline-primary">signup</a>
-    <a href="<c:url value="/customer/login"/>" class="btn btn-outline-primary active">Login</a>
-</div>
+
 <div style="position: relative;">
     <div class="bg-image">
     </div>
-    <div class="box" style="position:absolute">
-        <div class="row">
-            <div class="col-6-sm">
-                <form:form cssClass="p-1 my-5 mx-5" modelAttribute="customerDto"
+    <div class="box" style=" position:absolute ; ">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="btn-group mt-5 mx-5">
+                    <a href="<c:url value="/expert/signup"/>" class="btn btn-outline-primary active">signup</a>
+                    <a href="<c:url value="/expert/login"/>" class="btn btn-outline-primary">Login</a>
+                </div>
+                <form:form cssClass="p-1 my-1 mx-1" modelAttribute="customerDto"
                            enctype="multipart/form-data" action="submitLogin" method="post">
                     <p class="text-danger">${error}</p>
                     <table class="table table-bordered table-striped text-dark">
@@ -57,20 +57,12 @@
                                 <form:errors path="password" cssClass="text-danger"/>
                             </td>
                         </tr>
-
-                        <td>
-                        <tr>
-                            <form:button name="login">login</form:button>
-                            </td>
-                        </tr>
-                        </td>
-
                     </table>
+                    <form:button name="login">login</form:button>
                 </form:form>
             </div>
         </div>
     </div>
-</div>
 </div>
 </body>
 </html>

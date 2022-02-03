@@ -20,7 +20,7 @@
                     <a href="<c:url value="/expert/signup"/>" class="btn btn-outline-primary active">signup</a>
                     <a href="<c:url value="/expert/login"/>" class="btn btn-outline-primary">Login</a>
                 </div>
-                <form:form cssClass="p-1 my-5 mx-5" modelAttribute="expertDto"
+                <form:form cssClass="p-1 my-1 mx-1" modelAttribute="expertDto"
                            enctype="multipart/form-data" action="submitLogin" method="post">
                     <p class="text-danger">${error}</p>
                     <table class="table table-bordered table-striped text-dark">

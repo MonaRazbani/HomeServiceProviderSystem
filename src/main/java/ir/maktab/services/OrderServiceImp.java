@@ -1,7 +1,8 @@
 package ir.maktab.services;
 
 import ir.maktab.data.dao.OrderDao;
-import ir.maktab.data.dao.SubServiceDao;
+import ir.maktab.data.models.entities.SubService;
+import ir.maktab.dto.mapper.OrderMapper;
 import ir.maktab.dto.modelDtos.AddressDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
@@ -18,12 +19,12 @@ import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,16 +32,26 @@ public class OrderServiceImp implements OrderService{
     private final ControlInput controlInput;
     private final ControlEdition controlEdition;
     private final OrderDao orderDao;
-    private final AddressServiceImp addressServiceImp;
-    private final CustomerServiceImp customerServiceImp;
-    private final ExpertServiceImp expertService;
+    private final AddressService addressService;
+    private final CustomerService customerService;
+    private final ExpertService expertService;
+    private final SubServiceService subServiceService;
     private final ModelMapper modelMapper;
+    private final OrderMapper orderMapper;
+
 
     @Override
     public Order saveOrder(OrderDto orderDto) {
-        Order order = modelMapper.map(orderDto, Order.class);
+        Order order = orderMapper.toOrder(orderDto);
+        Customer customer = customerService.findCustomerByEmail(order.getCustomer().getEmail());
+        SubService subService = subServiceService.findByName(order.getSubService().getName());
         if (controlInput.isValidSuggestedPrice(order.getSubService(), order.getSuggestedPrice())) {
+
+            addressService.saveAddress(orderDto.getAddress());
             order.setIdentificationCode(UUID.randomUUID());
+            order.setCustomer(customer);
+            order.setSubService(subService);
+
             return orderDao.save(order);
 
         } else
@@ -58,7 +69,7 @@ public class OrderServiceImp implements OrderService{
         if (controlEdition.isValidToEdit(orderDto.getStatus())) {
 
             newAddressDto.setIdentificationCode(orderDto.getAddress().getIdentificationCode());
-            addressServiceImp.updateAddress(newAddressDto);
+            addressService.updateAddress(newAddressDto);
 
         } else
             throw new RuntimeException("edit Order Address Fail");
@@ -92,7 +103,7 @@ public class OrderServiceImp implements OrderService{
     @Override
     public List<Order> findOrderByCustomerAndStatus(CustomerDto customerDto, OrderStatus status) {
 
-        Customer customer = customerServiceImp.findCustomerByEmail(customerDto.getEmail());
+        Customer customer = customerService.findCustomerByEmail(customerDto.getEmail());
         List<Order> orders = orderDao.findByCustomerAndStatus(customer, status);
         if (!orders.isEmpty())
             return orders;
@@ -167,4 +178,16 @@ public class OrderServiceImp implements OrderService{
             throw new EditionDenied();
     }
 
+    @Override
+    public List<OrderDto> findOrderByStatus(OrderStatus orderStatus) {
+        List<Order> orders = orderDao.findByStatus(orderStatus);
+
+        if(orders.isEmpty())
+            throw new OrderNotFound();
+
+        return orders
+                .stream()
+                .map(orderMapper::toOrderDto)
+                .collect(Collectors.toList());
+    }
 }

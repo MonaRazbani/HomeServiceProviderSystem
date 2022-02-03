@@ -51,7 +51,7 @@ public class CustomerServiceImp implements CustomerService {
         Customer customer = modelMapper.map(customerDto, Customer.class);
         Optional<Customer> found = customerDao.findByEmailAndPassword(customer.getEmail(),customer.getPassword());
         if (found.isPresent()){
-            return modelMapper.map(found,CustomerDto.class);
+            return modelMapper.map(found.get(),CustomerDto.class);
         }else
             throw new CustomerNotFound();
     }

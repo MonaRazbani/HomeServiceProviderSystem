@@ -1,8 +1,9 @@
+/*
 package ir.maktab.web.controller;
 
 import ir.maktab.configuration.LastViewInterceptor;
 import ir.maktab.exceptions.AccessDenied;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +12,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.servlet.http.HttpServletRequest;
 
-@Configuration
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -26,3 +26,4 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ModelAndView(lastView, "error", ex.getMessage());
     }
 }
+*/

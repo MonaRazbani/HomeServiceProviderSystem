@@ -27,7 +27,7 @@ html,body{
 }
 .box {
     align-items: center;
-    width: 600px;
+    width: 500px;
     background-color: rgb(244, 245, 244);
     position :absolute;
     border-radius: 6px;

@@ -95,10 +95,9 @@
                                 gender:
                             </td>
                             <td>
-
-                                    female <form:radiobutton path="gender" value="FEMALE"/>
-                                    male <form:radiobutton path="gender" value="MALE"/>
-                        </td>
+                                female <form:radiobutton path="gender" value="FEMALE"/>
+                                male <form:radiobutton path="gender" value="MALE"/>
+                            </td>
                         </tr>
 
                         <tr>

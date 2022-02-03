@@ -6,6 +6,7 @@
     <title>Register Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/customerSignup.css">
 </head>
 <body>
 <div style="position: relative;">
@@ -20,7 +21,7 @@
                                 <form:label path="name">name :</form:label>
                             </td>
                             <td>
-                                <form:input path="name" name="name"/>
+                                <form:input cssClass="form-control" path="name" name="name"/>
                             </td>
                         </tr>
                         <tr>
@@ -34,7 +35,7 @@
                                 <form:label path="baseCost">baseCost :</form:label>
                             </td>
                             <td>
-                                <form:input path="baseCost" name="baseCost"/>
+                                <form:input cssClass="form-control" path="baseCost" name="baseCost"/>
                             </td>
                         </tr>
                         <tr>
@@ -48,7 +49,7 @@
                                 <form:label path="explanation">explanation :</form:label>
                             </td>
                             <td>
-                                <form:input path="explanation" name="explanation"/>
+                                <form:textarea cssClass="form-control" rows="3" id="comment" path="explanation" name="address.address"/>
                             </td>
                         </tr>
                         <tr>
@@ -57,14 +58,14 @@
                             </td>
                         </tr>
                         <tr>
-                            serviceCategory:
-                            <form:select path="serviceCategoryName">
-
-                            <c:forEach items="${serviceCategoryNameAll}" var="serviceCategory">
-                                <form:option value="${serviceCategory}" label="${serviceCategory}"/>
-                            </c:forEach>
-
-                        </form:select>
+                            <div class="form-group">
+                                <label for="sel1" style="font-family:'Segoe UI' ;font-size: large">select
+                                    ServiceCategory:</label>
+                                <form:select path="serviceCategoryName" cssClass="form-control" id="sel1">
+                                <c:forEach items="${serviceCategoryNameAll}" var="categoryService">
+                                    <form:option value="${categoryService}" label="${categoryService}"/>
+                                </c:forEach>
+                                </form:select>
                         </tr>
 
                         <tr>

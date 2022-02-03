@@ -20,11 +20,12 @@ public class Address {
 
     @Column(columnDefinition = "BINARY(16)",unique = true)
     private UUID identificationCode;
-    private String city;
+    private String address;
+   /* private String city;
     private String street;
     private String alley;
     private String houseNumber;
     private String floorNumber;
-    private String HouseUnitNumber;
+    private String HouseUnitNumber;*/
 
 }

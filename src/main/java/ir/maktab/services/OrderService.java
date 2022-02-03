@@ -46,4 +46,6 @@ public interface OrderService {
 
     void setOrderDtoStatusDone(OrderDto orderDto);
 
+    List<OrderDto> findOrderByStatus(OrderStatus orderStatus);
+
 }

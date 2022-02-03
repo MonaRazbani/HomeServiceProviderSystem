@@ -2,6 +2,9 @@ package ir.maktab.web.controller;
 
 import ir.maktab.configuration.LastViewInterceptor;
 import ir.maktab.data.models.entities.SubService;
+import ir.maktab.data.models.enums.OrderStatus;
+import ir.maktab.dto.modelDtos.OfferDto;
+import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
@@ -9,6 +12,7 @@ import ir.maktab.exceptions.AccessDenied;
 import ir.maktab.exceptions.DuplicateEmail;
 import ir.maktab.exceptions.ExpertNotFound;
 import ir.maktab.services.ExpertService;
+import ir.maktab.services.OrderService;
 import ir.maktab.services.ServiceCategoryService;
 import ir.maktab.services.SubServiceService;
 import ir.maktab.services.validation.OnExpertLogin;
@@ -37,6 +41,7 @@ public class ExpertController {
     private final ExpertService expertService;
     private final ServiceCategoryService serviceCategoryService;
     private final SubServiceService subServiceService;
+    private final OrderService orderService;
 
 
     @GetMapping(value = "/signup")
@@ -128,12 +133,30 @@ public class ExpertController {
         ExpertDto expertDto = (ExpertDto) httpSession.getAttribute("expertDto");
         if ( expertDto == null)
             throw new AccessDenied();
-        System.out.println(subServiceName);
+
         expertService.addSubServiceToExpertSubServices(expertDto,subServiceName);
 
         return "expert/dashboard";
 
     }
+
+
+    @GetMapping("/listOfOrders")
+    public ModelAndView showListOfOrder(HttpSession httpSession){
+
+        if (httpSession.getAttribute("expertDto") == null) {
+            throw new AccessDenied();
+        }
+
+        List<OrderDto> orderDtoList = orderService.findOrderByStatus(OrderStatus.WAITING_FOR_CHOOSING_EXPERT);
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("orderDtoList",orderDtoList );
+        model.put("OrderDto", new OfferDto());
+
+        return new ModelAndView("/expert/listOfOrders",model);
+    }
+
 
 
     @ExceptionHandler(value = ExpertNotFound.class)

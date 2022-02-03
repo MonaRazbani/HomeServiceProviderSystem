@@ -37,7 +37,7 @@ public class Order {
 
     private Date performedOrder ;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
 
     @CreationTimestamp

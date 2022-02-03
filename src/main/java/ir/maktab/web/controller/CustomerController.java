@@ -1,5 +1,6 @@
 package ir.maktab.web.controller;
 
+import ir.maktab.dto.mapper.SubServiceMapper;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
@@ -14,7 +15,6 @@ import ir.maktab.services.validation.OnCustomerLogin;
 import ir.maktab.services.validation.OnCustomerSignup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
 
 public class CustomerController {
     private final CustomerService customerService;
-    private final ServiceCategoryService serviceCategoryService;
-    private final SubServiceService subServiceService;
 
     @GetMapping(value = "/signup")
     public ModelAndView showSignupPage() {
@@ -40,9 +38,11 @@ public class CustomerController {
     }
 
     @PostMapping("/submitSignup")
-    public String registerCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerSignup.class) CustomerDto customerDto) {
+    public String registerCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerSignup.class) CustomerDto customerDto,
+                                   HttpSession httpSession) {
 
-        customerService.saveCustomer(customerDto);
+        CustomerDto saveCustomer = customerService.saveCustomer(customerDto);
+        httpSession.setAttribute("customerDto",saveCustomer);
 
         return "customer/dashboard";
     }
@@ -56,37 +56,9 @@ public class CustomerController {
     public String loginCustomer(@ModelAttribute("customerDto") @Validated(OnCustomerLogin.class) CustomerDto customerDto,
                                 HttpSession httpSession) {
         CustomerDto loginCustomer = customerService.loginCustomer(customerDto);
-        httpSession.setAttribute("customerDto",loginCustomer);
+        httpSession.setAttribute("customerDto", loginCustomer);
         return "customer/dashboard";
     }
-
-    @GetMapping("/listOfServiceCategory")
-    public ModelAndView listOfServiceCategoryPage(HttpSession httpSession) {
-        CustomerDto customerDto = (CustomerDto) httpSession.getAttribute("customerDto");
-        if ( customerDto == null)
-            throw new AccessDenied();
-
-        List<String> categoryServiceAll = serviceCategoryService.findAll().
-                stream().
-                map(ServiceCategoryDto::getName).
-                collect(Collectors.toList());
-
-        Map<String, Object> model = new HashMap<>();
-        model.put("categoryServiceAll", categoryServiceAll);
-        model.put("serviceCategoryDto", new ServiceCategoryDto());
-
-        return new ModelAndView("customer/selectServiceCategory", model);
-    }
-
-    @PostMapping("/selectServiceCategory")
-    public ModelAndView selectServiceCategory(HttpSession httpSession,
-                                              @ModelAttribute("orderDto") OrderDto orderDto) {
-        if (httpSession.getAttribute("customerDto") == null)
-            throw new AccessDenied();
-        return new ModelAndView("customer/selectSubService");
-    }
-
-
 
     @GetMapping("/dashboard")
     public ModelAndView showDashboard() {
@@ -100,6 +72,7 @@ public class CustomerController {
         model.put("error", ex.getMessage());
         return new ModelAndView("customer/login", model);
     }
+
     @ExceptionHandler(value = DuplicateEmail.class)
     public ModelAndView signupExceptionHandler(DuplicateEmail ex) {
         Map<String, Object> model = new HashMap<>();

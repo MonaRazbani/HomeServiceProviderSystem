@@ -1,16 +1,16 @@
 <%--
   Created by IntelliJ IDEA.
   User: Asus
-  Date: 1/23/2022
-  Time: 8:50 PM
+  Date: 2/2/2022
+  Time: 4:13 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>addAddressForOrder</title>
 </head>
 <body>
-<a href="/order/listOfServiceCategory" >Order</a>
+
 </body>
 </html>

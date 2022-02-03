@@ -4,6 +4,9 @@
 <html>
 <head>
     <title>add serviceCategory </title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+          integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/customerSignup.css">
 </head>
 <body>
 <div style="position: relative;">
@@ -15,10 +18,10 @@
                 <table class="table table-bordered table-striped text-dark">
                     <tr>
                         <td>
-                            <form:label path="name">name :</form:label>
+                            <form:label  path="name">name :</form:label>
                         </td>
                         <td>
-                            <form:input path="name" name="name"/>
+                            <form:input cssClass="form-control" path="name" name="name"/>
                         </td>
                     </tr>
                     <tr>

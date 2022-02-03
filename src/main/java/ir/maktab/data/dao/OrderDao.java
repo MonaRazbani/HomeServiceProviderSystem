@@ -19,6 +19,9 @@ public interface OrderDao extends PagingAndSortingRepository<Order,Long> {
     List<Order> findByExpertAndStatus(Expert expert, OrderStatus status) ;
 
     Optional<Order> findById(long id);
+
     Optional<Order> findByIdentificationCode(UUID identificationCode);
+
+    List<Order> findByStatus (OrderStatus status);
 
 }

@@ -3,6 +3,8 @@ package ir.maktab.services;
 import ir.maktab.data.dao.ExpertDao;
 import ir.maktab.data.models.entities.SubService;
 import ir.maktab.data.models.entities.roles.Expert;
+import ir.maktab.data.models.enums.OrderStatus;
+import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.DuplicateEmail;
@@ -12,10 +14,11 @@ import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -25,8 +28,8 @@ public class ExpertServiceImp implements ExpertService {
     private final ExpertDao expertDao;
     private final ControlInput controlInput;
     private final ModelMapper modelMapper;
-    private final ControlEdition controlEdition;
-    private final SubServiceServiceImp subServiceServiceImp;
+    private final SubServiceService subServiceService;
+
 
 
     @Override
@@ -96,7 +99,7 @@ public class ExpertServiceImp implements ExpertService {
     public void addSubServiceToExpertSubServices(ExpertDto expertDto, String subServiceName) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
         if (expert != null) {
-            SubService subService = subServiceServiceImp.findByName(subServiceName);
+            SubService subService = subServiceService.findByName(subServiceName);
             expert.getSubServices().add(subService);
             expertDao.save(expert);
         }
@@ -107,7 +110,7 @@ public class ExpertServiceImp implements ExpertService {
     public void deleteServiceFromExpertServices(ExpertDto expertDto, SubServiceDto subServiceDto) {
         Expert expert = findExpertByEmail(expertDto.getEmail());
         if (expert != null) {
-            SubService subServiceFound = subServiceServiceImp.findByName(subServiceDto.getName());
+            SubService subServiceFound = subServiceService.findByName(subServiceDto.getName());
             expert.getSubServices().remove(subServiceFound);
             expertDao.save(expert);
         }

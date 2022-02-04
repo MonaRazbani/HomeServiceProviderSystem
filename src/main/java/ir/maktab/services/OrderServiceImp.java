@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,12 +46,14 @@ public class OrderServiceImp implements OrderService{
         Order order = orderMapper.toOrder(orderDto);
         Customer customer = customerService.findCustomerByEmail(order.getCustomer().getEmail());
         SubService subService = subServiceService.findByName(order.getSubService().getName());
+
         if (controlInput.isValidSuggestedPrice(order.getSubService(), order.getSuggestedPrice())) {
 
             addressService.saveAddress(orderDto.getAddress());
             order.setIdentificationCode(UUID.randomUUID());
             order.setCustomer(customer);
             order.setSubService(subService);
+            order.setStatus(OrderStatus.WAITING_FOR_CHOOSING_EXPERT);
 
             return orderDao.save(order);
 
@@ -101,10 +104,10 @@ public class OrderServiceImp implements OrderService{
     }
 
     @Override
-    public List<Order> findOrderByCustomerAndStatus(CustomerDto customerDto, OrderStatus status) {
+    public List<Order> findOrderByCustomer(CustomerDto customerDto) {
 
         Customer customer = customerService.findCustomerByEmail(customerDto.getEmail());
-        List<Order> orders = orderDao.findByCustomerAndStatus(customer, status);
+        List<Order> orders = orderDao.findByCustomer(customer);
         if (!orders.isEmpty())
             return orders;
         else
@@ -135,8 +138,15 @@ public class OrderServiceImp implements OrderService{
         Optional<Order> order = orderDao.findByIdentificationCode(identificationCode);
         if (order.isPresent())
             return order.get();
-        else
-            throw new OrderNotFound();
+        else throw new OrderNotFound();
+    }
+
+    @Override
+    public OrderDto findOrderDtoByIdentificationCode(UUID identificationCode) {
+        Optional<Order> order = orderDao.findByIdentificationCode(identificationCode);
+        if (order.isPresent())
+            return orderMapper.toOrderDto(order.get());
+        else throw new OrderNotFound();
     }
 
     @Override
@@ -179,8 +189,9 @@ public class OrderServiceImp implements OrderService{
     }
 
     @Override
-    public List<OrderDto> findOrderByStatus(OrderStatus orderStatus) {
-        List<Order> orders = orderDao.findByStatus(orderStatus);
+    public List<OrderDto> findOrderByStatusAndSubService(OrderStatus orderStatus, SubService subService) {
+
+        List<Order> orders = orderDao.findByStatusAndSubService(orderStatus,subService);
 
         if(orders.isEmpty())
             throw new OrderNotFound();
@@ -190,4 +201,18 @@ public class OrderServiceImp implements OrderService{
                 .map(orderMapper::toOrderDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<OrderDto> findOrderForExpertBasedOnSubService(ExpertDto expertDto) {
+        List<SubService> subServiceByExpert = subServiceService.findSubServiceByExpert(expertDto);
+        List<OrderDto> orderList = new ArrayList<>();
+        for (SubService subService :subServiceByExpert) {
+
+            List<OrderDto> orderByStatusAndSubService =
+                    findOrderByStatusAndSubService(OrderStatus.WAITING_FOR_CHOOSING_EXPERT, subService);
+            orderList.addAll(orderByStatusAndSubService);
+        }
+        return orderList;
+    }
+
 }

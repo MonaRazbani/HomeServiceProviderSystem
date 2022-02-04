@@ -1,16 +1,16 @@
 package ir.maktab.web.controller;
 
-import ir.maktab.dto.mapper.SubServiceMapper;
-import ir.maktab.dto.modelDtos.OrderDto;
-import ir.maktab.dto.modelDtos.ServiceCategoryDto;
-import ir.maktab.dto.modelDtos.SubServiceDto;
+import ir.maktab.configuration.LastViewInterceptor;
+import ir.maktab.data.models.entities.Offer;
+import ir.maktab.data.models.entities.Order;
+import ir.maktab.dto.modelDtos.OfferDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.exceptions.AccessDenied;
 import ir.maktab.exceptions.CustomerNotFound;
 import ir.maktab.exceptions.DuplicateEmail;
 import ir.maktab.services.CustomerService;
-import ir.maktab.services.ServiceCategoryService;
-import ir.maktab.services.SubServiceService;
+import ir.maktab.services.OfferService;
+import ir.maktab.services.OrderService;
 import ir.maktab.services.validation.OnCustomerLogin;
 import ir.maktab.services.validation.OnCustomerSignup;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +19,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +33,8 @@ import java.util.stream.Collectors;
 
 public class CustomerController {
     private final CustomerService customerService;
+    private final OrderService orderService;
+    private final OfferService offerService;
 
     @GetMapping(value = "/signup")
     public ModelAndView showSignupPage() {
@@ -63,6 +67,45 @@ public class CustomerController {
     @GetMapping("/dashboard")
     public ModelAndView showDashboard() {
         return null;
+    }
+
+    @GetMapping("listOfOrder")
+    public ModelAndView showListOfOrderPage (@SessionAttribute("customerDto")CustomerDto customerDto){
+
+        if(customerDto==null)
+            throw new AccessDenied() ;
+
+        List<Order> customerOrder = orderService.findOrderByCustomer(customerDto);
+
+        return new ModelAndView("/customer/selectOrder", "customerOrder",customerOrder);
+    }
+
+    @GetMapping("/selectOrder/{identificationCode}")
+    public ModelAndView showOfferOfOrderPage(@SessionAttribute("customerDto")CustomerDto customerDto,
+                                             @PathVariable String identificationCode){
+        if (customerDto==null)
+            throw new AccessDenied();
+
+        Order order = orderService.findOrderByIdentificationCode(UUID.fromString(identificationCode));
+        List<OfferDto> offerDtosOfOrder = offerService.findOfferDtosOfOrder(order);
+
+        return new ModelAndView("customer/showOfferOfOrder","offerDtosOfOrder",offerDtosOfOrder);
+    }
+
+    @GetMapping("/showOfferOfOrder/{identificationCode}")
+    public ModelAndView showOfferDtosOfOrderPage(@SessionAttribute("customerDto")CustomerDto customerDto,
+                                                 @PathVariable String identificationCode,
+                                                 HttpServletRequest request) throws ParseException {
+
+        if (customerDto==null)
+            throw new AccessDenied();
+
+        Offer offer = offerService.findOfferByIdentificationCode(UUID.fromString(identificationCode));
+        offerService.acceptOfferForOrder(offer);
+
+        String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);
+
+        return new ModelAndView(lastView);
     }
 
     @ExceptionHandler(value = CustomerNotFound.class)

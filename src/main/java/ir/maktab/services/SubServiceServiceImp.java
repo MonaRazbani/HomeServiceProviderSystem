@@ -4,6 +4,7 @@ import ir.maktab.data.dao.SubServiceDao;
 import ir.maktab.data.models.entities.ServiceCategory;
 import ir.maktab.dto.mapper.SubServiceMapper;
 import ir.maktab.dto.modelDtos.SubServiceDto;
+import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.DuplicateSubService;
 import ir.maktab.exceptions.NoCategoryServiceForService;
 import ir.maktab.exceptions.SubServiceNotFound;
@@ -72,5 +73,10 @@ public class SubServiceServiceImp implements SubServiceService{
                 stream().
                 map(SubServiceMapper::toSubServiceDto).
                 collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SubService> findSubServiceByExpert(ExpertDto expertDto) {
+        return subServiceDao.findByExpertList_Email(expertDto.getEmail());
     }
 }

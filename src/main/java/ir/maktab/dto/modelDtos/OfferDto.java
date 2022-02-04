@@ -25,15 +25,17 @@ public class OfferDto {
 
     @NotNull
     @NumberFormat
-    private double suggestedPrice ;
+    private String suggestedPrice ;
 
     @NotNull
     @NumberFormat
-    private float suggestedDurationOfService ;
+    private String suggestedDurationOfService ;
+
     @DateTimeFormat(pattern = "hh:mm")
     @NotNull
     private Date startDate ;
 
     private OrderDto order;
+
     private OfferStatus status;
 }

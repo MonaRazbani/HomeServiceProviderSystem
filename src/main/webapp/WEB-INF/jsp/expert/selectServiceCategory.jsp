@@ -9,10 +9,9 @@
     <link rel="stylesheet" href="/static/css/selection.css">
 
 </head>
-
 <body>
-<form:form cssClass="p-1 my-5 mx-5" modelAttribute="serviceCategoryDto"
-           enctype="multipart/form-data" action="selectServiceCategoryProcess" method="post">
+<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" action="/expert/listOfServiceCategory" method="get">
+<p class="text-danger">${error}</p>
 <div style="position: relative;">
     <div class="bg-image">
     </div>
@@ -20,16 +19,13 @@
         <div class="container">
             <div class="row justify-content-md-center">
                 <div class="col col-lg-12">
-                    <div class="form-group">
-                        <label for="sel1" style="font-family:'Segoe UI' ;font-size: large">select
-                            ServiceCategory:</label>
-                        <form:select path="name" cssClass="form-control" id="sel1">
-                            <c:forEach items="${allServiceCategories}" var="categoryService">
-                                    <form:option value="${categoryService.name}" label="${categoryService.name}"/>
-                            </c:forEach>
-                        </form:select>
-                        <form:button name="selectServiceCategory" value="selectServiceCategory">select</form:button>
-                    </form:form>
+                    <div class="list-group">
+                        <c:forEach items="${categoryServiceAll}" var="categoryService">
+                            <a href="/expert/selectServiceCategory/${categoryService}"
+                               class="list-group-item list-group-item-action">
+                                    ${categoryService}</a>
+                        </c:forEach>
+                        </form:form>
                     </div>
                 </div>
             </div>

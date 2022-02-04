@@ -16,14 +16,11 @@
         <div class="container">
             <div class="row justify-content-md-center">
                 <div class="col col-lg-12">
-                    <a href="/expert/selectServiceCategory" type="button"
+                    <a href="/expert/listOfServiceCategory" type="button"
                        class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg "> add subService</a>
-                    <a href="/addSubService" type="button"
+                    <a href="/expert/listOfOrders" type="button"
                        class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> find Order </a>
-                    <a href="/admin/addServiceCategory" type="button"
-                       class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> add ServiceCategory </a>
-                    <button type="button" class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> log in as admin
-                    </button>
+
                 </div>
             </div>
         </div>

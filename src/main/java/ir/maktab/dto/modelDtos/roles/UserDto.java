@@ -41,7 +41,10 @@ public class UserDto {
     private String password;
 
     private UserStatus status;
+
     private RoleType roleType;
+
     private Gender gender;
+
     private double credit;
 }

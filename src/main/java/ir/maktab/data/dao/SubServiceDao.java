@@ -17,6 +17,11 @@ public interface SubServiceDao extends JpaRepository<SubService,Long> , JpaSpeci
 
     List<SubService> findByServiceCategory(ServiceCategory serviceCategory);
 
+/*    @Query(value = "select s from SubService s join Expert e where e.email = :email")
+    List<SubService> findSubServiceByExpert(String email);*/
+
+    List<SubService> findByExpertList_Email(String email);
+
     @Query("select s.name as name from SubService s")
     List<ProjectionSunServiceDto> findOnlyName();
 }

@@ -1,6 +1,7 @@
 package ir.maktab.data.dao;
 
 import ir.maktab.data.models.entities.Order;
+import ir.maktab.data.models.entities.SubService;
 import ir.maktab.data.models.entities.roles.Customer;
 import ir.maktab.data.models.entities.roles.Expert;
 import ir.maktab.data.models.enums.OrderStatus;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Repository
 public interface OrderDao extends PagingAndSortingRepository<Order,Long> {
 
-    List<Order> findByCustomerAndStatus (Customer customer, OrderStatus status) ;
+    List<Order> findByCustomer (Customer customer) ;
 
     List<Order> findByExpertAndStatus(Expert expert, OrderStatus status) ;
 
@@ -22,6 +23,6 @@ public interface OrderDao extends PagingAndSortingRepository<Order,Long> {
 
     Optional<Order> findByIdentificationCode(UUID identificationCode);
 
-    List<Order> findByStatus (OrderStatus status);
+    List<Order> findByStatusAndSubService (OrderStatus status, SubService subService);
 
 }

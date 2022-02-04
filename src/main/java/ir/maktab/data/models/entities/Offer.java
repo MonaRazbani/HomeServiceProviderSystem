@@ -1,8 +1,11 @@
 package ir.maktab.data.models.entities;
 
-import ir.maktab.data.models.enums.OfferStatus;
-import lombok.Data;
 import ir.maktab.data.models.entities.roles.Expert;
+import ir.maktab.data.models.enums.OfferStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -11,6 +14,10 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+
 public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,10 +1,9 @@
 package ir.maktab.data.models.entities;
 
-import lombok.Builder;
+import ir.maktab.data.models.entities.roles.Expert;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import ir.maktab.data.models.entities.roles.Expert;
 
 import javax.persistence.*;
 import java.util.List;

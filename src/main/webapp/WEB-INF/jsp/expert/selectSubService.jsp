@@ -12,8 +12,8 @@
 </head>
 
 <body>
-<form:form cssClass="p-1 my-5 mx-5" modelAttribute="subServiceDto"
-           enctype="multipart/form-data" action="/expert/selectSubService" method="post">
+<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" modelAttribute="subServiceDtoList"
+           action="/expert/selectSubService" method="post">
 <div style="position: relative;">
     <div class="bg-image">
     </div>
@@ -22,19 +22,20 @@
             <div class="row justify-content-md-center">
                 <div class="col col-lg-12">
                     <div class="form-group">
-                        <label for="sel1" style="font-family:'Segoe UI' ;font-size: large">select SubService:</label>
+                        <label for="sel1" style="font-family:'Segoe UI',sans-serif ;font-size: large">select SubService:</label>
                         <select class="form-control" id="sel1" name="subServiceName">
-                            <c:forEach items="${subServices}" var="subService">
-                                <option  value="${subService}" >${subService}</option>
+                            <c:forEach items="${subServiceDtoList}" var="subService">
+                                <option value="${subService}" >${subService}</option>
                             </c:forEach>
                         </select>
                         <form:button name="select">select</form:button>
                         </form:form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
 </body>
 </html>
+

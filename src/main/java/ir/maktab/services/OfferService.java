@@ -6,6 +6,7 @@ import ir.maktab.data.models.enums.OfferStatus;
 import ir.maktab.data.models.enums.OrderStatus;
 import ir.maktab.dto.modelDtos.OfferDto;
 import ir.maktab.dto.modelDtos.OrderDto;
+import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.EditionDenied;
 import ir.maktab.exceptions.OfferNotFound;
 
@@ -14,28 +15,31 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public interface OfferService {
-     OfferDto saveOffer(OfferDto offerDto, String startDateString) throws ParseException;
+     OfferDto saveOffer(OfferDto offerDto);
 
     void editStartDateOffer(OfferDto offerDto, String startDateString) throws ParseException;
 
-    void editOfferSuggestedPrice(OfferDto offerDto, double suggestedPrice);
+    void editOfferSuggestedPrice(OfferDto offerDto, String suggestedPrice);
 
-    void editSuggestedDurationOfService(OfferDto offerDto, float suggestedDurationOfService)throws ParseException;
+    void editSuggestedDurationOfService(OfferDto offerDto, String suggestedDurationOfService)throws ParseException;
 
-    List<Offer> findOffersOfOrder(OrderDto orderDto);
 
-    void deleteOfferFromOrder(OfferDto offerDto);
+    List<OfferDto> findOfferDtosOfOrder(Order order);
 
-    void acceptOfferForOrder(OfferDto offerDto);
+    void deleteOfferFromOrder(OfferDto offerDto) throws ParseException;
 
-    List<Offer> findByOfferSortedByPriceAndExpertRate(Order orderDto);
+    void acceptOfferForOrder(Offer offer) throws ParseException;
 
-    void updateOffer(OfferDto offerDto);
+    List<Offer> findByOfferSortedByPriceAndExpertRate(OrderDto orderDto);
 
-    Offer findOrderByIdentificationCode(UUID identificationCode);
+    void updateOffer(OfferDto offerDto) throws ParseException;
+
+    Offer findOfferByIdentificationCode(UUID identificationCode);
 
     long findOfferId(UUID identificationCode);
 
     Offer findOfferById(long id) ;
+
+    List<OfferDto> findExpertOffer(ExpertDto expertDto);
 }
 

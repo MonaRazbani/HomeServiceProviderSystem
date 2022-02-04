@@ -1,8 +1,12 @@
 package ir.maktab.services;
 
 import ir.maktab.data.dao.OfferDao;
+import ir.maktab.data.models.entities.roles.Expert;
+import ir.maktab.dto.mapper.OfferMapper;
+import ir.maktab.dto.mapper.OrderMapper;
 import ir.maktab.dto.modelDtos.OfferDto;
 import ir.maktab.dto.modelDtos.OrderDto;
+import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.EditionDenied;
 import ir.maktab.exceptions.OfferNotFound;
 import ir.maktab.data.models.entities.Offer;
@@ -10,51 +14,52 @@ import ir.maktab.data.models.entities.Order;
 import ir.maktab.data.models.enums.OfferStatus;
 import ir.maktab.data.models.enums.OrderStatus;
 import ir.maktab.validation.ControlEdition;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 
 public class OfferServiceImp implements OfferService{
-    private final OrderServiceImp orderServiceImp;
-    private final ExpertServiceImp expertService;
+    private final OrderService orderService;
+    private final ExpertService expertService;
     private final OfferDao offerDao;
-    private final ModelMapper modelMapper;
     private final ControlEdition controlEdition;
+    private final OrderMapper orderMapper ;
+    private final OfferMapper offerMapper ;
 
     @Autowired
-    public OfferServiceImp(OrderServiceImp orderServiceImp, ExpertServiceImp expertService, OfferDao offerDao, ModelMapper modelMapper,
-                           ControlEdition controlEdition) {
-        this.orderServiceImp = orderServiceImp;
+    public OfferServiceImp(OrderService orderService, ExpertService expertService, OfferDao offerDao,
+                           ControlEdition controlEdition, OrderMapper orderMapper, OfferMapper offerMapper) {
+        this.orderService = orderService;
         this.expertService = expertService;
         this.offerDao = offerDao;
-        this.modelMapper = modelMapper;
         this.controlEdition = controlEdition;
+        this.orderMapper = orderMapper;
+        this.offerMapper = offerMapper;
     }
 
 
     @Override
-    public OfferDto saveOffer(OfferDto offerDto, String startDateString) throws ParseException {
+    public OfferDto saveOffer(OfferDto offerDto) {
+
         if (controlEdition.isValidToEdit(offerDto.getOrder().getStatus())) {
-            Offer offer = modelMapper.map(offerDto, Offer.class);
-            Date startDate = new SimpleDateFormat("HH:mm").parse(startDateString);
-            offer.setStartDate(startDate);
+
+            Offer offer = offerMapper.toOffer(offerDto);
             offer.setIdentificationCode(UUID.randomUUID());
             offer.getExpert().setId(expertService.findExpertByEmail(offer.getExpert().getEmail()).getId());
-            offer.getOrder().setId(orderServiceImp.findOrderId(offer.getOrder().getIdentificationCode()));
+            offer.getOrder().setId(orderService.findOrderId(offer.getOrder().getIdentificationCode()));
             offer.setStatus(OfferStatus.WAITING_FOR_ACCEPT);
-            Offer save = offerDao.save(offer);
-            offer.getOrder().setStatus(OrderStatus.WAITING_FOR_CHOOSING_EXPERT);
-            orderServiceImp.updateOrder(offer.getOrder());
 
-            return modelMapper.map(save,OfferDto.class);
-        } else
-            throw new RuntimeException("saving offer fail");
+            Offer savedOffer = offerDao.save(offer);
+
+            return offerMapper.toOfferDto(savedOffer);
+        }
+        else throw new RuntimeException("submit offer fail");
     }
 
     @Override
@@ -65,34 +70,39 @@ public class OfferServiceImp implements OfferService{
     }
 
     @Override
-    public void editOfferSuggestedPrice(OfferDto offerDto, double suggestedPrice) {
+    public void editOfferSuggestedPrice(OfferDto offerDto, String suggestedPrice) {
         offerDto.setSuggestedPrice(suggestedPrice);
         updateOffer(offerDto);
     }
 
     @Override
-    public void editSuggestedDurationOfService(OfferDto offerDto, float suggestedDurationOfService) {
+    public void editSuggestedDurationOfService(OfferDto offerDto, String suggestedDurationOfService) {
         offerDto.setSuggestedDurationOfService(suggestedDurationOfService);
         updateOffer(offerDto);
     }
 
+
     @Override
-    public List<Offer> findOffersOfOrder(OrderDto orderDto) {
-        Order order = modelMapper.map(orderDto, Order.class);
-        long orderId = orderServiceImp.findOrderId(order.getIdentificationCode());
+    public List<OfferDto> findOfferDtosOfOrder(Order order) {
+
+        long orderId = orderService.findOrderId(order.getIdentificationCode());
         order.setId(orderId);
         List<Offer> offers = offerDao.findByOrder(order);
-        if (!offers.isEmpty()) {
-            return offers;
-        } else
-            throw new OfferNotFound();
+
+        /*if (offers.isEmpty())  چون نمیخوام تو کنترار به اکسپشن بخورم میخوام لیست خالی رو هم نشون بده
+            throw new OfferNotFound();*/
+
+        return offers
+                .stream()
+                .map(offerMapper::toOfferDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void deleteOfferFromOrder(OfferDto offerDto) {
         if (controlEdition.isValidToEdit(offerDto.getOrder().getStatus())) ;
         {
-            Offer offer = modelMapper.map(offerDto, Offer.class);
+            Offer offer = offerMapper.toOffer(offerDto);
             long offerId = findOfferId(offer.getIdentificationCode());
             offer.setId(offerId);
             offerDao.delete(offer);
@@ -100,21 +110,21 @@ public class OfferServiceImp implements OfferService{
     }
 
     @Override
-    public void acceptOfferForOrder(OfferDto offerDto) {
-        Offer offer = modelMapper.map(offerDto, Offer.class);
+    public void acceptOfferForOrder(Offer offer) {
         long offerId = findOfferId(offer.getIdentificationCode());
+
         offer.setId(offerId);
         offer.setStatus(OfferStatus.ACCEPT);
         offerDao.save(offer);
         offer.getOrder().setExpert(offer.getExpert());
         offer.getOrder().setStatus(OrderStatus.WAITING_FOR_COMING_EXPERT_TO_YOUR_PLACE);
-        orderServiceImp.updateOrder(offer.getOrder());
+        orderService.updateOrder(offer.getOrder());
     }
 
     @Override
-    public List<Offer> findByOfferSortedByPriceAndExpertRate(Order orderDto) {
-        Order order = modelMapper.map(orderDto, Order.class);
-        long orderId = orderServiceImp.findOrderId(order.getIdentificationCode());
+    public List<Offer> findByOfferSortedByPriceAndExpertRate(OrderDto orderDto) {
+        Order order = orderMapper.toOrder(orderDto);
+        long orderId = orderService.findOrderId(order.getIdentificationCode());
         order.setId(orderId);
         List<Offer> offers = offerDao.findByOrderOrderBySuggestedPriceAsc(order);
         offers.sort(Comparator.comparing(Offer::getExpert));
@@ -122,8 +132,9 @@ public class OfferServiceImp implements OfferService{
     }
 
     @Override
-    public void updateOffer(OfferDto offerDto) {
-        Offer offer = modelMapper.map(offerDto, Offer.class);
+    public void updateOffer(OfferDto offerDto)  {
+        Offer offer = offerMapper.toOffer(offerDto);
+
         if (controlEdition.isValidToEdit(offer.getOrder().getStatus())) {
             long offerId = findOfferId(offer.getIdentificationCode());
             offer.setId(offerId);
@@ -134,7 +145,7 @@ public class OfferServiceImp implements OfferService{
     }
 
     @Override
-    public Offer findOrderByIdentificationCode(UUID identificationCode) {
+    public Offer findOfferByIdentificationCode(UUID identificationCode) {
         Optional<Offer> offer = offerDao.findByIdentificationCode(identificationCode);
         if (offer.isPresent())
             return offer.get();
@@ -144,7 +155,7 @@ public class OfferServiceImp implements OfferService{
 
     @Override
     public long findOfferId(UUID identificationCode) {
-        Offer offer = findOrderByIdentificationCode(identificationCode);
+        Offer offer = findOfferByIdentificationCode(identificationCode);
         return offer.getId();
     }
 
@@ -155,6 +166,15 @@ public class OfferServiceImp implements OfferService{
             return offer.get();
         else
             throw new OfferNotFound();
+    }
+
+    @Override
+    public List<OfferDto> findExpertOffer(ExpertDto expertDto) {
+        Expert expert = expertService.findExpertByEmail(expertDto.getEmail());
+        return offerDao.findByExpert(expert)
+                .stream()
+                .map(offerMapper::toOfferDto)
+                .collect(Collectors.toList());
     }
 }
 

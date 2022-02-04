@@ -21,7 +21,7 @@
                     <a href="<c:url value="/expert/login"/>" class="btn btn-outline-primary">Login</a>
                 </div>
                 <form:form cssClass=" p-1" modelAttribute="expertDto"
-                           enctype="multipart/form-data" action="submitSignup" method="post">
+                           enctype="multipart/form-data" action="/expert/submitSignup" method="post">
                     <p class="text-danger">${error}</p>
                     <table class="table table-bordered table-striped text-dark">
                         <tr>
@@ -111,10 +111,8 @@
                             </td>
                         </tr>
                     </table>
+                    <form:button name="submitSignup">submitSignup</form:button>
                 </form:form>
-                <a href="/expert/dashboard" type="button"
-                   class=" col-sm-6 justify-center btn btn-secondary btn-md mt-3 shadow-lg">
-                    select</a>
             </div>
         </div>
     </div>

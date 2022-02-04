@@ -2,23 +2,22 @@ package ir.maktab.web.controller;
 
 import ir.maktab.configuration.LastViewInterceptor;
 import ir.maktab.data.models.entities.SubService;
-import ir.maktab.data.models.enums.OrderStatus;
+import ir.maktab.dto.mapper.SubServiceMapper;
 import ir.maktab.dto.modelDtos.OfferDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
+import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.AccessDenied;
 import ir.maktab.exceptions.DuplicateEmail;
 import ir.maktab.exceptions.ExpertNotFound;
-import ir.maktab.services.ExpertService;
-import ir.maktab.services.OrderService;
-import ir.maktab.services.ServiceCategoryService;
-import ir.maktab.services.SubServiceService;
+import ir.maktab.services.*;
 import ir.maktab.services.validation.OnExpertLogin;
 import ir.maktab.services.validation.OnExpertSignup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+
 import org.springframework.validation.BindException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -42,6 +38,7 @@ public class ExpertController {
     private final ServiceCategoryService serviceCategoryService;
     private final SubServiceService subServiceService;
     private final OrderService orderService;
+    private final OfferService offerService;
 
 
     @GetMapping(value = "/signup")
@@ -72,91 +69,90 @@ public class ExpertController {
     }
 
     @GetMapping("/dashboard")
-    public String showDashboardPage(HttpSession httpSession){
+    public String showDashboardPage(HttpSession httpSession) {
 
-        if (httpSession.getAttribute("expertDto")==null)
+        if (httpSession.getAttribute("expertDto") == null)
             throw new AccessDenied();
 
         return "expert/dashboard";
     }
 
-    @GetMapping("/selectServiceCategory")
-    public ModelAndView showSelectServiceCategoryPage (HttpSession httpSession){
+    @GetMapping("/listOfServiceCategory")
+    public ModelAndView listOfServiceCategoryPage(HttpSession httpSession) {
 
-        if (httpSession.getAttribute("expertDto")==null)
+        if (httpSession.getAttribute("expertDto") == null)
             throw new AccessDenied();
 
-        List<ServiceCategoryDto> allServiceCategories = serviceCategoryService.findAll();
+        List<String> categoryServiceAll = serviceCategoryService.findAll().
+                stream().
+                map(ServiceCategoryDto::getName).
+                collect(Collectors.toList());
 
-        Map<String, Object> model = new HashMap<>();
-        model.put("allServiceCategories", new ArrayList<ServiceCategoryDto>());
-        model.put("serviceCategoryDto", new ServiceCategoryDto());
-
-        return new ModelAndView("expert/selectServiceCategory",model);
+        return new ModelAndView("expert/selectServiceCategory", "categoryServiceAll", categoryServiceAll);
     }
 
-    @PostMapping(value = "/selectServiceCategoryProcess" )
-    public String selectServiceCategoryProcess(HttpSession httpSession ,
-                                               @ModelAttribute("serviceCategoryDto") ServiceCategoryDto serviceCategoryDto){
-
-        if (httpSession.getAttribute("expertDto")==null)
+    @GetMapping("/selectServiceCategory/{name}")
+    public ModelAndView showSelectSubServicePage(HttpSession httpSession, @PathVariable String name) {
+        if (httpSession.getAttribute("expertDto") == null)
             throw new AccessDenied();
-        List<ServiceCategoryDto> allServiceCategories = serviceCategoryService.findAll();
-        httpSession.setAttribute("serviceCategoryDto",serviceCategoryDto);
 
-        return "expert/selectSubService";
-    }
+        List<String> subServiceDtoList = subServiceService.findSubServicesOfServiceCategory(name).
+                stream().
+                map(SubServiceDto::getName).
+                collect(Collectors.toList());
 
-    @GetMapping("/selectSubService")
-    public ModelAndView showSelectSubServicePage(HttpSession httpSession){
-
-        if (httpSession.getAttribute("expertDto") == null) {
-            throw new AccessDenied();
-        }
-
-        List<String> subServices= subServiceService.findAll().stream()
-                .map(SubServiceDto::getName)
-                .collect(Collectors.toList());
-
-
-        Map<String, Object> model = new HashMap<>();
-        model.put("subServices",subServices );
-        model.put("subServiceDto", new SubServiceDto());
-
-        return new ModelAndView("expert/selectSubService", model);
+        return new ModelAndView("expert/selectSubService", "subServiceDtoList", subServiceDtoList);
     }
 
     @PostMapping("/selectSubService")
-    public String selectSubServiceProcess(HttpSession httpSession,
-                                          @RequestParam("subServiceName")String subServiceName){
+    public ModelAndView selectSubServiceProcess(HttpSession httpSession,
+                                                @RequestParam("subServiceName") String subServiceName) {
 
         ExpertDto expertDto = (ExpertDto) httpSession.getAttribute("expertDto");
-        if ( expertDto == null)
+
+        if (expertDto == null)
             throw new AccessDenied();
 
         expertService.addSubServiceToExpertSubServices(expertDto,subServiceName);
 
-        return "expert/dashboard";
+        return new ModelAndView("expert/listOfSubService", "orderDto", new OrderDto());
 
     }
 
-
     @GetMapping("/listOfOrders")
-    public ModelAndView showListOfOrder(HttpSession httpSession){
+    public ModelAndView showListOfOrder(HttpSession httpSession) {
+
+        ExpertDto expertDto = (ExpertDto) httpSession.getAttribute("expertDto");
+
+        if (expertDto == null)
+            throw new AccessDenied();
+
+        List<OrderDto> orderDtoList =
+                orderService.findOrderForExpertBasedOnSubService(expertDto);
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("orderDtoList", orderDtoList);
+        model.put("OrderDto", new OfferDto());
+
+        return new ModelAndView("/expert/selectOrder", model);
+    }
+
+    @GetMapping("/selectOrder/{identificationCode}")
+    public ModelAndView showSubmitOrderPage(@PathVariable String identificationCode, HttpSession httpSession) {
 
         if (httpSession.getAttribute("expertDto") == null) {
             throw new AccessDenied();
         }
 
-        List<OrderDto> orderDtoList = orderService.findOrderByStatus(OrderStatus.WAITING_FOR_CHOOSING_EXPERT);
+        OrderDto orderDto = orderService.findOrderDtoByIdentificationCode(UUID.fromString(identificationCode));
+        httpSession.setAttribute("orderDto",orderDto);
+
 
         Map<String, Object> model = new HashMap<>();
-        model.put("orderDtoList",orderDtoList );
-        model.put("OrderDto", new OfferDto());
+        model.put("offerDto",new OfferDto());
 
-        return new ModelAndView("/expert/listOfOrders",model);
+        return new ModelAndView("/offer/submitOffer",model);
     }
-
 
 
     @ExceptionHandler(value = ExpertNotFound.class)
@@ -180,6 +176,7 @@ public class ExpertController {
         String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);
         return new ModelAndView(lastView, ex.getBindingResult().getModel());
     }
+
     @ExceptionHandler(value = AccessDenied.class)
     public ModelAndView bindExceptionHandler(AccessDenied ex, HttpServletRequest request) {
         String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);

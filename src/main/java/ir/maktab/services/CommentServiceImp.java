@@ -2,6 +2,8 @@ package ir.maktab.services;
 
 import ir.maktab.data.dao.CommentDao;
 import ir.maktab.data.models.entities.Comment;
+import ir.maktab.data.models.entities.Order;
+import ir.maktab.dto.mapper.CommentMapper;
 import ir.maktab.dto.modelDtos.CommentDto;
 import ir.maktab.exceptions.CommentNotFound;
 import ir.maktab.exceptions.EditionDenied;
@@ -9,7 +11,6 @@ import ir.maktab.exceptions.InvalidRate;
 import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,37 +20,37 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CommentServiceImp implements CommentService {
     private final CommentDao commentDao;
-    private final ControlInput controlInput;
-    private final ModelMapper modelMapper;
+    private final OrderService orderService;
+    private final CommentMapper commentMapper;
     private final ControlEdition controlEdition;
 
     @Override
     public void saveComment(CommentDto commentDto) {
-        if (controlInput.isValidRate(commentDto.getRate())) {
-            Comment comment = modelMapper.map(commentDto, Comment.class);
-            commentDao.save(comment);
-        } else
-            throw new InvalidRate();
+        Order order = orderService.findOrderByIdentificationCode(commentDto.getOrder().getIdentificationCode());
+        Comment comment = commentMapper.toComment(commentDto);
+        comment.setIdentificationCode(UUID.randomUUID());
+        comment.setOrder(order);
+        commentDao.save(comment);
+
     }
 
     @Override
     public void updateComment(CommentDto commentDto) {
-        if (controlInput.isValidRate(commentDto.getRate())) {
 
-            Comment comment = modelMapper.map(commentDto, Comment.class);
+
+            Comment comment = commentMapper.toComment(commentDto);
             long commentId = findCommentId(commentDto.getIdentificationCode());
+
             comment.setId(commentId);
 
             commentDao.save(comment);
-        } else
-            throw new InvalidRate();
     }
 
     @Override
     public void deleteComment(CommentDto commentDto) {
         if (controlEdition.isValidToEdit(commentDto.getOrder().getStatus())) {
 
-            Comment comment = modelMapper.map(commentDto, Comment.class);
+            Comment comment = commentMapper.toComment(commentDto);
             long commentId = findCommentId(commentDto.getIdentificationCode());
             comment.setId(commentId);
 

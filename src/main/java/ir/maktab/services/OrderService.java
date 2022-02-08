@@ -41,6 +41,8 @@ public interface OrderService {
 
     void updateOrder(Order order);
 
+    void updateOrderForAcceptOrder(Order order);
+
     void setOrderDtoStatusDone(OrderDto orderDto);
 
     List<OrderDto> findOrderByStatusAndSubService(OrderStatus orderStatus, SubService subService);

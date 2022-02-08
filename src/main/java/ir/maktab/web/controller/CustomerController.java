@@ -1,9 +1,11 @@
 package ir.maktab.web.controller;
 
-import ir.maktab.configuration.LastViewInterceptor;
 import ir.maktab.data.models.entities.Offer;
 import ir.maktab.data.models.entities.Order;
+import ir.maktab.data.models.enums.OrderStatus;
+import ir.maktab.dto.modelDtos.CommentDto;
 import ir.maktab.dto.modelDtos.OfferDto;
+import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.exceptions.AccessDenied;
 import ir.maktab.exceptions.CustomerNotFound;
@@ -69,7 +71,7 @@ public class CustomerController {
         return null;
     }
 
-    @GetMapping("listOfOrder")
+    @GetMapping("/listOfOrder")
     public ModelAndView showListOfOrderPage (@SessionAttribute("customerDto")CustomerDto customerDto){
 
         if(customerDto==null)
@@ -81,21 +83,38 @@ public class CustomerController {
     }
 
     @GetMapping("/selectOrder/{identificationCode}")
-    public ModelAndView showOfferOfOrderPage(@SessionAttribute("customerDto")CustomerDto customerDto,
+    public ModelAndView showOfferOfOrderPage(HttpSession httpSession ,
                                              @PathVariable String identificationCode){
-        if (customerDto==null)
+        if (httpSession.getAttribute("customerDto")==null)
             throw new AccessDenied();
 
-        Order order = orderService.findOrderByIdentificationCode(UUID.fromString(identificationCode));
-        List<OfferDto> offerDtosOfOrder = offerService.findOfferDtosOfOrder(order);
+        OrderDto orderDto = orderService.findOrderDtoByIdentificationCode(UUID.fromString(identificationCode));
+        httpSession.setAttribute("orderDto",orderDto);
 
-        return new ModelAndView("customer/showOfferOfOrder","offerDtosOfOrder",offerDtosOfOrder);
+        if (orderDto.getStatus()== OrderStatus.WAITING_FOR_CHOOSING_EXPERT) {
+            List<OfferDto> offerDtosOfOrder = offerService.findOfferDtosOfOrder(orderDto);
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("orderDto", orderDto);
+            model.put("offerDtosOfOrder", offerDtosOfOrder);
+
+            return new ModelAndView("/customer/showOfferOfOrder",model);
+        }
+        else{
+            OfferDto acceptedOfferOfOrder = offerService.findAcceptedOfferOfOrder(orderDto);
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("orderDto", orderDto);
+            model.put("acceptedOfferOfOrder", acceptedOfferOfOrder);
+            model.put("orderStatus",OrderStatus.DONE);
+
+            return new ModelAndView("/order/showOrderMenuForCustomer",model);
+        }
     }
 
     @GetMapping("/showOfferOfOrder/{identificationCode}")
-    public ModelAndView showOfferDtosOfOrderPage(@SessionAttribute("customerDto")CustomerDto customerDto,
-                                                 @PathVariable String identificationCode,
-                                                 HttpServletRequest request) throws ParseException {
+    public String acceptOfferOfOrderPage(@SessionAttribute("customerDto")CustomerDto customerDto,
+                                                 @PathVariable String identificationCode) throws ParseException {
 
         if (customerDto==null)
             throw new AccessDenied();
@@ -103,9 +122,7 @@ public class CustomerController {
         Offer offer = offerService.findOfferByIdentificationCode(UUID.fromString(identificationCode));
         offerService.acceptOfferForOrder(offer);
 
-        String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);
-
-        return new ModelAndView(lastView);
+        return "/customer/showOfferOfOrder";
     }
 
     @ExceptionHandler(value = CustomerNotFound.class)
@@ -113,7 +130,7 @@ public class CustomerController {
         Map<String, Object> model = new HashMap<>();
         model.put("customerDto", new CustomerDto());
         model.put("error", ex.getMessage());
-        return new ModelAndView("customer/login", model);
+        return new ModelAndView("/customer/login", model);
     }
 
     @ExceptionHandler(value = DuplicateEmail.class)
@@ -121,6 +138,6 @@ public class CustomerController {
         Map<String, Object> model = new HashMap<>();
         model.put("customerDto", new CustomerDto());
         model.put("error", ex.getMessage());
-        return new ModelAndView("customer/signup", model);
+        return new ModelAndView("/customer/signup", model);
     }
 }

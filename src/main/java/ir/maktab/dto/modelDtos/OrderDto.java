@@ -1,19 +1,17 @@
 package ir.maktab.dto.modelDtos;
 
-import ir.maktab.data.models.entities.Offer;
+import ir.maktab.data.models.enums.OrderStatus;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ir.maktab.data.models.enums.OrderStatus;
 import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Data

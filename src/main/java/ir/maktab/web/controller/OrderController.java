@@ -2,6 +2,7 @@ package ir.maktab.web.controller;
 
 import ir.maktab.configuration.LastViewInterceptor;
 import ir.maktab.dto.mapper.SubServiceMapper;
+import ir.maktab.dto.modelDtos.CommentDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
@@ -92,6 +93,17 @@ public class OrderController {
         return "order/showCustomerOrders";
     }
 
+    @GetMapping("/payOrder")
+
+    public ModelAndView showPayOrderPage (@SessionAttribute("customerDto")CustomerDto customerDto,
+                                          @SessionAttribute("orderDto") OrderDto orderDto,
+                                          @ModelAttribute("commentDto") CommentDto commentDto) {
+
+        if (customerDto != null && orderDto != null)
+            throw new AccessDenied();
+return null;
+
+    }
 
     @ExceptionHandler(value = OrderWithoutSubService.class)
     public String signupExceptionHandler(OrderWithoutSubService ex) {

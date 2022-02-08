@@ -136,9 +136,11 @@ public class OrderServiceImp implements OrderService{
     @Override
     public Order findOrderByIdentificationCode(UUID identificationCode) {
         Optional<Order> order = orderDao.findByIdentificationCode(identificationCode);
-        if (order.isPresent())
-            return order.get();
-        else throw new OrderNotFound();
+
+        if (order.isEmpty())
+        throw new OrderNotFound();
+
+        return order.get();
     }
 
     @Override
@@ -176,6 +178,13 @@ public class OrderServiceImp implements OrderService{
             orderDao.save(order);
         } else
             throw new EditionDenied();
+    }
+
+    @Override
+    public void updateOrderForAcceptOrder(Order order) {
+        long orderId = findOrderId(order.getIdentificationCode());
+        order.setId(orderId);
+        orderDao.save(order);
     }
 
     @Override

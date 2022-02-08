@@ -24,17 +24,21 @@ public interface OfferService {
     void editSuggestedDurationOfService(OfferDto offerDto, String suggestedDurationOfService)throws ParseException;
 
 
-    List<OfferDto> findOfferDtosOfOrder(Order order);
+    List<OfferDto> findOfferDtosOfOrder(OrderDto orderDto);
+
+    OfferDto findAcceptedOfferOfOrder (OrderDto orderDto);
 
     void deleteOfferFromOrder(OfferDto offerDto) throws ParseException;
 
     void acceptOfferForOrder(Offer offer) throws ParseException;
 
-    List<Offer> findByOfferSortedByPriceAndExpertRate(OrderDto orderDto);
+    List<OfferDto> findByOfferSortedByPriceAndExpertRate(OrderDto orderDto);
 
     void updateOffer(OfferDto offerDto) throws ParseException;
 
     Offer findOfferByIdentificationCode(UUID identificationCode);
+
+    OfferDto findOfferDtoByIdentificationCode(UUID identificationCode);
 
     long findOfferId(UUID identificationCode);
 

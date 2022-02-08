@@ -35,7 +35,7 @@
                                     <td>${order.suggestedPrice}</td>
                                     <td>${order.address.address}</td>
                                     <td>
-                                        <a href="/expert/selectOrder/${order.identificationCode}"
+                                        <a href="/customer/selectOrder/${order.identificationCode}"
                                            class="btn btn-outline-secondary btn-sm  shadow-lg">
                                             select</a>
                                     </td>

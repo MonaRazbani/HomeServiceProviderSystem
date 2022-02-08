@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/offer")
@@ -34,19 +35,43 @@ public class OfferController {
         offerDto.setExpert(expertDto);
         offerDto.setOrder(orderDto);
 
-            offerService.saveOffer(offerDto);
+        offerService.saveOffer(offerDto);
 
         return new ModelAndView("/offer/expertOffers");
     }
 
     @GetMapping("expertOffer")
-    public ModelAndView showListOfOffersPage(HttpSession httpSession){
+    public ModelAndView showListOfOffersPage(HttpSession httpSession) {
 
         ExpertDto expertDto = (ExpertDto) httpSession.getAttribute("expertDto");
-        if (expertDto ==null)
+        if (expertDto == null)
             throw new AccessDenied();
         List<OfferDto> expertOffers = offerService.findExpertOffer(expertDto);
 
-        return new ModelAndView("/offer/expertOffers","expertOffers",expertOffers);
+        return new ModelAndView("/offer/expertOffers", "expertOffers", expertOffers);
     }
+
+    @GetMapping("/expertOffers")
+    public ModelAndView showExpertOffersPage(@SessionAttribute("expertDto") ExpertDto expertDto) {
+
+        if (expertDto == null)
+            throw new AccessDenied();
+
+        List<OfferDto> expertOffers = offerService.findExpertOffer(expertDto);
+
+        return new ModelAndView("/offer/expertOffers", "expertOffers", expertOffers);
+    }
+    @GetMapping("/expertOffer/{identificationCode}")
+    public ModelAndView selectOfferFromExpertOffers(@SessionAttribute("expertDto") ExpertDto expertDto,
+                                                    @PathVariable String identificationCode){
+        if(expertDto==null)
+            throw new AccessDenied();
+
+        OfferDto offerDto = offerService.findOfferDtoByIdentificationCode(UUID.fromString(identificationCode));
+
+        return new ModelAndView("offer/showOfferMenuForExpert","offerDto",offerDto);
+    }
+ /*   @GetMapping("/changeOrderStatus")
+    public ModelAndView showChangeStatusPage*/
 }
+

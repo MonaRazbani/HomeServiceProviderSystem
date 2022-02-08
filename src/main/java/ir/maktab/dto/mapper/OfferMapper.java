@@ -8,9 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 @Configuration
 public class OfferMapper {
     private final ModelMapper modelMapper;

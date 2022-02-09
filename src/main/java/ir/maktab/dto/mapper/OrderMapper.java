@@ -10,18 +10,18 @@ import ir.maktab.dto.modelDtos.CommentDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class OrderMapper {
     private final ModelMapper modelMapper;
+    public final CommentMapper commentMapper;
 
-    @Autowired
-    public OrderMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
+
 
     public Order toOrder(OrderDto orderDto) {
         Order order = Order.builder()
@@ -37,7 +37,7 @@ public class OrderMapper {
             order.setExpert(modelMapper.map(orderDto.getExpert(), Expert.class));
 
         if (orderDto.getComment() != null)
-            order.setComment(modelMapper.map(orderDto.getComment(), Comment.class));
+            order.setComment(commentMapper.toComment(orderDto.getComment()));
 
         if (orderDto.getAddress() != null)
             order.setAddress(modelMapper.map(orderDto.getAddress(), Address.class));
@@ -65,7 +65,7 @@ public class OrderMapper {
             orderDto.setExpert(modelMapper.map(order.getExpert(), ExpertDto.class));
 
         if (order.getComment() != null)
-            orderDto.setComment(modelMapper.map(order.getComment(), CommentDto.class));
+            orderDto.setComment(commentMapper.toCommentDto(order.getComment()));
 
         if (order.getStatus() != null)
             orderDto.setStatus(order.getStatus());
@@ -76,4 +76,5 @@ public class OrderMapper {
         return orderDto;
 
     }
+
 }

@@ -33,7 +33,7 @@ public class OfferDto {
 
     @DateTimeFormat(pattern = "hh:mm")
     @NotNull
-    private Date startDate ;
+    private String startDate ;
 
     private OrderDto order;
 

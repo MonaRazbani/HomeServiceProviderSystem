@@ -22,7 +22,7 @@ public class CommentController {
         if(customerDto==null && orderDto==null)
             throw new AccessDenied();
 
-        return new ModelAndView("comment/submitComment","commentDto",new CommentDto());
+        return new ModelAndView("order/submitComment","commentDto",new CommentDto());
     }
     @PostMapping("/submitComment")
     public String submitCommentProcess (@SessionAttribute("customerDto")CustomerDto customerDto,
@@ -32,8 +32,7 @@ public class CommentController {
         if(customerDto==null && orderDto==null)
             throw new AccessDenied();
 
-        commentDto.setOrder(orderDto);
-        commentService.saveComment(commentDto);
+
         return "/customer/dashboard";
     }
 }

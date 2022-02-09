@@ -3,7 +3,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>change offer status</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
           integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/css/table.css">
@@ -11,6 +11,7 @@
 </head>
 
 <body>
+<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" action="/offer/changeOrderStatus" method="post">
     <div style="position: relative;">
         <div class="bg-image">
         </div>
@@ -21,7 +22,7 @@
                         <div class="list-group">
                             <table class="table table-striped table-light table-hover ">
                                 <tr>
-                                    <th>customer name </th>
+                                    <th>customer name</th>
                                     <th>subService</th>
                                     <th>explanation</th>
                                     <th>suggestedPrice</th>
@@ -30,8 +31,8 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        ${sessionScope.offerDto.order.customer.firstName }
-                                        ${sessionScope.offerDto.order.customer.lastName} </td>
+                                            ${sessionScope.offerDto.order.customer.firstName }
+                                            ${sessionScope.offerDto.order.customer.lastName} </td>
                                     <td>${sessionScope.offerDto.order.subService.name}</td>
                                     <td>${sessionScope.offerDto.order.explanation}</td>
                                     <td>${sessionScope.offerDto.order.suggestedPrice}</td>
@@ -53,33 +54,33 @@
                                     <td>${sessionScope.offerDto.status}</td>
                                 </tr>
                             </table>
+                            WAITING_FOR_CHOOSING_EXPERT,
+                            WAITING_FOR_COMING_EXPERT_TO_YOUR_PLACE,
+                            STARTED,
+                            DONE,
+                            PAID
 
-                            <div class="row justify-content-center">
-                            <c:if test="${sessionScope.offerDto.status=='WAITING_FOR_ACCEPT'}">
-                                    <a href="/offer/editOfferStartDate" type="button"
-                                       class=" justify-content-center col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"
-                                       id="btnPay"> edit start date </a>
-
-                                <a href="/offer/editOfferSuggestedPrice" type="button"
+                            <c:if test="${sessionScope.offerDto.order.status=='WAITING_FOR_COMING_EXPERT_TO_YOUR_PLACE' }">
+                                <a href="/offer/changeOrderStatus/${"STARTED"}" type="button"
                                    class=" justify-content-center col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"
-                                   id="btnPay"> edit suggested price  </a>
-                                <a href="/offer/editOfferSuggestedDurationOfService" type="button"
-                                   class=" justify-content-center col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"
-                                   id="btnPay"> edit suggested Duration Of Service  </a>
-
+                                   id="btnPay"> STARTED </a>
                             </c:if>
-                                <c:if test="${sessionScope.offerDto.status=='ACCEPT'}">
-                                    <a href="/offer/changeOrderStatus" type="button"
-                                       class=" justify-content-center col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"
-                                       id="btnPay"> change order status </a>
-                                </c:if>
-                            </div>
+
+
+                            <c:if test="${sessionScope.offerDto.order.status=='STARTED' }">
+                                <a href="/offer/changeOrderStatus/${"DONE"}" type="button"
+                                   class=" justify-content-center col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"
+                                   id="btnPay"> DONE </a>
+                            </c:if>
+
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
 
+</form:form>
+</body>
 </html>

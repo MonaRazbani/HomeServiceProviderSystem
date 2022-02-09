@@ -125,6 +125,13 @@ public class CustomerController {
         return "/customer/showOfferOfOrder";
     }
 
+    @GetMapping("logout")
+    public String logout(HttpSession httpSession){
+        httpSession.removeAttribute("customerDto");
+        return "/index";
+    }
+
+
     @ExceptionHandler(value = CustomerNotFound.class)
     public ModelAndView loginExceptionHandler(CustomerNotFound ex) {
         Map<String, Object> model = new HashMap<>();

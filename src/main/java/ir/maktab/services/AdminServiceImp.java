@@ -56,6 +56,7 @@ public class AdminServiceImp implements AdminService{
 
 
         Specification<User> specification = UserSpecifications.userFilter(userCategoryDto);
+
         return userDao
                 .findAll(specification, pageable)
                 .stream()

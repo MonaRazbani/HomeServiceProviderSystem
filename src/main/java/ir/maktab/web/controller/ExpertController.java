@@ -154,6 +154,13 @@ public class ExpertController {
         return new ModelAndView("/offer/submitOffer",model);
     }
 
+    @GetMapping("logout")
+    public String logout(HttpSession httpSession){
+        httpSession.removeAttribute("expertDto");
+        return "/index";
+    }
+
+
 
     @ExceptionHandler(value = ExpertNotFound.class)
     public ModelAndView loginExceptionHandler(ExpertNotFound ex) {

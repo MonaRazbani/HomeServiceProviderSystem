@@ -26,5 +26,5 @@ public class CommentDto {
     @Max(value = 5 ,message = "rate between 1-5")
     private Double rate ;
     private String comment ;
-    private OrderDto order;
+
 }

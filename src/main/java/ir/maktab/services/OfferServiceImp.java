@@ -35,7 +35,7 @@ public class OfferServiceImp implements OfferService {
 
 
     @Override
-    public OfferDto saveOffer(OfferDto offerDto) {
+    public OfferDto saveOffer(OfferDto offerDto) throws ParseException {
 
         if (controlEdition.isValidToEdit(offerDto.getOrder().getStatus())) {
 
@@ -52,22 +52,32 @@ public class OfferServiceImp implements OfferService {
     }
 
     @Override
-    public void editStartDateOffer(OfferDto offerDto, String startDateString) throws ParseException {
-        Date startDate = new SimpleDateFormat("HH:mm").parse(startDateString);
+    public OfferDto editStartDateOffer(OfferDto offerDto, String startDate) throws ParseException {
         offerDto.setStartDate(startDate);
-        updateOffer(offerDto);
+      return   offerMapper.toOfferDto(updateOffer(offerDto));
     }
 
     @Override
-    public void editOfferSuggestedPrice(OfferDto offerDto, String suggestedPrice) {
+    public OfferDto editOfferSuggestedPrice(OfferDto offerDto, String suggestedPrice) throws ParseException {
         offerDto.setSuggestedPrice(suggestedPrice);
-        updateOffer(offerDto);
+        Offer offer = updateOffer(offerDto);
+        return   offerMapper.toOfferDto(offer);
+        }
+
+    @Override
+    public OfferDto editSuggestedDurationOfService(OfferDto offerDto, String suggestedDurationOfService) throws ParseException {
+        offerDto.setSuggestedDurationOfService(suggestedDurationOfService);
+
+       return offerMapper.toOfferDto(updateOffer(offerDto));
     }
 
     @Override
-    public void editSuggestedDurationOfService(OfferDto offerDto, String suggestedDurationOfService) {
-        offerDto.setSuggestedDurationOfService(suggestedDurationOfService);
-        updateOffer(offerDto);
+    public OfferDto changeOrderStatus(OfferDto offerDto, String orderStatus) throws ParseException {
+        Offer offer = findOfferByIdentificationCode(offerDto.getIdentificationCode());
+        orderService.changeOrderStatus(offer.getOrder(),OrderStatus.valueOf(orderStatus));
+
+        return
+                offerMapper.toOfferDto(findOfferByIdentificationCode(offerDto.getIdentificationCode()));
     }
 
 
@@ -99,7 +109,7 @@ public class OfferServiceImp implements OfferService {
     }
 
     @Override
-    public void deleteOfferFromOrder(OfferDto offerDto) {
+    public void deleteOfferFromOrder(OfferDto offerDto) throws ParseException {
         if (controlEdition.isValidToEdit(offerDto.getOrder().getStatus())) {
             Offer offer = offerMapper.toOffer(offerDto);
             long offerId = findOfferId(offer.getIdentificationCode());
@@ -111,21 +121,17 @@ public class OfferServiceImp implements OfferService {
     @Override
     public void acceptOfferForOrder(Offer offer) {
 
-        long offerId = findOfferId(offer.getIdentificationCode());
-        offer.setId(offerId);
-
         List<Offer> offers = offerDao.findByOrder(offer.getOrder());
         for (Offer offerOfOrder : offers) {
             if (offerOfOrder.equals(offer)) {
-                offer.setStatus(OfferStatus.ACCEPT);
+                offerOfOrder.setStatus(OfferStatus.ACCEPT);
             } else {
                 offerOfOrder.setStatus(OfferStatus.NOT_ACCEPT);
             }
             offerDao.save(offerOfOrder);
         }
         offer.getOrder().setExpert(offer.getExpert());
-        offer.getOrder().setStatus(OrderStatus.WAITING_FOR_COMING_EXPERT_TO_YOUR_PLACE);
-        orderService.updateOrderForAcceptOrder(offer.getOrder());
+        orderService.changeOrderStatus(offer.getOrder(),OrderStatus.WAITING_FOR_COMING_EXPERT_TO_YOUR_PLACE);
     }
 
     @Override
@@ -142,13 +148,15 @@ public class OfferServiceImp implements OfferService {
     }
 
     @Override
-    public void updateOffer(OfferDto offerDto) {
+    public Offer updateOffer(OfferDto offerDto) throws ParseException {
         Offer offer = offerMapper.toOffer(offerDto);
 
         if (controlEdition.isValidToEdit(offer.getOrder().getStatus())) {
             long offerId = findOfferId(offer.getIdentificationCode());
             offer.setId(offerId);
-            offerDao.save(offer);
+            offer.setOrder(orderService.findOrderByIdentificationCode(offer.getOrder().getIdentificationCode()));
+            offer.setExpert(expertService.findExpertByEmail(offer.getExpert().getEmail()));
+            return offerDao.save(offer);
         } else {
             throw new EditionDenied();
         }

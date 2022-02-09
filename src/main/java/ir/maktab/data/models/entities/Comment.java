@@ -26,6 +26,4 @@ public class Comment {
 
     private String comment ;
 
-    @OneToOne
-    private Order order;
 }

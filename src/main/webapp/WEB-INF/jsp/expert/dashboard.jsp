@@ -20,6 +20,8 @@
                        class="col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg "> add subService</a>
                     <a href="/expert/listOfOrders" type="button"
                        class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> find Order </a>
+                    <a href="/offer/expertOffers" type="button"
+                       class=" col-sm-12 btn btn-secondary btn-md mb-2 shadow-lg"> find Order </a>
 
                 </div>
             </div>

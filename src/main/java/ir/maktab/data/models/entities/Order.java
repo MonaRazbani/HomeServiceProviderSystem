@@ -49,11 +49,9 @@ public class Order {
     @Enumerated(value = EnumType.STRING)
     private OrderStatus status;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Comment comment ;
 
-    @ToString.Exclude
-    @OneToMany (cascade = CascadeType.ALL , mappedBy = "order")
-    private List<Offer> offerList;
+
 
 }

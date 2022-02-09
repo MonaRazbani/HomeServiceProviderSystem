@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AddressServiceImp implements AddressService {
+public class AddressServiceImp implements AddressService  {
     private final AddressDao addressDao;
     private final ModelMapper modelMapper;
 

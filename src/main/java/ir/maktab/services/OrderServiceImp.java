@@ -1,9 +1,11 @@
 package ir.maktab.services;
 
 import ir.maktab.data.dao.OrderDao;
+import ir.maktab.data.models.entities.Comment;
 import ir.maktab.data.models.entities.SubService;
 import ir.maktab.dto.mapper.OrderMapper;
 import ir.maktab.dto.modelDtos.AddressDto;
+import ir.maktab.dto.modelDtos.CommentDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
@@ -39,6 +41,7 @@ public class OrderServiceImp implements OrderService{
     private final SubServiceService subServiceService;
     private final ModelMapper modelMapper;
     private final OrderMapper orderMapper;
+    private final CommentService commentService;
 
 
     @Override
@@ -174,28 +177,13 @@ public class OrderServiceImp implements OrderService{
 
         if (controlEdition.isValidToEdit(order.getStatus())) {
             long orderId = findOrderId(order.getIdentificationCode());
+            order.setCustomer(customerService.findCustomerByEmail(order.getCustomer().getEmail()));
             order.setId(orderId);
             orderDao.save(order);
         } else
             throw new EditionDenied();
     }
 
-    @Override
-    public void updateOrderForAcceptOrder(Order order) {
-        long orderId = findOrderId(order.getIdentificationCode());
-        order.setId(orderId);
-        orderDao.save(order);
-    }
-
-    @Override
-    public void setOrderDtoStatusDone(OrderDto orderDto) {
-        Order order = findOrderByIdentificationCode(orderDto.getIdentificationCode());
-        if (controlEdition.isValidToEdit(order.getStatus())) {
-            order.setStatus(OrderStatus.DONE);
-            orderDao.save(order);
-        } else
-            throw new EditionDenied();
-    }
 
     @Override
     public List<OrderDto> findOrderByStatusAndSubService(OrderStatus orderStatus, SubService subService) {
@@ -222,6 +210,20 @@ public class OrderServiceImp implements OrderService{
             orderList.addAll(orderByStatusAndSubService);
         }
         return orderList;
+    }
+
+    @Override
+    public void changeOrderStatus(Order order,OrderStatus orderStatus) {
+        order.setStatus(orderStatus);
+        orderDao.save(order);
+    }
+
+    @Override
+    public void setCommentForOrder(OrderDto orderDto, CommentDto commentDto) {
+        Order order = findOrderByIdentificationCode(orderDto.getIdentificationCode());
+        Comment comment = commentService.saveComment(commentDto);
+        order.setComment(comment);
+        orderDao.save(order);
     }
 
 }

@@ -6,7 +6,7 @@ import ir.maktab.dto.modelDtos.CommentDto;
 import java.util.UUID;
 
 public interface CommentService {
-     void saveComment(CommentDto commentDto);
+     Comment saveComment(CommentDto commentDto);
 
      void updateComment(CommentDto commentDto) ;
 

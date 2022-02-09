@@ -1,11 +1,4 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: Asus
-  Date: 2/8/2022
-  Time: 2:09 PM
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
@@ -17,7 +10,7 @@
 </head>
 
 <body>
-<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" action="/comment/submitComment" method="post"
+<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" action="/order/submitComment" method="post"
            modelAttribute="commentDto">
 <div style="position: relative;">
     <div class="bg-image">

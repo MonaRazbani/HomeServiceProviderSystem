@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" action="/offer/expertOffer" method="get" modelAttribute="expertOffers">
+<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" action="/offer/expertOffers" method="get" modelAttribute="offerDto">
 <div style="position: relative;">
     <div class="bg-image">
     </div>

@@ -6,15 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@RequiredArgsConstructor
 public class CommentMapper {
-    private final OrderMapper orderMapper;
 
 
     public Comment toComment(CommentDto commentDto) {
         Comment comment = Comment.builder()
                 .rate(commentDto.getRate())
-                .order(orderMapper.toOrder(commentDto.getOrder()))
                 .build();
         if (commentDto.getIdentificationCode()!=null)
             comment.setIdentificationCode(commentDto.getIdentificationCode());
@@ -28,7 +25,6 @@ public class CommentMapper {
         CommentDto commentDto = CommentDto.builder()
                 .identificationCode(comment.getIdentificationCode())
                 .rate(comment.getRate())
-                .order(orderMapper.toOrderDto(comment.getOrder()))
                 .build();
 
         if (comment.getComment() != null)

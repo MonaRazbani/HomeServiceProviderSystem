@@ -11,8 +11,7 @@
 </head>
 
 <body>
-<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" action="/order/showOrderMenu" method="get"
-           modelAttribute="commentDto">
+<form:form cssClass="p-1 my-5 mx-5" enctype="multipart/form-data" action="/order/showOrderMenu" method="get">
     <div style="position: relative;">
         <div class="bg-image">
         </div>
@@ -54,11 +53,10 @@
                                     <td>${acceptedOfferOfOrder.suggestedDurationOfService}</td>
                                 </tr>
                             </table>
-
-
+                            <div class="row justify-content-center">
                             <c:if test="${orderDto.status=='DONE'}">
 
-                                <c:if test="${orderDto.comment!=null}">
+                                <c:if test="${orderDto.comment==null}">
                                     <a href="/comment/submitComment" type="button"
                                        class=" justify-content-center col-sm-6 btn btn-secondary btn-md mb-2 shadow-lg"
                                        id="btnPay"> comment </a>
@@ -68,6 +66,7 @@
                                    id="btnPay"> Pay </a>
 
                             </c:if>
+                            </div>
                         </div>
                     </div>
                 </div>

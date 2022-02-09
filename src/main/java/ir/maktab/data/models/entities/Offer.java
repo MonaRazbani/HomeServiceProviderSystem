@@ -2,10 +2,7 @@ package ir.maktab.data.models.entities;
 
 import ir.maktab.data.models.entities.roles.Expert;
 import ir.maktab.data.models.enums.OfferStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -17,12 +14,13 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id ;
 
+    @EqualsAndHashCode.Include
     @Column(columnDefinition = "BINARY(16)")
     private UUID identificationCode;
 

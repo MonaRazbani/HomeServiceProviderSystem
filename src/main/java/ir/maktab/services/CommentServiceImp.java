@@ -20,18 +20,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CommentServiceImp implements CommentService {
     private final CommentDao commentDao;
-    private final OrderService orderService;
     private final CommentMapper commentMapper;
     private final ControlEdition controlEdition;
 
     @Override
-    public void saveComment(CommentDto commentDto) {
-        Order order = orderService.findOrderByIdentificationCode(commentDto.getOrder().getIdentificationCode());
+    public Comment  saveComment(CommentDto commentDto) {
         Comment comment = commentMapper.toComment(commentDto);
         comment.setIdentificationCode(UUID.randomUUID());
-        comment.setOrder(order);
-        commentDao.save(comment);
-
+       return commentDao.save(comment);
     }
 
     @Override
@@ -48,7 +44,6 @@ public class CommentServiceImp implements CommentService {
 
     @Override
     public void deleteComment(CommentDto commentDto) {
-        if (controlEdition.isValidToEdit(commentDto.getOrder().getStatus())) {
 
             Comment comment = commentMapper.toComment(commentDto);
             long commentId = findCommentId(commentDto.getIdentificationCode());
@@ -56,8 +51,6 @@ public class CommentServiceImp implements CommentService {
 
             commentDao.delete(comment);
 
-        } else
-            throw new EditionDenied();
     }
 
     @Override

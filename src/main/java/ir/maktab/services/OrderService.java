@@ -4,6 +4,7 @@ import ir.maktab.data.models.entities.Order;
 import ir.maktab.data.models.entities.SubService;
 import ir.maktab.data.models.enums.OrderStatus;
 import ir.maktab.dto.modelDtos.AddressDto;
+import ir.maktab.dto.modelDtos.CommentDto;
 import ir.maktab.dto.modelDtos.OrderDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
@@ -41,12 +42,11 @@ public interface OrderService {
 
     void updateOrder(Order order);
 
-    void updateOrderForAcceptOrder(Order order);
-
-    void setOrderDtoStatusDone(OrderDto orderDto);
-
     List<OrderDto> findOrderByStatusAndSubService(OrderStatus orderStatus, SubService subService);
 
     List<OrderDto> findOrderForExpertBasedOnSubService(ExpertDto expertDto);
 
+    void changeOrderStatus(Order order,OrderStatus orderStatus);
+
+    void setCommentForOrder(OrderDto orderDto , CommentDto commentDto);
 }

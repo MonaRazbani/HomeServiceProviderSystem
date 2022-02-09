@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 public class ExpertDto extends UserDto{
     private byte[] photo;
     private String rateString;
+    private Double rate;
 }

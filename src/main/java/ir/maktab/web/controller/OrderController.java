@@ -93,18 +93,6 @@ public class OrderController {
         return "order/showCustomerOrders";
     }
 
-    @GetMapping("/payOrder")
-
-    public ModelAndView showPayOrderPage(@SessionAttribute("customerDto") CustomerDto customerDto,
-                                         @SessionAttribute("orderDto") OrderDto orderDto,
-                                         @ModelAttribute("commentDto") CommentDto commentDto) {
-
-        if (customerDto != null && orderDto != null)
-            throw new AccessDenied();
-        return null;
-
-    }
-
     @GetMapping("/submitComment")
     public ModelAndView showSubmitCommentPage(@SessionAttribute("customerDto")CustomerDto customerDto,
                                               @SessionAttribute("orderDto") OrderDto orderDto){
@@ -112,17 +100,42 @@ public class OrderController {
             throw new AccessDenied();
 
         return new ModelAndView("order/submitComment","commentDto",new CommentDto());
+
     }
     @PostMapping("/submitComment")
     public String submitCommentProcess (@SessionAttribute("customerDto")CustomerDto customerDto,
                                         @SessionAttribute("orderDto") OrderDto orderDto,
-                                        @ModelAttribute("commentDto")CommentDto commentDto){
+                                        @ModelAttribute("commentDto")CommentDto commentDto,
+                                        HttpSession httpSession){
 
         if(customerDto==null && orderDto==null)
             throw new AccessDenied();
-
         orderService.setCommentForOrder(orderDto,commentDto);
+        httpSession.removeAttribute("orderDto");
+
         return "/customer/dashboard";
+    }
+
+
+    @GetMapping("/payOrder")
+
+    public String showPayOrderPage(@SessionAttribute("customerDto") CustomerDto customerDto,
+                                         @SessionAttribute("orderDto") OrderDto orderDto) {
+
+        if (customerDto != null && orderDto != null)
+            throw new AccessDenied();
+
+        return "order/payOrder";
+    }
+
+    @GetMapping("paymentWithBankCart")
+    private ModelAndView showPaymentWithBankCart(@SessionAttribute("customerDto")CustomerDto customerDto,
+                                                 @SessionAttribute("orderDto") OrderDto orderDto){
+
+        if (customerDto != null && orderDto != null)
+            throw new AccessDenied();
+
+        return new ModelAndView("order/payOrder","bankCartDto";
     }
 
     @ExceptionHandler(value = OrderWithoutSubService.class)

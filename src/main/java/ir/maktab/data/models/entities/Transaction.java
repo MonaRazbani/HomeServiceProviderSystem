@@ -11,7 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
-
 @Entity
 @Data
 @Builder
@@ -25,10 +24,10 @@ public class Transaction {
     @Column(columnDefinition = "BINARY(16)")
     private UUID identificationCode;
 
-    @CreationTimestamp
+   @CreationTimestamp
     private Date creationDate ;
 
-    @OneToOne
+     @OneToOne
     private Order order;
 
     private double price ;
@@ -36,6 +35,6 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
 
-    @Enumerated(EnumType.STRING)
+   @Enumerated(EnumType.STRING)
     private TransactionType type;
 }

@@ -2,21 +2,21 @@ package ir.maktab.services;
 
 import ir.maktab.data.dao.OrderDao;
 import ir.maktab.data.models.entities.Comment;
+import ir.maktab.data.models.entities.Order;
 import ir.maktab.data.models.entities.SubService;
+import ir.maktab.data.models.entities.roles.Customer;
+import ir.maktab.data.models.entities.roles.Expert;
+import ir.maktab.data.models.enums.OrderStatus;
+import ir.maktab.data.models.enums.TransactionStatus;
+import ir.maktab.data.models.enums.TransactionType;
 import ir.maktab.dto.mapper.OrderMapper;
-import ir.maktab.dto.modelDtos.AddressDto;
-import ir.maktab.dto.modelDtos.CommentDto;
-import ir.maktab.dto.modelDtos.OrderDto;
-import ir.maktab.dto.modelDtos.SubServiceDto;
+import ir.maktab.dto.modelDtos.*;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 import ir.maktab.exceptions.EditionDenied;
 import ir.maktab.exceptions.InvalidSuggestedPrice;
 import ir.maktab.exceptions.OrderNotFound;
-import ir.maktab.data.models.entities.Order;
-import ir.maktab.data.models.entities.roles.Customer;
-import ir.maktab.data.models.entities.roles.Expert;
-import ir.maktab.data.models.enums.OrderStatus;
+import ir.maktab.exceptions.PaymentFail;
 import ir.maktab.validation.ControlEdition;
 import ir.maktab.validation.ControlInput;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImp implements OrderService{
+public class OrderServiceImp implements OrderService {
     private final ControlInput controlInput;
     private final ControlEdition controlEdition;
     private final OrderDao orderDao;
@@ -42,6 +42,7 @@ public class OrderServiceImp implements OrderService{
     private final ModelMapper modelMapper;
     private final OrderMapper orderMapper;
     private final CommentService commentService;
+    private final TransactionService transactionService;
 
 
     @Override
@@ -141,7 +142,7 @@ public class OrderServiceImp implements OrderService{
         Optional<Order> order = orderDao.findByIdentificationCode(identificationCode);
 
         if (order.isEmpty())
-        throw new OrderNotFound();
+            throw new OrderNotFound();
 
         return order.get();
     }
@@ -155,14 +156,14 @@ public class OrderServiceImp implements OrderService{
     }
 
     @Override
-    public long findOrderId (UUID identificationCode) {
+    public long findOrderId(UUID identificationCode) {
         Order order = findOrderByIdentificationCode(identificationCode);
         return order.getId();
     }
 
     @Override
     public void updateOrder(OrderDto orderDto) {
-        Order order = modelMapper.map(orderDto,Order.class);
+        Order order = modelMapper.map(orderDto, Order.class);
 
         if (controlEdition.isValidToEdit(order.getStatus())) {
             long orderId = findOrderId(order.getIdentificationCode());
@@ -188,9 +189,9 @@ public class OrderServiceImp implements OrderService{
     @Override
     public List<OrderDto> findOrderByStatusAndSubService(OrderStatus orderStatus, SubService subService) {
 
-        List<Order> orders = orderDao.findByStatusAndSubService(orderStatus,subService);
+        List<Order> orders = orderDao.findByStatusAndSubService(orderStatus, subService);
 
-        if(orders.isEmpty())
+        if (orders.isEmpty())
             throw new OrderNotFound();
 
         return orders
@@ -203,7 +204,7 @@ public class OrderServiceImp implements OrderService{
     public List<OrderDto> findOrderForExpertBasedOnSubService(ExpertDto expertDto) {
         List<SubService> subServiceByExpert = subServiceService.findSubServiceByExpert(expertDto);
         List<OrderDto> orderList = new ArrayList<>();
-        for (SubService subService :subServiceByExpert) {
+        for (SubService subService : subServiceByExpert) {
 
             List<OrderDto> orderByStatusAndSubService =
                     findOrderByStatusAndSubService(OrderStatus.WAITING_FOR_CHOOSING_EXPERT, subService);
@@ -213,8 +214,10 @@ public class OrderServiceImp implements OrderService{
     }
 
     @Override
-    public void changeOrderStatus(Order order,OrderStatus orderStatus) {
+    public void changeOrderStatus(Order order, OrderStatus orderStatus) {
         order.setStatus(orderStatus);
+        if (orderStatus == OrderStatus.DONE)
+            order.setPerformedOrder(new java.util.Date());
         orderDao.save(order);
     }
 
@@ -224,6 +227,42 @@ public class OrderServiceImp implements OrderService{
         Comment comment = commentService.saveComment(commentDto);
         order.setComment(comment);
         orderDao.save(order);
+    }
+
+    @Override
+    public void paymentWithCredit(TransactionDto transactionDto, OrderDto orderDto) {
+
+        Order order = findOrderByIdentificationCode(orderDto.getIdentificationCode());
+        order.getCustomer().setCredit(order.getCustomer().getCredit() - transactionDto.getPrice());
+        Customer updateCustomer = customerService.updateCustomer(order.getCustomer());
+
+        if (updateCustomer.getCredit() == orderDto.getCustomer().getCredit() - transactionDto.getPrice()) {
+
+            transactionDto.setStatus(TransactionStatus.SUCCESSFUL);
+
+            changeOrderStatus(order, OrderStatus.PAID);
+            transactionService.save(transactionDto, order);
+
+            TransactionDto depositTransaction = TransactionDto.builder()
+                    .order(orderDto)
+                    .price(transactionDto.getPrice() * 0.7)
+                    .type(TransactionType.DEPOSIT)
+                    .build();
+
+            order.getExpert().setCredit(order.getExpert().getCredit() + depositTransaction.getPrice());
+            Expert updateExpert = expertService.updateExpert(order.getExpert());
+
+            if (updateExpert.getCredit() == orderDto.getExpert().getCredit() + depositTransaction.getPrice()) {
+
+                depositTransaction.setStatus(TransactionStatus.SUCCESSFUL);
+                transactionService.save(depositTransaction, order);
+            }
+
+        } else {
+            transactionDto.setStatus(TransactionStatus.FAIL);
+            transactionService.save(transactionDto, order);
+            throw new PaymentFail();
+        }
     }
 
 }

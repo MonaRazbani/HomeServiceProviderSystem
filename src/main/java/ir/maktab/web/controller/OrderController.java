@@ -1,13 +1,13 @@
 package ir.maktab.web.controller;
 
 import ir.maktab.configuration.LastViewInterceptor;
+import ir.maktab.data.models.enums.TransactionType;
+import ir.maktab.dto.BankCardDto;
 import ir.maktab.dto.mapper.SubServiceMapper;
-import ir.maktab.dto.modelDtos.CommentDto;
-import ir.maktab.dto.modelDtos.OrderDto;
-import ir.maktab.dto.modelDtos.ServiceCategoryDto;
-import ir.maktab.dto.modelDtos.SubServiceDto;
+import ir.maktab.dto.modelDtos.*;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.exceptions.AccessDenied;
+import ir.maktab.exceptions.CreditBalanceNotEnough;
 import ir.maktab.exceptions.InvalidSuggestedPrice;
 import ir.maktab.exceptions.OrderWithoutSubService;
 import ir.maktab.services.OrderService;
@@ -20,7 +20,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -94,23 +96,24 @@ public class OrderController {
     }
 
     @GetMapping("/submitComment")
-    public ModelAndView showSubmitCommentPage(@SessionAttribute("customerDto")CustomerDto customerDto,
-                                              @SessionAttribute("orderDto") OrderDto orderDto){
-        if(customerDto==null && orderDto==null)
+    public ModelAndView showSubmitCommentPage(@SessionAttribute("customerDto") CustomerDto customerDto,
+                                              @SessionAttribute("orderDto") OrderDto orderDto) {
+        if (customerDto == null && orderDto == null)
             throw new AccessDenied();
 
-        return new ModelAndView("order/submitComment","commentDto",new CommentDto());
+        return new ModelAndView("order/submitComment", "commentDto", new CommentDto());
 
     }
-    @PostMapping("/submitComment")
-    public String submitCommentProcess (@SessionAttribute("customerDto")CustomerDto customerDto,
-                                        @SessionAttribute("orderDto") OrderDto orderDto,
-                                        @ModelAttribute("commentDto")CommentDto commentDto,
-                                        HttpSession httpSession){
 
-        if(customerDto==null && orderDto==null)
+    @PostMapping("/submitComment")
+    public String submitCommentProcess(@SessionAttribute("customerDto") CustomerDto customerDto,
+                                       @SessionAttribute("orderDto") OrderDto orderDto,
+                                       @ModelAttribute("commentDto") CommentDto commentDto,
+                                       HttpSession httpSession) {
+
+        if (customerDto == null && orderDto == null)
             throw new AccessDenied();
-        orderService.setCommentForOrder(orderDto,commentDto);
+        orderService.setCommentForOrder(orderDto, commentDto);
         httpSession.removeAttribute("orderDto");
 
         return "/customer/dashboard";
@@ -120,22 +123,71 @@ public class OrderController {
     @GetMapping("/payOrder")
 
     public String showPayOrderPage(@SessionAttribute("customerDto") CustomerDto customerDto,
-                                         @SessionAttribute("orderDto") OrderDto orderDto) {
+                                   @SessionAttribute("orderDto") OrderDto orderDto,
+                                   @SessionAttribute("acceptedOfferOfOrder") OfferDto acceptedOfferOfOrder) {
 
-        if (customerDto != null && orderDto != null)
+        if (customerDto == null && orderDto == null && acceptedOfferOfOrder == null)
             throw new AccessDenied();
 
-        return "order/payOrder";
+
+        return "/order/payOrder";
     }
 
-    @GetMapping("paymentWithBankCart")
-    private ModelAndView showPaymentWithBankCart(@SessionAttribute("customerDto")CustomerDto customerDto,
-                                                 @SessionAttribute("orderDto") OrderDto orderDto){
+    @GetMapping("/paymentWithBankCard")
+    private ModelAndView showPaymentWithBankCart(HttpSession httpSession) {
+
+        CustomerDto customerDto = (CustomerDto) httpSession.getAttribute("customerDto");
+        OrderDto orderDto = (OrderDto) httpSession.getAttribute("orderDto");
+        OfferDto acceptedOfferOfOrder = (OfferDto) httpSession.getAttribute("acceptedOfferOfOrder");
+
+        if (customerDto == null && orderDto == null && acceptedOfferOfOrder == null)
+            throw new AccessDenied();
+
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setOrder(orderDto);
+        transactionDto.setPrice(Double.parseDouble(acceptedOfferOfOrder.getSuggestedPrice()));
+        transactionDto.setType(TransactionType.WITHDRAW_BY_BANK_CARD);
+
+        httpSession.setAttribute("transactionDto", transactionDto);
+
+        return new ModelAndView("/order/paymentWithBankCard", "bankCartDto", new BankCardDto());
+    }
+
+    @PostMapping("/paymentWithBankCard")
+    private ModelAndView paymentWithBankCart(@SessionAttribute("customerDto") CustomerDto customerDto,
+                                             @SessionAttribute("orderDto") OrderDto orderDto,
+                                             @SessionAttribute("transactionDto") TransactionDto transactionDto,
+                                             @ModelAttribute("bankCardDto") BankCardDto bankCardDto) {
 
         if (customerDto != null && orderDto != null)
             throw new AccessDenied();
+        //todo
+        return null;
+    }
 
-        return new ModelAndView("order/payOrder","bankCartDto";
+    @GetMapping("/paymentWithCredit")
+    private String showPaymentWithCredit(HttpSession httpSession) {
+
+        CustomerDto customerDto = (CustomerDto) httpSession.getAttribute("customerDto");
+        OrderDto orderDto = (OrderDto) httpSession.getAttribute("orderDto");
+        OfferDto acceptedOfferOfOrder = (OfferDto) httpSession.getAttribute("acceptedOfferOfOrder");
+
+        if (customerDto == null && orderDto == null && acceptedOfferOfOrder == null)
+            throw new AccessDenied();
+
+        if (Double.parseDouble(acceptedOfferOfOrder.getSuggestedPrice()) > customerDto.getCredit())
+            throw new CreditBalanceNotEnough();
+
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setOrder(orderDto);
+        transactionDto.setPrice(Double.parseDouble(acceptedOfferOfOrder.getSuggestedPrice()));
+        transactionDto.setType(TransactionType.WITHDRAW_BY_CREDIT);
+
+        orderService.paymentWithCredit(transactionDto,orderDto);
+
+        httpSession.removeAttribute("orderDto");
+
+        return "/customer/selectOrder";
     }
 
     @ExceptionHandler(value = OrderWithoutSubService.class)

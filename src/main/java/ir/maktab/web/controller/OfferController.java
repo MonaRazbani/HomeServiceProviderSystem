@@ -47,29 +47,6 @@ public class OfferController {
         return new ModelAndView("/offer/expertOffers");
     }
 
-/*
-    @GetMapping("/expertOffers")
-    public ModelAndView showExpertOffersPage(@SessionAttribute("expertDto") ExpertDto expertDto) {
-
-        if (expertDto == null)
-            throw new AccessDenied();
-
-        List<OfferDto> expertOffers = offerService.findExpertOffer(expertDto);
-
-        return new ModelAndView("/offer/expertOffers", "expertOffers", expertOffers);
-    }
-
-    @GetMapping("/expertOffers/{identificationCode}")
-    public ModelAndView selectOfferFromExpertOffers(@SessionAttribute("expertDto") ExpertDto expertDto,
-                                                    @PathVariable String identificationCode) {
-        if (expertDto == null)
-            throw new AccessDenied();
-
-        OfferDto offerDto = offerService.findOfferDtoByIdentificationCode(UUID.fromString(identificationCode));
-
-        return new ModelAndView("offer/showOfferMenuForExpert", "offerDto", offerDto);
-    }*/
-
     @GetMapping("/expertOffers")
     public ModelAndView showExpertOfferPage(@SessionAttribute("expertDto") ExpertDto expertDto) {
 

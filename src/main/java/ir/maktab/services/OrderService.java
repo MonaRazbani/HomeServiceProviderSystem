@@ -3,10 +3,7 @@ package ir.maktab.services;
 import ir.maktab.data.models.entities.Order;
 import ir.maktab.data.models.entities.SubService;
 import ir.maktab.data.models.enums.OrderStatus;
-import ir.maktab.dto.modelDtos.AddressDto;
-import ir.maktab.dto.modelDtos.CommentDto;
-import ir.maktab.dto.modelDtos.OrderDto;
-import ir.maktab.dto.modelDtos.SubServiceDto;
+import ir.maktab.dto.modelDtos.*;
 import ir.maktab.dto.modelDtos.roles.CustomerDto;
 import ir.maktab.dto.modelDtos.roles.ExpertDto;
 
@@ -49,4 +46,6 @@ public interface OrderService {
     void changeOrderStatus(Order order,OrderStatus orderStatus);
 
     void setCommentForOrder(OrderDto orderDto , CommentDto commentDto);
+    
+    void paymentWithCredit(TransactionDto transactionDto, OrderDto orderDto);
 }

@@ -13,6 +13,8 @@ public interface ExpertService {
 
     ExpertDto updateExpert(ExpertDto expertDto);
 
+    Expert updateExpert(Expert expert);
+
     ExpertDto loginExpert(ExpertDto expertDto);
 
     Expert findExpertByEmail(String email);

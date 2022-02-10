@@ -47,6 +47,11 @@ public class CustomerServiceImp implements CustomerService {
     }
 
     @Override
+    public Customer updateCustomer(Customer customer) {
+       return customerDao.save(customer) ;
+    }
+
+    @Override
     public CustomerDto loginCustomer(CustomerDto customerDto) {
         Customer customer = modelMapper.map(customerDto, Customer.class);
         Optional<Customer> found = customerDao.findByEmailAndPassword(customer.getEmail(),customer.getPassword());

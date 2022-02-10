@@ -102,7 +102,7 @@ public class CustomerController {
         }
         else{
             OfferDto acceptedOfferOfOrder = offerService.findAcceptedOfferOfOrder(orderDto);
-
+            httpSession.setAttribute("acceptedOfferOfOrder",acceptedOfferOfOrder);
             Map<String, Object> model = new HashMap<>();
             model.put("orderDto", orderDto);
             model.put("acceptedOfferOfOrder", acceptedOfferOfOrder);

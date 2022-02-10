@@ -9,6 +9,8 @@ public interface CustomerService {
 
     CustomerDto updateCustomer(CustomerDto customerDto);
 
+    Customer updateCustomer(Customer customer);
+
     CustomerDto loginCustomer(CustomerDto customerDto);
 
     Customer findCustomerByEmail(String email);

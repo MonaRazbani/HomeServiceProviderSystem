@@ -16,10 +16,6 @@ public class AddressDto {
     private UUID identificationCode;
     @NotNull(message = "You can't leave this empty.")
     private String address ;
-  /*  private String street ;
-    private String alley ;
-    private String houseNumber;
-    private String floorNumber;
-    private String HouseUnitNumber;*/
+
 
 }

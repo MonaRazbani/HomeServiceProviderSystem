@@ -66,6 +66,11 @@ public class ExpertServiceImp implements ExpertService {
     }
 
     @Override
+    public Expert updateExpert(Expert expert) {
+        return expertDao.save(expert);
+    }
+
+    @Override
     public Expert findExpertByEmail(String email) {
         if (controlInput.isValidEmail(email)) {
             Optional<Expert> expert = expertDao.findByEmail(email);

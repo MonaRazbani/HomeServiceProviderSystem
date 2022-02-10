@@ -1,6 +1,7 @@
 package ir.maktab.services;
 
 import ir.maktab.data.dao.TransactionDao;
+import ir.maktab.data.models.entities.Order;
 import ir.maktab.data.models.entities.Transaction;
 import ir.maktab.dto.mapper.TransactionMapper;
 import ir.maktab.dto.modelDtos.TransactionDto;
@@ -19,9 +20,10 @@ public class TransactionServiceImp implements TransactionService {
 
 
     @Override
-    public TransactionDto save(TransactionDto transactionDto) {
+    public TransactionDto save(TransactionDto transactionDto, Order order) {
         Transaction transaction = transactionMapper.toTransaction(transactionDto);
         transaction.setIdentificationCode(UUID.randomUUID());
+        transaction.setOrder(order);
         Transaction save = transactionDao.save(transaction);
         return transactionMapper.toTransactionDto(save);
 

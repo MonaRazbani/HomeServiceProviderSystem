@@ -2,17 +2,18 @@ package ir.maktab.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
+@EnableWebMvc
 public class WebConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+     /*   registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("/jsp/**");*/
+
         registry.addResourceHandler("/static/**").addResourceLocations("/static/");
     }
 
@@ -33,4 +34,5 @@ public class WebConfiguration implements WebMvcConfigurer {
         resolver.setSuffix(".jsp");
         return resolver;
     }
+
 }

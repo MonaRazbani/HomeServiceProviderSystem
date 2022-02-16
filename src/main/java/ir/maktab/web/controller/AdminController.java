@@ -6,6 +6,7 @@ import ir.maktab.dto.modelDtos.AdminDto;
 import ir.maktab.dto.modelDtos.ServiceCategoryDto;
 import ir.maktab.dto.modelDtos.SubServiceDto;
 import ir.maktab.dto.modelDtos.roles.UserDto;
+import ir.maktab.exceptions.AccessDenied;
 import ir.maktab.exceptions.AdminNotFound;
 import ir.maktab.exceptions.BadFilterSearching;
 import ir.maktab.exceptions.DuplicateSubService;
@@ -42,16 +43,20 @@ public class AdminController {
     }
 
     @PostMapping("/submitLogin")
-    public ModelAndView loginCustomer(@ModelAttribute("adminDto") @Validated AdminDto adminDto) {
-        adminService.loginAdmin(adminDto);
+    public ModelAndView loginCustomer(@ModelAttribute("adminDto") @Validated AdminDto adminDto,HttpSession httpSession) {
+        AdminDto loginAdmin = adminService.loginAdmin(adminDto);
+        httpSession.setAttribute("adminDto",loginAdmin);
+
         return new ModelAndView("admin/dashboard");
     }
 
 
     @GetMapping("/searchUser")
     public ModelAndView showSearchUserPage(HttpSession session) {
-        List<SubServiceDto> serviceServiceDtoAll = subServiceService.findAll();
+        if (session.getAttribute("adminDto")==null)
+            throw new AccessDenied();
 
+        List<SubServiceDto> serviceServiceDtoAll = subServiceService.findAll();
         session.setAttribute("serviceServiceDtoAll", serviceServiceDtoAll);
 
         Map<String, Object> model = new HashMap<>();
@@ -63,7 +68,7 @@ public class AdminController {
 
     @PostMapping("/searchUserProcess")
     public ModelAndView searchUser(@ModelAttribute("userCategoryDto") UserCategoryDto userCategoryDto, ModelAndView modelAndView) {
-        List<UserDto> userDtoList = adminService.UserDynamicSearch(userCategoryDto);
+        List<UserDto> userDtoList = adminService.userDynamicSearch(userCategoryDto);
         modelAndView.addObject("userDtoList", userDtoList);
         modelAndView.setViewName("admin/searchUser");
         return modelAndView;
@@ -100,12 +105,6 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-
-    @ExceptionHandler(value = BindException.class)//
-    public ModelAndView bindExceptionHandler(BindException ex, HttpServletRequest request) {
-        String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);
-        return new ModelAndView(lastView, ex.getBindingResult().getModel());
-    }
 
     @ExceptionHandler(value = AdminNotFound.class)
     public ModelAndView loginExceptionHandler(AdminNotFound ex) {

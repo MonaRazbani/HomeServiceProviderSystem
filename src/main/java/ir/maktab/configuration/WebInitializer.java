@@ -25,4 +25,5 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
     protected Filter[] getServletFilters() {
         return null;
     }
+
 }

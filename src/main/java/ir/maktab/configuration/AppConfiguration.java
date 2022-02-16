@@ -1,6 +1,5 @@
 package ir.maktab.configuration;
 
-import ir.maktab.dto.mapper.OrderMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

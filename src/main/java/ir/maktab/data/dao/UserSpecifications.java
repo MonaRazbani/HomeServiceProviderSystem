@@ -20,7 +20,7 @@ public interface UserSpecifications {
             Join<User, SubService> subServices = root.join("subServices");
             List<Predicate> predicates = new ArrayList<>();
 
-            if (userCategoryDto.getRoleType() == RoleType.CUSTOMER && userCategoryDto.getSubService() != null) {
+            if (userCategoryDto.getRoleType() == RoleType.CUSTOMER && userCategoryDto.getSubServiceName() != null) {
                 throw new BadFilterSearching();
             }
 
@@ -41,8 +41,8 @@ public interface UserSpecifications {
                 Predicate rolTypeFilter = criteriaBuilder.equal(root.get("rolType"), userCategoryDto.getRoleType());
                 predicates.add(rolTypeFilter);
             }
-            if (userCategoryDto.getSubService() != null) {
-                Predicate subServiceFilter = criteriaBuilder.in(subServices.get("name")).value(userCategoryDto.getSubService());
+            if (userCategoryDto.getSubServiceName() != null) {
+                Predicate subServiceFilter = criteriaBuilder.in(subServices.get("name")).value(userCategoryDto.getSubServiceName());
                 predicates.add(subServiceFilter);
 
             }

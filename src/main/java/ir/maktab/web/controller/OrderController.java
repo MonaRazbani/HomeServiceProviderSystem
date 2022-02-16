@@ -156,7 +156,6 @@ public class OrderController {
     @PostMapping("/paymentWithBankCard")
     private ModelAndView paymentWithBankCart(@SessionAttribute("customerDto") CustomerDto customerDto,
                                              @SessionAttribute("orderDto") OrderDto orderDto,
-                                             @SessionAttribute("transactionDto") TransactionDto transactionDto,
                                              @ModelAttribute("bankCardDto") BankCardDto bankCardDto) {
 
         if (customerDto != null && orderDto != null)
@@ -196,7 +195,7 @@ public class OrderController {
     }
 
     @ExceptionHandler(value = InvalidSuggestedPrice.class)
-    public ModelAndView bindExceptionHandler(InvalidSuggestedPrice ex, HttpServletRequest request) {
+    public ModelAndView xxxx(InvalidSuggestedPrice ex, HttpServletRequest request) {
         String lastView = (String) request.getSession().getAttribute(LastViewInterceptor.LAST_VIEW_ATTRIBUTE);
         return new ModelAndView(lastView, "error", ex.getMessage());
     }
